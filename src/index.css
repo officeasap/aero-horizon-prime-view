@@ -55,6 +55,16 @@
   }
 }
 
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+}
+
 @layer components {
   .glass-panel {
     @apply bg-panel backdrop-blur-md border border-white/10 rounded-2xl shadow-lg;
@@ -69,7 +79,7 @@
   }
   
   .flight-cell {
-    @apply inline-block px-2 relative overflow-hidden perspective-[1000px] transition-all duration-300;
+    @apply inline-block px-2 relative overflow-hidden perspective-1000 transition-all duration-300;
   }
   
   .flight-cell-content {
@@ -86,13 +96,5 @@
   
   .font-inter {
     font-family: 'Inter', sans-serif;
-  }
-
-  .perspective-[1000px] {
-    perspective: 1000px;
-  }
-  
-  .transform-style-3d {
-    transform-style: preserve-3d;
   }
 }

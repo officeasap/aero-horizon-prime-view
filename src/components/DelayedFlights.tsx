@@ -196,7 +196,7 @@ const DelayedFlights: React.FC = () => {
             <span className="text-sm text-gray-light">Moderate Delay (60-120 min)</span>
             
             <span className="inline-block w-3 h-3 rounded-full bg-yellow-400 ml-4"></span>
-            <span className="text-sm text-gray-light">Minor Delay (< 60 min)</span>
+            <span className="text-sm text-gray-light">Minor Delay (&lt; 60 min)</span>
           </div>
           
           <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
