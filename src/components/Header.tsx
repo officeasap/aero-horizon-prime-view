@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { X, Menu, Plane, Cloud, MapPin, AlertTriangle, Building2, Phone, ChevronDown } from 'lucide-react';
+import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -40,11 +40,11 @@ const Header = () => {
   };
 
   const nav = [
-    { name: 'Home', path: '/' },
-    { name: 'Live Flight Tracker', path: '/live-tracker' },
-    { name: 'Flight Status', path: '/flight-status' },
-    { name: 'Airports & Airlines', path: '/airports-airlines' },
-    { name: 'Weather', path: '/weather' },
+    { name: 'Home', path: '/', icon: <Building2 className="h-4 w-4 mr-2" /> },
+    { name: 'Live Flight Tracker', path: '/live-tracker', icon: <Plane className="h-4 w-4 mr-2" /> },
+    { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-4 w-4 mr-2" /> },
+    { name: 'Airports & Airlines', path: '/airports-airlines', icon: <MapPin className="h-4 w-4 mr-2" /> },
+    { name: 'Weather', path: '/weather', icon: <Cloud className="h-4 w-4 mr-2" /> },
   ];
   
   return (
@@ -81,20 +81,15 @@ const Header = () => {
               )}
               onClick={closeMenu}
             >
+              {link.icon}
               <span>{link.name}</span>
             </Link>
           ))}
           
-          {/* More dropdown */}
-          <div className="relative group">
-            <button className="flex items-center text-white hover:text-purple transition-colors duration-200 font-medium gap-1">
-              More <ChevronDown className="h-4 w-4" />
-            </button>
-          </div>
-          
           {/* Contact Button */}
           <Link to="/contact">
-            <Button className="bg-dark hover:bg-dark/80 text-white border border-purple rounded-full px-6">
+            <Button variant="contact" className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
               Contact Us
             </Button>
           </Link>
@@ -104,7 +99,8 @@ const Header = () => {
         {isMobile && isMenuOpen && (
           <div className="fixed bottom-8 left-8 right-8">
             <Link to="/contact" className="w-full block">
-              <Button className="bg-dark hover:bg-dark/80 text-white border border-purple rounded-full px-6 w-full">
+              <Button variant="contact" className="w-full flex items-center justify-center gap-2">
+                <Phone className="h-4 w-4" />
                 Contact Us
               </Button>
             </Link>
