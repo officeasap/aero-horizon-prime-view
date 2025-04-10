@@ -4,11 +4,13 @@ import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Link, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,12 +21,17 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
   const navItems = [
-    { name: 'Home', href: '#hero' },
-    { name: 'Flight Schedule', href: '#schedule' },
-    { name: 'Flight Tracker', href: '#tracker' },
-    { name: 'Delays', href: '#delays' },
-    { name: 'Weather Forecast', href: '#weather' },
+    { name: 'Home', href: '/' },
+    { name: 'Live Tracker', href: '/live-tracker' },
+    { name: 'Flight Status', href: '/flight-status' },
+    { name: 'Airports & Airlines', href: '/airports-airlines' },
+    { name: 'Weather', href: '/weather' },
   ];
 
   return (
@@ -36,29 +43,32 @@ const Header = () => {
     >
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <div className="flex items-center">
+          <Link to="/" className="flex items-center">
             <img 
               src="/lovable-uploads/28f1aa86-908f-4a07-837d-7a69fa78941c.png" 
               alt="ASAP Tracker Logo" 
-              className="h-10 md:h-12 mr-3" 
+              className="h-12 md:h-14 mr-3" 
             />
             <div className="text-2xl md:text-3xl font-bold font-space tracking-wider">
-              <span className="text-purple">ASAP</span>
+              <span className="text-[#A259FF]">ASAP</span>
               <span className="text-white ml-2">TRACKER</span>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           {navItems.map((item) => (
-            <a 
+            <Link 
               key={item.name} 
-              href={item.href}
-              className="text-white hover:text-purple transition-colors text-sm font-medium"
+              to={item.href}
+              className={cn(
+                "text-white hover:text-purple transition-colors text-sm font-medium",
+                location.pathname === item.href && "text-purple"
+              )}
             >
               {item.name}
-            </a>
+            </Link>
           ))}
           <Button 
             variant="outline" 
@@ -82,14 +92,16 @@ const Header = () => {
         <nav className="absolute top-full left-0 right-0 bg-dark/95 backdrop-blur-md py-5 px-6 shadow-lg animate-fade-in">
           <div className="flex flex-col space-y-4">
             {navItems.map((item) => (
-              <a 
+              <Link 
                 key={item.name} 
-                href={item.href}
-                className="text-white hover:text-purple transition-colors py-2 text-lg"
-                onClick={() => setIsMenuOpen(false)}
+                to={item.href}
+                className={cn(
+                  "text-white hover:text-purple transition-colors py-2 text-lg",
+                  location.pathname === item.href && "text-purple"
+                )}
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
             <Button 
               variant="outline" 

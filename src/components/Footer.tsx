@@ -1,91 +1,140 @@
 
 import React from 'react';
-import { Facebook, Instagram, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
-const Footer: React.FC = () => {
+const Footer = () => {
   return (
-    <footer className="bg-gray-dark py-12 border-t border-white/10">
+    <footer className="bg-gray-dark/50 pt-16 border-t border-white/5">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="md:col-span-1">
-            <div className="flex items-center mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          {/* Column 1 - About */}
+          <div>
+            <Link to="/" className="flex items-center mb-6">
               <img 
                 src="/lovable-uploads/28f1aa86-908f-4a07-837d-7a69fa78941c.png" 
                 alt="ASAP Tracker Logo" 
-                className="h-12 mr-3" 
+                className="h-10 mr-3" 
               />
-              <div className="text-2xl font-bold font-space tracking-wider">
-                <span className="text-purple">ASAP</span>
+              <div className="text-xl font-bold font-space tracking-wider">
+                <span className="text-[#A259FF]">ASAP</span>
                 <span className="text-white ml-2">TRACKER</span>
               </div>
-            </div>
-            <p className="text-gray-light text-sm mb-6">
-              Your trusted source for real-time flight information, tracking, and global weather forecasts.
+            </Link>
+            <p className="text-gray-light mb-6 text-sm">
+              Comprehensive flight tracking and monitoring solutions for travelers, aviation professionals, and businesses.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-light hover:text-purple transition-colors">
-                <Facebook size={20} />
+                <Facebook size={18} />
               </a>
               <a href="#" className="text-gray-light hover:text-purple transition-colors">
-                <Twitter size={20} />
+                <Twitter size={18} />
               </a>
               <a href="#" className="text-gray-light hover:text-purple transition-colors">
-                <Instagram size={20} />
+                <Instagram size={18} />
               </a>
               <a href="#" className="text-gray-light hover:text-purple transition-colors">
-                <Linkedin size={20} />
+                <Linkedin size={18} />
               </a>
             </div>
           </div>
           
+          {/* Column 2 - Quick Links */}
           <div>
-            <h3 className="text-white font-medium mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li><a href="#hero" className="text-gray-light hover:text-purple transition-colors text-sm">Home</a></li>
-              <li><a href="#schedule" className="text-gray-light hover:text-purple transition-colors text-sm">Flight Schedule</a></li>
-              <li><a href="#tracker" className="text-gray-light hover:text-purple transition-colors text-sm">Flight Tracker</a></li>
-              <li><a href="#delays" className="text-gray-light hover:text-purple transition-colors text-sm">Delays</a></li>
-              <li><a href="#weather" className="text-gray-light hover:text-purple transition-colors text-sm">Weather Forecast</a></li>
+            <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link to="/" className="text-gray-light hover:text-purple transition-colors text-sm">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/live-tracker" className="text-gray-light hover:text-purple transition-colors text-sm">
+                  Live Flight Tracker
+                </Link>
+              </li>
+              <li>
+                <Link to="/flight-status" className="text-gray-light hover:text-purple transition-colors text-sm">
+                  Flight Status
+                </Link>
+              </li>
+              <li>
+                <Link to="/airports-airlines" className="text-gray-light hover:text-purple transition-colors text-sm">
+                  Airports & Airlines
+                </Link>
+              </li>
+              <li>
+                <Link to="/weather" className="text-gray-light hover:text-purple transition-colors text-sm">
+                  Global Weather
+                </Link>
+              </li>
             </ul>
           </div>
           
+          {/* Column 3 - Contact */}
           <div>
-            <h3 className="text-white font-medium mb-4">Services</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">Flight Alerts</a></li>
-              <li><a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">Travel Planning</a></li>
-              <li><a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">Airport Information</a></li>
-              <li><a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">API Access</a></li>
-              <li><a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">Mobile App</a></li>
+            <h3 className="text-lg font-semibold mb-6">Contact Us</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start">
+                <MapPin size={18} className="text-purple mr-3 mt-1 flex-shrink-0" />
+                <span className="text-gray-light text-sm">
+                  123 Aviation Blvd, Suite 500<br />
+                  New York, NY 10001
+                </span>
+              </li>
+              <li className="flex items-center">
+                <Phone size={18} className="text-purple mr-3 flex-shrink-0" />
+                <a href="tel:+11234567890" className="text-gray-light hover:text-purple transition-colors text-sm">
+                  +1 (123) 456-7890
+                </a>
+              </li>
+              <li className="flex items-center">
+                <Mail size={18} className="text-purple mr-3 flex-shrink-0" />
+                <a href="mailto:info@asaptracker.com" className="text-gray-light hover:text-purple transition-colors text-sm">
+                  info@asaptracker.com
+                </a>
+              </li>
             </ul>
           </div>
           
+          {/* Column 4 - Newsletter */}
           <div>
-            <h3 className="text-white font-medium mb-4">Subscribe</h3>
-            <p className="text-gray-light text-sm mb-4">
-              Subscribe to our newsletter to receive updates on flight information and travel tips.
+            <h3 className="text-lg font-semibold mb-6">Newsletter</h3>
+            <p className="text-gray-light mb-4 text-sm">
+              Subscribe to receive the latest updates and news about flights and weather conditions.
             </p>
-            <div className="flex">
-              <input 
+            <div className="flex flex-col space-y-3">
+              <Input 
                 type="email" 
-                placeholder="Your email address" 
-                className="bg-white/10 border-white/10 focus:border-purple text-white placeholder:text-gray-light text-sm py-2 px-3 rounded-l-lg w-full"
+                placeholder="Your email" 
+                className="bg-dark border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
               />
-              <button className="bg-purple hover:bg-purple-600 text-white rounded-r-lg px-3 py-2 transition-colors">
-                <Mail size={16} />
-              </button>
+              <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
+                Subscribe
+              </Button>
             </div>
           </div>
         </div>
         
-        <div className="border-t border-white/10 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-light text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} ASAP Tracker. All rights reserved.
-          </p>
-          <div className="flex space-x-4">
-            <a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">Privacy Policy</a>
-            <a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">Terms of Service</a>
-            <a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">Cookie Policy</a>
+        <div className="border-t border-white/5 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-gray-light text-sm mb-4 md:mb-0">
+              © 2025 ASAP Tracker. All rights reserved.
+            </p>
+            <div className="flex space-x-6">
+              <a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">
+                Privacy Policy
+              </a>
+              <a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">
+                Terms of Service
+              </a>
+              <a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">
+                Cookie Policy
+              </a>
+            </div>
           </div>
         </div>
       </div>
