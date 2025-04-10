@@ -40,11 +40,11 @@ const Header = () => {
   };
 
   const nav = [
-    { name: 'Home', path: '/', icon: <Building2 className="h-4 w-4 mr-2" /> },
-    { name: 'Live Flight Tracker', path: '/live-tracker', icon: <Plane className="h-4 w-4 mr-2" /> },
-    { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-4 w-4 mr-2" /> },
-    { name: 'Airports & Airlines', path: '/airports-airlines', icon: <MapPin className="h-4 w-4 mr-2" /> },
-    { name: 'Weather', path: '/weather', icon: <Cloud className="h-4 w-4 mr-2" /> },
+    { name: 'Home', path: '/', icon: <Building2 className="h-4 w-4" /> },
+    { name: 'Live Flight Tracker', path: '/live-tracker', icon: <Plane className="h-4 w-4" /> },
+    { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-4 w-4" /> },
+    { name: 'Airports & Airlines', path: '/airports-airlines', icon: <MapPin className="h-4 w-4" /> },
+    { name: 'Weather', path: '/weather', icon: <Cloud className="h-4 w-4" /> },
   ];
   
   return (
@@ -67,7 +67,7 @@ const Header = () => {
 
         {/* Navigation Links */}
         <nav className={cn(
-          "lg:flex items-center gap-8 hidden",
+          "lg:flex items-center gap-6 hidden",
           isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-6 z-50 border-r border-purple/20",
           isMenuOpen ? "flex" : "hidden"
         )}>
@@ -76,22 +76,20 @@ const Header = () => {
               key={link.name}
               to={link.path}
               className={cn(
-                "flex items-center text-white hover:text-purple transition-colors duration-200 font-medium",
+                "flex items-center gap-2 text-white hover:text-purple transition-colors duration-200 font-medium",
                 location.pathname === link.path && "text-purple"
               )}
               onClick={closeMenu}
             >
               {link.icon}
-              <span>{link.name}</span>
+              {link.name}
             </Link>
           ))}
           
           {/* Contact Button */}
-          <Link to="/contact">
-            <Button variant="contact" className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              Contact Us
-            </Button>
+          <Link to="/contact" className="flex items-center gap-2 text-white hover:text-purple transition-colors duration-200 font-medium">
+            <Phone className="h-4 w-4" />
+            Contact
           </Link>
         </nav>
 
@@ -101,7 +99,7 @@ const Header = () => {
             <Link to="/contact" className="w-full block">
               <Button variant="contact" className="w-full flex items-center justify-center gap-2">
                 <Phone className="h-4 w-4" />
-                Contact Us
+                Contact
               </Button>
             </Link>
           </div>
