@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone } from 'lucide-react';
+import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone, MailOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -65,9 +65,9 @@ const Header = () => {
           </Button>
         )}
 
-        {/* Navigation Links */}
+        {/* Navigation Links - Centered */}
         <nav className={cn(
-          "lg:flex items-center gap-6 hidden",
+          "lg:flex items-center gap-6 flex-grow justify-center",
           isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-6 z-50 border-r border-purple/20",
           isMenuOpen ? "flex" : "hidden"
         )}>
@@ -93,9 +93,26 @@ const Header = () => {
           </Link>
         </nav>
 
+        {/* Subscribe Button - Desktop */}
+        {!isMobile && (
+          <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
+            <Button variant="subscribe" className="purple-glow flex items-center gap-2">
+              <MailOpen className="h-4 w-4" />
+              Subscribe
+            </Button>
+          </a>
+        )}
+
         {/* Mobile Menu Items */}
         {isMobile && isMenuOpen && (
-          <div className="fixed bottom-8 left-8 right-8">
+          <div className="fixed bottom-8 left-8 right-8 flex flex-col gap-4">
+            <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer" className="w-full block">
+              <Button variant="subscribe" className="w-full purple-glow flex items-center justify-center gap-2">
+                <MailOpen className="h-4 w-4" />
+                Subscribe
+              </Button>
+            </a>
+            
             <Link to="/contact" className="w-full block">
               <Button variant="contact" className="w-full flex items-center justify-center gap-2">
                 <Phone className="h-4 w-4" />
