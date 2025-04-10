@@ -69,7 +69,7 @@ const Header = () => {
         {/* Navigation Links */}
         <nav className={cn(
           "lg:flex items-center space-x-6 hidden",
-          isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-6 z-50 border-r border-purple/20",
+          isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-6 z-50 border-r border-purple/20 rounded-[18%]",
           isMenuOpen ? "flex" : "hidden"
         )}>
           {nav.map((link) => (
@@ -89,7 +89,7 @@ const Header = () => {
           {/* Subscribe Button - Hide on Mobile Menu */}
           {!isMobile && (
             <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
-              <Button className="bg-purple hover:bg-purple-600 text-white purple-glow border border-purple/50">
+              <Button className="bg-purple hover:bg-purple-600 text-white purple-glow border border-purple/50 rounded-[18%]">
                 Subscribe
               </Button>
             </a>
@@ -99,7 +99,7 @@ const Header = () => {
         {/* Subscribe Button - Show on Mobile Menu */}
         {isMobile && isMenuOpen && (
           <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
-            <Button className="bg-purple hover:bg-purple-600 text-white purple-glow border border-purple/50">
+            <Button className="bg-purple hover:bg-purple-600 text-white purple-glow border border-purple/50 rounded-[18%]">
               Subscribe
             </Button>
           </a>
