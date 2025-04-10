@@ -67,7 +67,7 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-panel backdrop-blur-md border border-purple/20 rounded-[18%] shadow-lg;
+    @apply bg-panel backdrop-blur-md border border-purple/20 rounded-2xl shadow-lg;
   }
 
   .purple-glow {
@@ -99,10 +99,10 @@
   }
 
   .accent-border {
-    @apply border border-purple/30 rounded-[18%];
+    @apply border border-purple/30;
   }
   
   .accent-panel {
-    @apply bg-panel border border-purple/30 rounded-[18%] shadow-md;
+    @apply bg-panel border border-purple/30 rounded-lg shadow-md;
   }
 }
