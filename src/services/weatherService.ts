@@ -82,6 +82,77 @@ const weatherData = {
       { day: 'Fri', temp: 89, condition: 'Partly Cloudy', icon: 'Cloud' },
     ]
   },
+  // Added more Asian cities
+  'Shanghai': {
+    current: { temp: 75, condition: 'Cloudy', humidity: 68, wind: 8, icon: 'Cloud' },
+    forecast: [
+      { day: 'Mon', temp: 77, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Tue', temp: 79, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Wed', temp: 80, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Thu', temp: 76, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Fri', temp: 74, condition: 'Cloudy', icon: 'Cloud' },
+    ]
+  },
+  'Seoul': {
+    current: { temp: 68, condition: 'Partly Cloudy', humidity: 62, wind: 9, icon: 'Cloud' },
+    forecast: [
+      { day: 'Mon', temp: 70, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Tue', temp: 72, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Wed', temp: 69, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Thu', temp: 67, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Fri', temp: 65, condition: 'Cloudy', icon: 'Cloud' },
+    ]
+  },
+  'Kuala Lumpur': {
+    current: { temp: 86, condition: 'Thunderstorm', humidity: 80, wind: 6, icon: 'CloudLightning' },
+    forecast: [
+      { day: 'Mon', temp: 87, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Tue', temp: 88, condition: 'Thunderstorm', icon: 'CloudLightning' },
+      { day: 'Wed', temp: 86, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Thu', temp: 85, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 87, condition: 'Thunderstorm', icon: 'CloudLightning' },
+    ]
+  },
+  'Hong Kong': {
+    current: { temp: 82, condition: 'Partly Cloudy', humidity: 75, wind: 10, icon: 'Cloud' },
+    forecast: [
+      { day: 'Mon', temp: 83, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Tue', temp: 81, condition: 'Thunderstorm', icon: 'CloudLightning' },
+      { day: 'Wed', temp: 79, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Thu', temp: 80, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 82, condition: 'Sunny', icon: 'Sun' },
+    ]
+  },
+  'Manila': {
+    current: { temp: 85, condition: 'Rain', humidity: 82, wind: 12, icon: 'CloudRain' },
+    forecast: [
+      { day: 'Mon', temp: 86, condition: 'Thunderstorm', icon: 'CloudLightning' },
+      { day: 'Tue', temp: 85, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Wed', temp: 84, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Thu', temp: 86, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 87, condition: 'Partly Cloudy', icon: 'Cloud' },
+    ]
+  },
+  'Ho Chi Minh City': {
+    current: { temp: 89, condition: 'Hot', humidity: 78, wind: 7, icon: 'Sun' },
+    forecast: [
+      { day: 'Mon', temp: 90, condition: 'Hot', icon: 'Sun' },
+      { day: 'Tue', temp: 91, condition: 'Thunderstorm', icon: 'CloudLightning' },
+      { day: 'Wed', temp: 88, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Thu', temp: 87, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 89, condition: 'Hot', icon: 'Sun' },
+    ]
+  },
+  'Taipei': {
+    current: { temp: 79, condition: 'Partly Cloudy', humidity: 70, wind: 8, icon: 'Cloud' },
+    forecast: [
+      { day: 'Mon', temp: 80, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Tue', temp: 82, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Wed', temp: 83, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Thu', temp: 79, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Fri', temp: 77, condition: 'Rain', icon: 'CloudRain' },
+    ]
+  },
   // More global cities
   'Sydney': {
     current: { temp: 68, condition: 'Windy', humidity: 55, wind: 15, icon: 'Wind' },
@@ -113,7 +184,6 @@ const weatherData = {
       { day: 'Fri', temp: 93, condition: 'Partly Cloudy', icon: 'Cloud' },
     ]
   },
-  // Add more cities as needed
 };
 
 export async function fetchWeatherData(city: string): Promise<WeatherData | null> {
@@ -160,7 +230,14 @@ export async function fetchFlightWeatherConditions() {
       'London to Dubai': weatherData['Dubai'],
       'Tokyo to Singapore': weatherData['Singapore'],
       'Sydney to Jakarta': weatherData['Jakarta'],
-      'Bangkok to Dubai': weatherData['Dubai']
+      'Bangkok to Dubai': weatherData['Dubai'],
+      // Adding more flight routes for Asian cities
+      'Singapore to Kuala Lumpur': weatherData['Kuala Lumpur'],
+      'Jakarta to Bangkok': weatherData['Bangkok'],
+      'Hong Kong to Shanghai': weatherData['Shanghai'],
+      'Seoul to Tokyo': weatherData['Tokyo'],
+      'Manila to Taipei': weatherData['Taipei'],
+      'Ho Chi Minh City to Bangkok': weatherData['Bangkok'],
     };
     
     return flightRouteWeather;
