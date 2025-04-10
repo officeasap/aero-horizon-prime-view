@@ -9,6 +9,7 @@ import HistoricalFlights from '@/components/HistoricalFlights';
 import AboutSection from '@/components/AboutSection';
 import ContactForm from '@/components/ContactForm';
 import Footer from '@/components/Footer';
+import BackgroundAircraft from '@/components/BackgroundAircraft';
 import { Plane, MapPin, BarChart3, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -17,6 +18,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-dark text-white overflow-x-hidden">
       <Header />
+      <BackgroundAircraft />
       
       {/* Hero Section */}
       <section id="hero" className="pt-32 pb-16 relative">

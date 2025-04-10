@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -106,7 +105,6 @@
     @apply bg-panel border border-purple/30 rounded-lg shadow-md;
   }
   
-  /* New class for the header navigation style */
   .main-nav-link {
     @apply px-3 py-2 relative text-white hover:text-purple transition-all duration-200;
   }
@@ -119,4 +117,19 @@
     content: '';
     @apply absolute bottom-0 left-0 right-0 h-0.5 bg-purple opacity-80;
   }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(-2deg);
+  }
+}
+
+.floating-aircraft {
+  animation: float 15s ease-in-out infinite;
+  opacity: 0.15;
+  filter: hue-rotate(240deg) brightness(0.7);
 }
