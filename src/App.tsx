@@ -10,6 +10,7 @@ import LiveFlightTracker from "./pages/LiveFlightTracker";
 import FlightStatus from "./pages/FlightStatus";
 import AirportsAirlines from "./pages/AirportsAirlines";
 import GlobalWeather from "./pages/GlobalWeather";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/flight-status" element={<FlightStatus />} />
           <Route path="/airports-airlines" element={<AirportsAirlines />} />
           <Route path="/weather" element={<GlobalWeather />} />
+          <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

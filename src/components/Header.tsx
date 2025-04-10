@@ -1,117 +1,113 @@
-
-import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { X, Menu, Plane, Cloud, MapPin, AlertTriangle, Building2, Phone } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import useMobile from '@/hooks/use-mobile';
+
+const navLinks = [
+  { name: 'Home', path: '/', icon: <Plane className="h-5 w-5 lg:h-4 lg:w-4" /> },
+  { name: 'Live Flight Tracker', path: '/live-tracker', icon: <MapPin className="h-5 w-5 lg:h-4 lg:w-4" /> },
+  { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-5 w-5 lg:h-4 lg:w-4" /> },
+  { name: 'Airports & Airlines', path: '/airports-airlines', icon: <Building2 className="h-5 w-5 lg:h-4 lg:w-4" /> },
+  { name: 'Weather', path: '/weather', icon: <Cloud className="h-5 w-5 lg:h-4 lg:w-4" /> },
+];
 
 const Header = () => {
-  const [scrolled, setScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isMobile = useIsMobile();
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const headerRef = useRef<HTMLElement>(null);
+  const isMobile = useMobile();
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      if (headerRef.current) {
+        const headerHeight = headerRef.current.offsetHeight;
+        setIsScrolled(window.scrollY > headerHeight);
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial scroll position on mount
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
   useEffect(() => {
+    setIsMenuOpen(false); // Close the menu when the route changes
+  }, [location]);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
     setIsMenuOpen(false);
-  }, [location.pathname]);
+  };
 
-  const navItems = [
-    { name: 'Home', href: '/' },
-    { name: 'Live Tracker', href: '/live-tracker' },
-    { name: 'Flight Status', href: '/flight-status' },
-    { name: 'Airports & Airlines', href: '/airports-airlines' },
-    { name: 'Weather', href: '/weather' },
+  const nav = [
+    { name: 'Home', path: '/', icon: <Plane className="h-5 w-5 lg:h-4 lg:w-4" /> },
+    { name: 'Live Flight Tracker', path: '/live-tracker', icon: <MapPin className="h-5 w-5 lg:h-4 lg:w-4" /> },
+    { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-5 w-5 lg:h-4 lg:w-4" /> },
+    { name: 'Airports & Airlines', path: '/airports-airlines', icon: <Building2 className="h-5 w-5 lg:h-4 lg:w-4" /> },
+    { name: 'Weather', path: '/weather', icon: <Cloud className="h-5 w-5 lg:h-4 lg:w-4" /> },
+    { name: 'Contact', path: '/contact', icon: <Phone className="h-5 w-5 lg:h-4 lg:w-4" /> },
   ];
-
+  
   return (
-    <header 
-      className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-6 md:px-10',
-        scrolled ? 'bg-dark/80 backdrop-blur-md shadow-lg' : 'bg-transparent'
-      )}
-    >
-      <div className="container mx-auto flex items-center justify-between">
-        <div className="flex items-center">
-          <Link to="/" className="flex items-center">
-            <img 
-              src="/lovable-uploads/28f1aa86-908f-4a07-837d-7a69fa78941c.png" 
-              alt="ASAP Tracker Logo" 
-              className="h-12 md:h-14 mr-3" 
-            />
-            <div className="text-2xl md:text-3xl font-bold font-space tracking-wider">
-              <span className="text-[#A259FF]">ASAP</span>
-              <span className="text-white ml-2">TRACKER</span>
-            </div>
-          </Link>
-        </div>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          {navItems.map((item) => (
-            <Link 
-              key={item.name} 
-              to={item.href}
-              className={cn(
-                "text-white hover:text-purple transition-colors text-sm font-medium",
-                location.pathname === item.href && "text-purple"
-              )}
-            >
-              {item.name}
-            </Link>
-          ))}
-          <Button 
-            variant="outline" 
-            className="bg-transparent border-purple text-purple hover:bg-purple hover:text-white purple-glow"
-          >
-            Contact Us
-          </Button>
-        </nav>
+    <header className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300" ref={headerRef}>
+      <div className={cn(
+        "container flex items-center justify-between py-4 px-4",
+        isScrolled ? "bg-dark/70 backdrop-blur-md" : "bg-transparent",
+        isMobile ? "py-3" : "py-4"
+      )}>
+        <Link to="/" className="flex items-center font-bold font-space text-xl md:text-2xl text-white">
+          ASAP<span className="text-purple">Tracker</span>
+        </Link>
 
         {/* Mobile Menu Button */}
-        <button 
-          className="md:hidden text-white"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
+        {isMobile && (
+          <Button variant="ghost" size="icon" onClick={toggleMenu} className="lg:hidden text-white">
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
+        )}
 
-      {/* Mobile Navigation */}
-      {isMobile && isMenuOpen && (
-        <nav className="absolute top-full left-0 right-0 bg-dark/95 backdrop-blur-md py-5 px-6 shadow-lg animate-fade-in">
-          <div className="flex flex-col space-y-4">
-            {navItems.map((item) => (
-              <Link 
-                key={item.name} 
-                to={item.href}
-                className={cn(
-                  "text-white hover:text-purple transition-colors py-2 text-lg",
-                  location.pathname === item.href && "text-purple"
-                )}
-              >
-                {item.name}
-              </Link>
-            ))}
-            <Button 
-              variant="outline" 
-              className="bg-transparent border-purple text-purple hover:bg-purple hover:text-white w-full mt-4 purple-glow"
+        {/* Navigation Links */}
+        <nav className={cn(
+          "lg:flex items-center space-x-6 hidden",
+          isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-6 z-50",
+          isMenuOpen ? "flex" : "hidden"
+        )}>
+          {nav.map((link) => (
+            <Link
+              key={link.name}
+              to={link.path}
+              className={cn(
+                "flex items-center text-gray-light hover:text-white transition-colors duration-200",
+                location.pathname === link.path && "text-white font-medium"
+              )}
+              onClick={closeMenu}
             >
-              Contact Us
+              {link.icon}
+              <span className="ml-2">{link.name}</span>
+            </Link>
+          ))}
+          {/* Subscribe Button - Hide on Mobile Menu */}
+          {!isMobile && (
+            <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
+              Subscribe
             </Button>
-          </div>
+          )}
         </nav>
-      )}
+
+        {/* Subscribe Button - Show on Mobile Menu */}
+        {isMobile && isMenuOpen && (
+          <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
+            Subscribe
+          </Button>
+        )}
+      </div>
     </header>
   );
 };

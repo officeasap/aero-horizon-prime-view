@@ -1,11 +1,43 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Mail, MapPin, Phone, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 
 const ContactForm: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    // Simulate form submission
+    setTimeout(() => {
+      setLoading(false);
+      toast.success("Message sent successfully! We'll get back to you soon.");
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+    }, 1500);
+  };
+
   return (
     <section id="contact" className="py-12 w-full max-w-6xl mx-auto">
       <div className="px-4">
@@ -20,7 +52,7 @@ const ContactForm: React.FC = () => {
           <div className="glass-panel p-6">
             <h3 className="text-xl font-semibold mb-4 font-space">Get in Touch</h3>
             
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
@@ -28,6 +60,9 @@ const ContactForm: React.FC = () => {
                     id="name" 
                     placeholder="Your name" 
                     className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -37,6 +72,9 @@ const ContactForm: React.FC = () => {
                     type="email" 
                     placeholder="Your email" 
                     className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
               </div>
@@ -47,6 +85,9 @@ const ContactForm: React.FC = () => {
                   id="subject" 
                   placeholder="Subject of your message" 
                   className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
                 />
               </div>
               
@@ -57,15 +98,28 @@ const ContactForm: React.FC = () => {
                   placeholder="Your message" 
                   rows={5}
                   className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple resize-none"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
                 />
               </div>
               
               <Button 
                 type="submit" 
                 className="w-full bg-purple hover:bg-purple-600 text-white purple-glow"
+                disabled={loading}
               >
-                <Send size={16} className="mr-2" />
-                Send Message
+                {loading ? (
+                  <>
+                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send size={16} className="mr-2" />
+                    Send Message
+                  </>
+                )}
               </Button>
             </form>
           </div>
@@ -79,7 +133,7 @@ const ContactForm: React.FC = () => {
                   <MapPin className="text-purple h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                   <div>
                     <h4 className="font-medium">Our Location</h4>
-                    <p className="text-sm text-gray-light">123 Aviation Boulevard, Skyline Center, New York, NY 10001</p>
+                    <p className="text-sm text-gray-light">JL DMC 1 NO 29 BEKASI, Indonesia</p>
                   </div>
                 </div>
                 
@@ -96,8 +150,7 @@ const ContactForm: React.FC = () => {
                   <Phone className="text-purple h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                   <div>
                     <h4 className="font-medium">Call Us</h4>
-                    <p className="text-sm text-gray-light">+1 (555) 123-4567</p>
-                    <p className="text-sm text-gray-light">+1 (555) 987-6543</p>
+                    <p className="text-sm text-gray-light">+62 813 1567 9012</p>
                   </div>
                 </div>
               </div>
