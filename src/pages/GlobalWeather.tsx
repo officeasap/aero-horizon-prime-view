@@ -25,7 +25,9 @@ const GlobalWeather = () => {
       </section>
       
       {/* Main Content */}
-      <WeatherForecast />
+      <div className="container mx-auto px-4">
+        <WeatherForecast />
+      </div>
       
       {/* Footer */}
       <Footer />

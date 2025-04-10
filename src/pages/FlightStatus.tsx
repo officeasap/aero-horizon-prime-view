@@ -2,6 +2,7 @@
 import React from 'react';
 import Header from '@/components/Header';
 import DelayedFlights from '@/components/DelayedFlights';
+import HistoricalFlights from '@/components/HistoricalFlights';
 import Footer from '@/components/Footer';
 
 const FlightStatus = () => {
@@ -25,7 +26,10 @@ const FlightStatus = () => {
       </section>
       
       {/* Main Content */}
-      <DelayedFlights />
+      <div className="container mx-auto px-4">
+        <DelayedFlights />
+        <HistoricalFlights />
+      </div>
       
       {/* Footer */}
       <Footer />

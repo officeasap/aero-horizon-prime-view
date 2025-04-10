@@ -1,93 +1,101 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Cloud, CloudRain, CloudSnow, Search, Sun, Wind, CloudLightning } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { fetchWeatherData, searchCities, fetchFlightWeatherConditions, WeatherData } from '@/services/weatherService';
+import { toast } from 'sonner';
 
-// Sample weather data for different cities
-const weatherData = {
-  'New York': {
-    current: { temp: 72, condition: 'Partly Cloudy', humidity: 65, wind: 8, icon: Cloud },
-    forecast: [
-      { day: 'Mon', temp: 74, condition: 'Sunny', icon: Sun },
-      { day: 'Tue', temp: 76, condition: 'Partly Cloudy', icon: Cloud },
-      { day: 'Wed', temp: 71, condition: 'Rain', icon: CloudRain },
-      { day: 'Thu', temp: 68, condition: 'Rain', icon: CloudRain },
-      { day: 'Fri', temp: 70, condition: 'Partly Cloudy', icon: Cloud },
-    ]
-  },
-  'London': {
-    current: { temp: 62, condition: 'Rain', humidity: 80, wind: 12, icon: CloudRain },
-    forecast: [
-      { day: 'Mon', temp: 60, condition: 'Rain', icon: CloudRain },
-      { day: 'Tue', temp: 59, condition: 'Cloudy', icon: Cloud },
-      { day: 'Wed', temp: 63, condition: 'Partly Cloudy', icon: Cloud },
-      { day: 'Thu', temp: 65, condition: 'Sunny', icon: Sun },
-      { day: 'Fri', temp: 61, condition: 'Cloudy', icon: Cloud },
-    ]
-  },
-  'Tokyo': {
-    current: { temp: 81, condition: 'Sunny', humidity: 70, wind: 5, icon: Sun },
-    forecast: [
-      { day: 'Mon', temp: 83, condition: 'Sunny', icon: Sun },
-      { day: 'Tue', temp: 85, condition: 'Sunny', icon: Sun },
-      { day: 'Wed', temp: 86, condition: 'Partly Cloudy', icon: Cloud },
-      { day: 'Thu', temp: 84, condition: 'Rain', icon: CloudRain },
-      { day: 'Fri', temp: 80, condition: 'Thunderstorm', icon: CloudLightning },
-    ]
-  },
-  'Sydney': {
-    current: { temp: 68, condition: 'Windy', humidity: 55, wind: 15, icon: Wind },
-    forecast: [
-      { day: 'Mon', temp: 65, condition: 'Windy', icon: Wind },
-      { day: 'Tue', temp: 63, condition: 'Rain', icon: CloudRain },
-      { day: 'Wed', temp: 67, condition: 'Partly Cloudy', icon: Cloud },
-      { day: 'Thu', temp: 72, condition: 'Sunny', icon: Sun },
-      { day: 'Fri', temp: 74, condition: 'Sunny', icon: Sun },
-    ]
-  },
-  'Moscow': {
-    current: { temp: 40, condition: 'Snow', humidity: 85, wind: 10, icon: CloudSnow },
-    forecast: [
-      { day: 'Mon', temp: 38, condition: 'Snow', icon: CloudSnow },
-      { day: 'Tue', temp: 36, condition: 'Snow', icon: CloudSnow },
-      { day: 'Wed', temp: 42, condition: 'Cloudy', icon: Cloud },
-      { day: 'Thu', temp: 45, condition: 'Partly Cloudy', icon: Cloud },
-      { day: 'Fri', temp: 41, condition: 'Snow', icon: CloudSnow },
-    ]
-  },
-  'Dubai': {
-    current: { temp: 95, condition: 'Sunny', humidity: 40, wind: 7, icon: Sun },
-    forecast: [
-      { day: 'Mon', temp: 97, condition: 'Sunny', icon: Sun },
-      { day: 'Tue', temp: 98, condition: 'Sunny', icon: Sun },
-      { day: 'Wed', temp: 96, condition: 'Sunny', icon: Sun },
-      { day: 'Thu', temp: 95, condition: 'Sunny', icon: Sun },
-      { day: 'Fri', temp: 93, condition: 'Partly Cloudy', icon: Cloud },
-    ]
-  }
+// Icon mapping for easy reference
+const iconMap = {
+  'Sun': Sun,
+  'Cloud': Cloud,
+  'CloudRain': CloudRain,
+  'CloudSnow': CloudSnow,
+  'Wind': Wind,
+  'CloudLightning': CloudLightning,
 };
 
-type City = keyof typeof weatherData;
-const cities = Object.keys(weatherData) as City[];
-
 const WeatherForecast: React.FC = () => {
-  const [selectedCity, setSelectedCity] = useState<City>('New York');
+  const [selectedCity, setSelectedCity] = useState<string>('New York');
   const [searchTerm, setSearchTerm] = useState('');
+  const [filteredCities, setFilteredCities] = useState<string[]>([]);
+  const [weatherData, setWeatherData] = useState<Record<string, WeatherData>>({});
+  const [loading, setLoading] = useState(false);
+  const [showFlightWeather, setShowFlightWeather] = useState(false);
+  const [flightRouteWeather, setFlightRouteWeather] = useState<Record<string, any>>({});
 
-  const filteredCities = cities.filter(city => 
-    city.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    // Load initial weather data for the selected city
+    loadWeatherData(selectedCity);
+    
+    // Load initial city list
+    searchCities('').then(cities => {
+      setFilteredCities(cities);
+    });
+  }, []);
 
-  const selectCity = (city: City) => {
-    setSelectedCity(city);
-    setSearchTerm('');
+  const loadWeatherData = async (city: string) => {
+    setLoading(true);
+    try {
+      // Check if we already have this city's weather in our cache
+      if (!weatherData[city]) {
+        const data = await fetchWeatherData(city);
+        if (data) {
+          setWeatherData(prev => ({
+            ...prev,
+            [city]: data
+          }));
+        } else {
+          toast.error(`Weather data for ${city} is not available.`);
+          return;
+        }
+      }
+      
+      setSelectedCity(city);
+      setSearchTerm('');
+    } catch (error) {
+      console.error("Error loading weather data:", error);
+      toast.error("Failed to load weather data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    try {
+      const results = await searchCities(searchTerm);
+      setFilteredCities(results);
+    } catch (error) {
+      console.error("Error searching cities:", error);
+      toast.error("Failed to search cities. Please try again.");
+    }
+  };
+
+  const selectCity = (city: string) => {
+    loadWeatherData(city);
+  };
+
+  const loadFlightWeatherConditions = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchFlightWeatherConditions();
+      setFlightRouteWeather(data);
+      setShowFlightWeather(true);
+      toast.success("Flight weather conditions loaded successfully");
+    } catch (error) {
+      console.error("Error loading flight weather conditions:", error);
+      toast.error("Failed to load flight weather conditions. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getWeatherBackground = (condition: string) => {
     switch (condition) {
       case 'Sunny':
+      case 'Hot':
         return 'from-yellow-500/20 to-orange-500/20';
       case 'Partly Cloudy':
         return 'from-blue-400/20 to-gray-400/20';
@@ -117,107 +125,171 @@ const WeatherForecast: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="w-full lg:w-1/3">
             <div className="glass-panel p-4 mb-4">
-              <div className="relative mb-4">
+              <div className="relative mb-4 flex">
                 <Input
                   type="text"
                   placeholder="Search cities..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg pr-10"
                 />
-                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-light h-4 w-4" />
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="absolute right-0 top-0 h-full text-gray-light hover:text-white"
+                  onClick={handleSearch}
+                >
+                  <Search className="h-4 w-4" />
+                </Button>
               </div>
               
-              <div className="space-y-1 max-h-[300px] overflow-y-auto">
-                {filteredCities.length > 0 ? (
-                  filteredCities.map((city) => (
-                    <button
-                      key={city}
-                      className={cn(
-                        "w-full flex justify-between items-center p-2 rounded transition-colors",
-                        selectedCity === city 
-                          ? "bg-purple/20 text-white" 
-                          : "hover:bg-white/5 text-gray-light"
-                      )}
-                      onClick={() => selectCity(city)}
-                    >
-                      <span>{city}</span>
-                      <div className="flex items-center">
-                        <span className="text-sm font-medium mr-2">{weatherData[city].current.temp}°F</span>
-                        {React.createElement(weatherData[city].current.icon, { 
-                          size: 16, 
-                          className: selectedCity === city ? "text-purple" : "text-gray-light" 
-                        })}
-                      </div>
-                    </button>
-                  ))
-                ) : (
-                  <div className="text-center text-gray-light py-4">No cities match your search</div>
-                )}
-              </div>
+              {loading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple"></div>
+                </div>
+              ) : (
+                <div className="space-y-1 max-h-[300px] overflow-y-auto">
+                  {filteredCities.length > 0 ? (
+                    filteredCities.map((city) => (
+                      <button
+                        key={city}
+                        className={cn(
+                          "w-full flex justify-between items-center p-2 rounded transition-colors",
+                          selectedCity === city 
+                            ? "bg-purple/20 text-white" 
+                            : "hover:bg-white/5 text-gray-light"
+                        )}
+                        onClick={() => selectCity(city)}
+                      >
+                        <span>{city}</span>
+                        {weatherData[city] && (
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium mr-2">{weatherData[city].current.temp}°F</span>
+                            {React.createElement(iconMap[weatherData[city].current.icon as keyof typeof iconMap] || Cloud, { 
+                              size: 16, 
+                              className: selectedCity === city ? "text-purple" : "text-gray-light" 
+                            })}
+                          </div>
+                        )}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-light py-4">No cities match your search</div>
+                  )}
+                </div>
+              )}
             </div>
             
             <Button 
               className="w-full bg-purple hover:bg-purple-600 text-white purple-glow"
+              onClick={loadFlightWeatherConditions}
+              disabled={loading}
             >
               View Flight Weather Conditions
             </Button>
           </div>
           
           <div className="w-full lg:w-2/3">
-            <div 
-              className={cn(
-                "glass-panel overflow-hidden rounded-2xl p-6 bg-gradient-to-br transition-all duration-500",
-                getWeatherBackground(weatherData[selectedCity].current.condition)
-              )}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-2xl font-medium">{selectedCity}</h3>
-                  <p className="text-gray-light">Today's Weather</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-4xl font-light">{weatherData[selectedCity].current.temp}°F</div>
-                  <p className="text-purple">{weatherData[selectedCity].current.condition}</p>
-                </div>
-              </div>
-              
-              <div className="flex mt-8 justify-center">
-                {React.createElement(weatherData[selectedCity].current.icon, { 
-                  size: 80, 
-                  className: "text-white opacity-80" 
-                })}
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                <div className="bg-white/5 p-3 rounded-lg">
-                  <div className="text-sm text-gray-light">Humidity</div>
-                  <div className="text-lg font-medium">{weatherData[selectedCity].current.humidity}%</div>
-                </div>
-                <div className="bg-white/5 p-3 rounded-lg">
-                  <div className="text-sm text-gray-light">Wind Speed</div>
-                  <div className="text-lg font-medium">{weatherData[selectedCity].current.wind} mph</div>
-                </div>
-              </div>
-              
-              <div className="mt-8">
-                <h4 className="font-medium mb-3">5-Day Forecast</h4>
-                <div className="grid grid-cols-5 gap-2">
-                  {weatherData[selectedCity].forecast.map((day, index) => (
-                    <div key={index} className="bg-white/10 rounded-lg p-3 text-center">
-                      <div className="text-sm font-medium">{day.day}</div>
-                      <div className="my-2">
-                        {React.createElement(day.icon, { 
-                          size: 24, 
-                          className: "mx-auto text-white opacity-80" 
-                        })}
+            {showFlightWeather ? (
+              <div className="space-y-4">
+                <h3 className="text-xl font-medium mb-2">Flight Route Weather Conditions</h3>
+                {Object.entries(flightRouteWeather).map(([route, data], index) => (
+                  <div 
+                    key={route}
+                    className={cn(
+                      "glass-panel overflow-hidden rounded-xl p-4 bg-gradient-to-br transition-all duration-500",
+                      getWeatherBackground((data as WeatherData).current.condition)
+                    )}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-lg font-medium">{route}</h3>
+                        <p className="text-gray-light">Current Weather</p>
                       </div>
-                      <div className="text-sm font-medium">{day.temp}°F</div>
+                      <div className="text-right">
+                        <div className="text-2xl font-light">{(data as WeatherData).current.temp}°F</div>
+                        <p className="text-purple">{(data as WeatherData).current.condition}</p>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="bg-white/5 p-3 rounded-lg">
+                        <div className="text-sm text-gray-light">Humidity</div>
+                        <div className="text-lg font-medium">{(data as WeatherData).current.humidity}%</div>
+                      </div>
+                      <div className="bg-white/5 p-3 rounded-lg">
+                        <div className="text-sm text-gray-light">Wind Speed</div>
+                        <div className="text-lg font-medium">{(data as WeatherData).current.wind} mph</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <Button 
+                  variant="outline" 
+                  className="mt-4 border-gray-light text-gray-light hover:text-white"
+                  onClick={() => setShowFlightWeather(false)}
+                >
+                  Back to City Weather
+                </Button>
               </div>
-            </div>
+            ) : (
+              weatherData[selectedCity] && (
+                <div 
+                  className={cn(
+                    "glass-panel overflow-hidden rounded-2xl p-6 bg-gradient-to-br transition-all duration-500",
+                    getWeatherBackground(weatherData[selectedCity].current.condition)
+                  )}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-2xl font-medium">{selectedCity}</h3>
+                      <p className="text-gray-light">Today's Weather</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-4xl font-light">{weatherData[selectedCity].current.temp}°F</div>
+                      <p className="text-purple">{weatherData[selectedCity].current.condition}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex mt-8 justify-center">
+                    {React.createElement(iconMap[weatherData[selectedCity].current.icon as keyof typeof iconMap] || Cloud, { 
+                      size: 80, 
+                      className: "text-white opacity-80" 
+                    })}
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mt-6">
+                    <div className="bg-white/5 p-3 rounded-lg">
+                      <div className="text-sm text-gray-light">Humidity</div>
+                      <div className="text-lg font-medium">{weatherData[selectedCity].current.humidity}%</div>
+                    </div>
+                    <div className="bg-white/5 p-3 rounded-lg">
+                      <div className="text-sm text-gray-light">Wind Speed</div>
+                      <div className="text-lg font-medium">{weatherData[selectedCity].current.wind} mph</div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8">
+                    <h4 className="font-medium mb-3">5-Day Forecast</h4>
+                    <div className="grid grid-cols-5 gap-2">
+                      {weatherData[selectedCity].forecast.map((day, index) => (
+                        <div key={index} className="bg-white/10 rounded-lg p-3 text-center">
+                          <div className="text-sm font-medium">{day.day}</div>
+                          <div className="my-2">
+                            {React.createElement(iconMap[day.icon as keyof typeof iconMap] || Cloud, { 
+                              size: 24, 
+                              className: "mx-auto text-white opacity-80" 
+                            })}
+                          </div>
+                          <div className="text-sm font-medium">{day.temp}°F</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
           </div>
         </div>
       </div>
