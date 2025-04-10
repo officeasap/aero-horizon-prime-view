@@ -40,9 +40,9 @@ const Header = () => {
             <img 
               src="/lovable-uploads/28f1aa86-908f-4a07-837d-7a69fa78941c.png" 
               alt="ASAP Tracker Logo" 
-              className="h-8 md:h-10 mr-3" 
+              className="h-10 md:h-12 mr-3" 
             />
-            <div className="text-xl md:text-2xl font-bold font-space tracking-wider">
+            <div className="text-2xl md:text-3xl font-bold font-space tracking-wider">
               <span className="text-purple">ASAP</span>
               <span className="text-white ml-2">TRACKER</span>
             </div>
