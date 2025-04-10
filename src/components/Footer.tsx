@@ -8,9 +8,16 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <div className="text-xl font-bold font-space tracking-wider mb-4">
-              <span className="text-purple">ASAP</span>
-              <span className="text-white ml-2">TRACKER</span>
+            <div className="flex items-center mb-4">
+              <img 
+                src="/lovable-uploads/28f1aa86-908f-4a07-837d-7a69fa78941c.png" 
+                alt="ASAP Tracker Logo" 
+                className="h-10 mr-3" 
+              />
+              <div className="text-xl font-bold font-space tracking-wider">
+                <span className="text-purple">ASAP</span>
+                <span className="text-white ml-2">TRACKER</span>
+              </div>
             </div>
             <p className="text-gray-light text-sm mb-6">
               Your trusted source for real-time flight information, tracking, and global weather forecasts.

@@ -36,9 +36,16 @@ const Header = () => {
     >
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <div className="text-xl md:text-2xl font-bold font-space tracking-wider">
-            <span className="text-purple">ASAP</span>
-            <span className="text-white ml-2">TRACKER</span>
+          <div className="flex items-center">
+            <img 
+              src="/lovable-uploads/28f1aa86-908f-4a07-837d-7a69fa78941c.png" 
+              alt="ASAP Tracker Logo" 
+              className="h-8 md:h-10 mr-3" 
+            />
+            <div className="text-xl md:text-2xl font-bold font-space tracking-wider">
+              <span className="text-purple">ASAP</span>
+              <span className="text-white ml-2">TRACKER</span>
+            </div>
           </div>
         </div>
 
