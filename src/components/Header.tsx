@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { X, Menu, Plane, Cloud, MapPin, AlertTriangle, Building2, Phone } from 'lucide-react';
+import { X, Menu, Plane, Cloud, MapPin, AlertTriangle, Building2, Phone, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -40,19 +40,18 @@ const Header = () => {
   };
 
   const nav = [
-    { name: 'Home', path: '/', icon: <Plane className="h-5 w-5 lg:h-4 lg:w-4" /> },
-    { name: 'Live Flight Tracker', path: '/live-tracker', icon: <MapPin className="h-5 w-5 lg:h-4 lg:w-4" /> },
-    { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-5 w-5 lg:h-4 lg:w-4" /> },
-    { name: 'Airports & Airlines', path: '/airports-airlines', icon: <Building2 className="h-5 w-5 lg:h-4 lg:w-4" /> },
-    { name: 'Weather', path: '/weather', icon: <Cloud className="h-5 w-5 lg:h-4 lg:w-4" /> },
-    { name: 'Contact', path: '/contact', icon: <Phone className="h-5 w-5 lg:h-4 lg:w-4" /> },
+    { name: 'Home', path: '/' },
+    { name: 'Live Flight Tracker', path: '/live-tracker' },
+    { name: 'Flight Status', path: '/flight-status' },
+    { name: 'Airports & Airlines', path: '/airports-airlines' },
+    { name: 'Weather', path: '/weather' },
   ];
   
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300" ref={headerRef}>
       <div className={cn(
         "container flex items-center justify-between py-4 px-4",
-        isScrolled ? "bg-dark/70 backdrop-blur-md border-b border-purple/20" : "bg-transparent",
+        isScrolled ? "bg-dark/90 backdrop-blur-md border-b border-purple/20" : "bg-dark",
         isMobile ? "py-3" : "py-4"
       )}>
         <Link to="/" className="flex items-center font-bold font-space text-xl md:text-2xl text-white">
@@ -68,7 +67,7 @@ const Header = () => {
 
         {/* Navigation Links */}
         <nav className={cn(
-          "lg:flex items-center space-x-6 hidden",
+          "lg:flex items-center gap-8 hidden",
           isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-6 z-50 border-r border-purple/20",
           isMenuOpen ? "flex" : "hidden"
         )}>
@@ -77,32 +76,39 @@ const Header = () => {
               key={link.name}
               to={link.path}
               className={cn(
-                "flex items-center text-gray-light hover:text-purple transition-colors duration-200",
-                location.pathname === link.path && "text-purple font-medium"
+                "flex items-center text-white hover:text-purple transition-colors duration-200 font-medium",
+                location.pathname === link.path && "text-purple"
               )}
               onClick={closeMenu}
             >
-              {link.icon}
-              <span className="ml-2">{link.name}</span>
+              <span>{link.name}</span>
             </Link>
           ))}
-          {/* Subscribe Button - Hide on Mobile Menu */}
-          {!isMobile && (
-            <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
-              <Button className="bg-purple hover:bg-purple-600 text-white purple-glow border border-purple/50">
-                Subscribe
-              </Button>
-            </a>
-          )}
+          
+          {/* More dropdown */}
+          <div className="relative group">
+            <button className="flex items-center text-white hover:text-purple transition-colors duration-200 font-medium gap-1">
+              More <ChevronDown className="h-4 w-4" />
+            </button>
+          </div>
+          
+          {/* Contact Button */}
+          <Link to="/contact">
+            <Button className="bg-dark hover:bg-dark/80 text-white border border-purple rounded-full px-6">
+              Contact Us
+            </Button>
+          </Link>
         </nav>
 
-        {/* Subscribe Button - Show on Mobile Menu */}
+        {/* Mobile Menu Items */}
         {isMobile && isMenuOpen && (
-          <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
-            <Button className="bg-purple hover:bg-purple-600 text-white purple-glow border border-purple/50">
-              Subscribe
-            </Button>
-          </a>
+          <div className="fixed bottom-8 left-8 right-8">
+            <Link to="/contact" className="w-full block">
+              <Button className="bg-dark hover:bg-dark/80 text-white border border-purple rounded-full px-6 w-full">
+                Contact Us
+              </Button>
+            </Link>
+          </div>
         )}
       </div>
     </header>

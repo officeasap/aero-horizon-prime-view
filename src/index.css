@@ -105,4 +105,18 @@
   .accent-panel {
     @apply bg-panel border border-purple/30 rounded-lg shadow-md;
   }
+  
+  /* New class for the header navigation style */
+  .main-nav-link {
+    @apply px-3 py-2 relative text-white hover:text-purple transition-all duration-200;
+  }
+  
+  .main-nav-link.active {
+    @apply text-purple;
+  }
+  
+  .main-nav-link.active::after {
+    content: '';
+    @apply absolute bottom-0 left-0 right-0 h-0.5 bg-purple opacity-80;
+  }
 }
