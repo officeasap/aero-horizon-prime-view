@@ -32,7 +32,7 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
+    --border: 270 100% 67%;
     --input: 0 0% 20%;
     --ring: 270 100% 67%;
 
@@ -67,7 +67,7 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-panel backdrop-blur-md border border-white/10 rounded-2xl shadow-lg;
+    @apply bg-panel backdrop-blur-md border border-purple/20 rounded-2xl shadow-lg;
   }
 
   .purple-glow {
@@ -96,5 +96,13 @@
   
   .font-inter {
     font-family: 'Inter', sans-serif;
+  }
+
+  .accent-border {
+    @apply border border-purple/30;
+  }
+  
+  .accent-panel {
+    @apply bg-panel border border-purple/30 rounded-lg shadow-md;
   }
 }

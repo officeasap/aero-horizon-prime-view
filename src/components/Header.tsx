@@ -6,14 +6,6 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const navLinks = [
-  { name: 'Home', path: '/', icon: <Plane className="h-5 w-5 lg:h-4 lg:w-4" /> },
-  { name: 'Live Flight Tracker', path: '/live-tracker', icon: <MapPin className="h-5 w-5 lg:h-4 lg:w-4" /> },
-  { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-5 w-5 lg:h-4 lg:w-4" /> },
-  { name: 'Airports & Airlines', path: '/airports-airlines', icon: <Building2 className="h-5 w-5 lg:h-4 lg:w-4" /> },
-  { name: 'Weather', path: '/weather', icon: <Cloud className="h-5 w-5 lg:h-4 lg:w-4" /> },
-];
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -60,7 +52,7 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300" ref={headerRef}>
       <div className={cn(
         "container flex items-center justify-between py-4 px-4",
-        isScrolled ? "bg-dark/70 backdrop-blur-md" : "bg-transparent",
+        isScrolled ? "bg-dark/70 backdrop-blur-md border-b border-purple/20" : "bg-transparent",
         isMobile ? "py-3" : "py-4"
       )}>
         <Link to="/" className="flex items-center font-bold font-space text-xl md:text-2xl text-white">
@@ -69,7 +61,7 @@ const Header = () => {
 
         {/* Mobile Menu Button */}
         {isMobile && (
-          <Button variant="ghost" size="icon" onClick={toggleMenu} className="lg:hidden text-white">
+          <Button variant="ghost" size="icon" onClick={toggleMenu} className="lg:hidden text-white hover:text-purple hover:bg-purple/10">
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         )}
@@ -77,7 +69,7 @@ const Header = () => {
         {/* Navigation Links */}
         <nav className={cn(
           "lg:flex items-center space-x-6 hidden",
-          isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-6 z-50",
+          isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-6 z-50 border-r border-purple/20",
           isMenuOpen ? "flex" : "hidden"
         )}>
           {nav.map((link) => (
@@ -85,8 +77,8 @@ const Header = () => {
               key={link.name}
               to={link.path}
               className={cn(
-                "flex items-center text-gray-light hover:text-white transition-colors duration-200",
-                location.pathname === link.path && "text-white font-medium"
+                "flex items-center text-gray-light hover:text-purple transition-colors duration-200",
+                location.pathname === link.path && "text-purple font-medium"
               )}
               onClick={closeMenu}
             >
@@ -97,7 +89,7 @@ const Header = () => {
           {/* Subscribe Button - Hide on Mobile Menu */}
           {!isMobile && (
             <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
-              <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
+              <Button className="bg-purple hover:bg-purple-600 text-white purple-glow border border-purple/50">
                 Subscribe
               </Button>
             </a>
@@ -107,7 +99,7 @@ const Header = () => {
         {/* Subscribe Button - Show on Mobile Menu */}
         {isMobile && isMenuOpen && (
           <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
-            <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
+            <Button className="bg-purple hover:bg-purple-600 text-white purple-glow border border-purple/50">
               Subscribe
             </Button>
           </a>
