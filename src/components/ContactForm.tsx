@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Mail, MapPin, Phone, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -88,8 +87,8 @@ const ContactForm: React.FC = () => {
                   <Mail className="text-purple h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                   <div>
                     <h4 className="font-medium">Email Us</h4>
-                    <p className="text-sm text-gray-light">info@forwardflights.com</p>
-                    <p className="text-sm text-gray-light">support@forwardflights.com</p>
+                    <p className="text-sm text-gray-light">info@asaptracker.com</p>
+                    <p className="text-sm text-gray-light">support@asaptracker.com</p>
                   </div>
                 </div>
                 
@@ -105,7 +104,6 @@ const ContactForm: React.FC = () => {
             </div>
             
             <div className="glass-panel p-0 overflow-hidden rounded-2xl h-[300px]">
-              {/* This would be a map in a real implementation */}
               <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80')] bg-cover bg-center opacity-50 relative">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="bg-dark/70 px-4 py-2 rounded-lg backdrop-blur-sm">

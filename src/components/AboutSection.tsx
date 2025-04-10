@@ -8,7 +8,7 @@ const AboutSection: React.FC = () => {
     <section id="about" className="py-12 w-full max-w-6xl mx-auto">
       <div className="px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold font-space mb-4">About Forward Flights</h2>
+          <h2 className="text-3xl font-bold font-space mb-4">About ASAP Tracker</h2>
           <p className="text-gray-light max-w-2xl mx-auto">
             We provide real-time flight tracking, scheduling information, and weather forecasts to help you plan and navigate your air travel with confidence.
           </p>
@@ -18,7 +18,7 @@ const AboutSection: React.FC = () => {
           <div className="glass-panel p-6">
             <h3 className="text-xl font-semibold mb-4 font-space">Our Mission</h3>
             <p className="text-gray-light mb-6">
-              Forward Flights is dedicated to providing travelers with accurate, up-to-date information about flight schedules, delays, and weather conditions around the globe. Our goal is to help you make informed decisions and have a smoother travel experience.
+              ASAP Tracker is dedicated to providing travelers with accurate, up-to-date information about flight schedules, delays, and weather conditions around the globe. Our goal is to help you make informed decisions and have a smoother travel experience.
             </p>
             <p className="text-gray-light">
               Using advanced technology and real-time data integration, we offer a comprehensive view of the current state of air travel, allowing you to stay informed about your flights and potential disruptions.
@@ -66,7 +66,7 @@ const AboutSection: React.FC = () => {
         <div className="mt-12 text-center">
           <h3 className="text-xl font-semibold mb-4 font-space">Start Tracking Your Flights Today</h3>
           <p className="text-gray-light max-w-2xl mx-auto mb-6">
-            Join thousands of travelers who rely on Forward Flights for their journey planning and real-time updates.
+            Join thousands of travelers who rely on ASAP Tracker for their journey planning and real-time updates.
           </p>
           <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
             Sign Up for Free

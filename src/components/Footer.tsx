@@ -9,8 +9,8 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <div className="text-xl font-bold font-space tracking-wider mb-4">
-              <span className="text-purple">FORWARD</span>
-              <span className="text-white ml-2">FLIGHTS</span>
+              <span className="text-purple">ASAP</span>
+              <span className="text-white ml-2">TRACKER</span>
             </div>
             <p className="text-gray-light text-sm mb-6">
               Your trusted source for real-time flight information, tracking, and global weather forecasts.
@@ -73,7 +73,7 @@ const Footer: React.FC = () => {
         
         <div className="border-t border-white/10 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-light text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} Forward Flights. All rights reserved.
+            &copy; {new Date().getFullYear()} ASAP Tracker. All rights reserved.
           </p>
           <div className="flex space-x-4">
             <a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">Privacy Policy</a>

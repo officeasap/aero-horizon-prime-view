@@ -37,8 +37,8 @@ const Header = () => {
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <div className="text-xl md:text-2xl font-bold font-space tracking-wider">
-            <span className="text-purple">FORWARD</span>
-            <span className="text-white ml-2">FLIGHTS</span>
+            <span className="text-purple">ASAP</span>
+            <span className="text-white ml-2">TRACKER</span>
           </div>
         </div>
 
