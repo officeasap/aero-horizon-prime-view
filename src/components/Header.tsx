@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { X, Menu, Plane, Cloud, MapPin, AlertTriangle, Building2, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import useMobile from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const navLinks = [
   { name: 'Home', path: '/', icon: <Plane className="h-5 w-5 lg:h-4 lg:w-4" /> },
@@ -95,17 +96,21 @@ const Header = () => {
           ))}
           {/* Subscribe Button - Hide on Mobile Menu */}
           {!isMobile && (
-            <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
-              Subscribe
-            </Button>
+            <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
+              <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
+                Subscribe
+              </Button>
+            </a>
           )}
         </nav>
 
         {/* Subscribe Button - Show on Mobile Menu */}
         {isMobile && isMenuOpen && (
-          <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
-            Subscribe
-          </Button>
+          <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
+            <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
+              Subscribe
+            </Button>
+          </a>
         )}
       </div>
     </header>

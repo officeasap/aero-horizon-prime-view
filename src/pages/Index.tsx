@@ -33,12 +33,12 @@ const Index = () => {
               Track flights, check schedules, monitor delays, and stay updated with global weather forecasts - all in one place.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              <Link to="/live-tracker">
+              <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
                 <Button className="bg-purple hover:bg-purple-600 text-white purple-glow w-full sm:w-auto">
                   <Plane className="h-4 w-4 mr-2" />
-                  Track Flight
+                  Sign up for free
                 </Button>
-              </Link>
+              </a>
               <Link to="/airports-airlines">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto">
                   <Search className="h-4 w-4 mr-2" />
