@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { fetchAirportsAndAirlines } from '@/services/aviationService';
 import { toast } from 'sonner';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 // Sample airport data for fallback
 const airports = [
@@ -25,6 +27,15 @@ const airports = [
   { name: 'Ngurah Rai International Airport', city: 'Denpasar', country: 'Indonesia', code: 'DPS', icao: 'WADD', type: 'International' },
   { name: 'Incheon International Airport', city: 'Seoul', country: 'South Korea', code: 'ICN', icao: 'RKSI', type: 'International' },
   { name: 'Hong Kong International Airport', city: 'Hong Kong', country: 'China', code: 'HKG', icao: 'VHHH', type: 'International' },
+  // Additional major international airports
+  { name: 'Suvarnabhumi Airport', city: 'Bangkok', country: 'Thailand', code: 'BKK', icao: 'VTBS', type: 'International' },
+  { name: 'Kuala Lumpur International Airport', city: 'Kuala Lumpur', country: 'Malaysia', code: 'KUL', icao: 'WMKK', type: 'International' },
+  { name: 'Indira Gandhi International Airport', city: 'Delhi', country: 'India', code: 'DEL', icao: 'VIDP', type: 'International' },
+  { name: 'Shanghai Pudong International Airport', city: 'Shanghai', country: 'China', code: 'PVG', icao: 'ZSPD', type: 'International' },
+  { name: 'Sydney Kingsford Smith Airport', city: 'Sydney', country: 'Australia', code: 'SYD', icao: 'YSSY', type: 'International' },
+  { name: 'Narita International Airport', city: 'Tokyo', country: 'Japan', code: 'NRT', icao: 'RJAA', type: 'International' },
+  { name: 'Changi International Airport', city: 'Singapore', country: 'Singapore', code: 'SIN', icao: 'WSSS', type: 'International' },
+  { name: 'Taiwan Taoyuan International Airport', city: 'Taipei', country: 'Taiwan', code: 'TPE', icao: 'RCTP', type: 'International' },
 ];
 
 // Sample airline data for fallback
@@ -42,6 +53,15 @@ const airlines = [
   { name: 'AirAsia', code: 'AK', country: 'Malaysia', fleet: 255, hub: 'Kuala Lumpur International Airport' },
   { name: 'Cathay Pacific', code: 'CX', country: 'Hong Kong', fleet: 155, hub: 'Hong Kong International Airport' },
   { name: 'Japan Airlines', code: 'JL', country: 'Japan', fleet: 167, hub: 'Tokyo Narita Airport' },
+  // Additional major airlines
+  { name: 'Air China', code: 'CA', country: 'China', fleet: 428, hub: 'Beijing Capital International Airport' },
+  { name: 'China Eastern Airlines', code: 'MU', country: 'China', fleet: 573, hub: 'Shanghai Pudong International Airport' },
+  { name: 'Korean Air', code: 'KE', country: 'South Korea', fleet: 169, hub: 'Incheon International Airport' },
+  { name: 'All Nippon Airways', code: 'NH', country: 'Japan', fleet: 217, hub: 'Tokyo Haneda Airport' },
+  { name: 'Thai Airways', code: 'TG', country: 'Thailand', fleet: 75, hub: 'Suvarnabhumi Airport' },
+  { name: 'Malaysia Airlines', code: 'MH', country: 'Malaysia', fleet: 81, hub: 'Kuala Lumpur International Airport' },
+  { name: 'EVA Air', code: 'BR', country: 'Taiwan', fleet: 86, hub: 'Taiwan Taoyuan International Airport' },
+  { name: 'Philippine Airlines', code: 'PR', country: 'Philippines', fleet: 75, hub: 'Ninoy Aquino International Airport' },
 ];
 
 const AirportsAirlines = () => {
@@ -51,6 +71,7 @@ const AirportsAirlines = () => {
   const [airportData, setAirportData] = useState(airports);
   const [airlineData, setAirlineData] = useState(airlines);
   const [page, setPage] = useState(1);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const itemsPerPage = 8;
   
   useEffect(() => {
@@ -72,7 +93,8 @@ const AirportsAirlines = () => {
             airport.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
             airport.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
             airport.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            airport.country.toLowerCase().includes(searchTerm.toLowerCase())
+            airport.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            airport.icao.toLowerCase().includes(searchTerm.toLowerCase())
           );
           setAirportData(filteredAirports);
           
@@ -105,7 +127,8 @@ const AirportsAirlines = () => {
           airport.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
           airport.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
           airport.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          airport.country.toLowerCase().includes(searchTerm.toLowerCase())
+          airport.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          airport.icao.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setAirportData(filteredAirports);
       } else {
@@ -119,7 +142,14 @@ const AirportsAirlines = () => {
     } finally {
       setLoading(false);
       setPage(1); // Reset to first page when searching
+      setShowSuggestions(false); // Close suggestions after search
     }
+  };
+  
+  const handleSelect = (value: string) => {
+    setSearchTerm(value);
+    setShowSuggestions(false);
+    handleSearch();
   };
   
   const loadMore = async () => {
@@ -145,6 +175,24 @@ const AirportsAirlines = () => {
   const viewDetails = (type: string, id: string) => {
     toast.info(`Viewing details for ${type} ${id}`);
     // In a real app, this would navigate to a details page or open a modal
+  };
+  
+  // Filter suggestions based on search term
+  const getSearchSuggestions = () => {
+    if (!searchTerm) return [];
+    
+    if (activeTab === 'airports') {
+      return airports.filter(airport => 
+        airport.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        airport.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        airport.icao.toLowerCase().includes(searchTerm.toLowerCase())
+      ).slice(0, 5);
+    } else {
+      return airlines.filter(airline => 
+        airline.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        airline.code.toLowerCase().includes(searchTerm.toLowerCase())
+      ).slice(0, 5);
+    }
   };
   
   // Calculate paginated data
@@ -178,22 +226,72 @@ const AirportsAirlines = () => {
         <div className="px-4">
           <div className="glass-panel p-4 mb-6">
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="relative w-full md:w-auto flex-1">
-                <Input
-                  type="text"
-                  placeholder={`Search ${activeTab === 'airports' ? 'airports' : 'airlines'}...`}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg pr-10 w-full"
-                />
-                <button 
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-light hover:text-white"
-                  onClick={handleSearch}
-                >
-                  <Search className="h-4 w-4" />
-                </button>
-              </div>
+              <Popover open={showSuggestions} onOpenChange={setShowSuggestions}>
+                <PopoverTrigger asChild>
+                  <div className="relative w-full md:w-auto flex-1">
+                    <Input
+                      type="text"
+                      placeholder={`Search ${activeTab === 'airports' ? 'airports' : 'airlines'} by name or code...`}
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        if (e.target.value) {
+                          setShowSuggestions(true);
+                        } else {
+                          setShowSuggestions(false);
+                        }
+                      }}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                      className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg pr-10 w-full"
+                    />
+                    <button 
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-light hover:text-white"
+                      onClick={handleSearch}
+                    >
+                      <Search className="h-4 w-4" />
+                    </button>
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 w-full md:w-[300px] bg-gray-dark border-gray-600" align="start">
+                  <Command className="bg-gray-dark">
+                    <CommandInput 
+                      placeholder={`Search ${activeTab === 'airports' ? 'airports' : 'airlines'}...`} 
+                      value={searchTerm}
+                      onValueChange={setSearchTerm}
+                      className="border-none text-white placeholder:text-gray-light"
+                    />
+                    <CommandList className="text-white">
+                      <CommandEmpty className="py-2 px-4 text-gray-light">No results found</CommandEmpty>
+                      <CommandGroup>
+                        {getSearchSuggestions().map((item: any) => (
+                          <CommandItem 
+                            key={item.code} 
+                            className="flex items-center px-4 py-2 hover:bg-purple/20 cursor-pointer"
+                            onSelect={() => handleSelect(item.code)}
+                          >
+                            <div className="flex flex-col">
+                              <span className="font-medium">{item.name}</span>
+                              <span className="text-sm text-gray-light flex items-center gap-1">
+                                {activeTab === 'airports' ? (
+                                  <>
+                                    <Building2 className="h-3 w-3" /> 
+                                    {item.code} / {item.icao} - {item.city}, {item.country}
+                                  </>
+                                ) : (
+                                  <>
+                                    <Plane className="h-3 w-3" /> 
+                                    {item.code} - {item.country}
+                                  </>
+                                )}
+                              </span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               
               <Tabs 
                 defaultValue="airports" 
