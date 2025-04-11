@@ -4,29 +4,48 @@ import { Clock, Search, Globe, MapPin } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-// Define major cities with their time zones
+// Define major cities with their time zones - expanded with more Asian cities
 const majorCities = [
+  // Indonesia cities
+  { city: 'Jakarta', country: 'Indonesia', timezone: 'Asia/Jakarta' },
+  { city: 'Bali (Denpasar)', country: 'Indonesia', timezone: 'Asia/Makassar' },
+  { city: 'Java (Surabaya)', country: 'Indonesia', timezone: 'Asia/Jakarta' },
+  { city: 'Makassar', country: 'Indonesia', timezone: 'Asia/Makassar' },
+  
+  // More Asian cities
+  { city: 'Shanghai', country: 'China', timezone: 'Asia/Shanghai' },
+  { city: 'Seoul', country: 'South Korea', timezone: 'Asia/Seoul' },
+  { city: 'Taipei', country: 'Taiwan', timezone: 'Asia/Taipei' },
+  { city: 'Manila', country: 'Philippines', timezone: 'Asia/Manila' },
+  { city: 'Kuala Lumpur', country: 'Malaysia', timezone: 'Asia/Kuala_Lumpur' },
+  { city: 'Ho Chi Minh City', country: 'Vietnam', timezone: 'Asia/Ho_Chi_Minh' },
+  { city: 'Yangon', country: 'Myanmar', timezone: 'Asia/Yangon' },
+  { city: 'Dhaka', country: 'Bangladesh', timezone: 'Asia/Dhaka' },
+  { city: 'Karachi', country: 'Pakistan', timezone: 'Asia/Karachi' },
+  
+  // Major global cities from before
+  { city: 'Tokyo', country: 'Japan', timezone: 'Asia/Tokyo' },
+  { city: 'Singapore', country: 'Singapore', timezone: 'Asia/Singapore' },
+  { city: 'Hong Kong', country: 'China', timezone: 'Asia/Hong_Kong' },
+  { city: 'Bangkok', country: 'Thailand', timezone: 'Asia/Bangkok' },
+  { city: 'Mumbai', country: 'India', timezone: 'Asia/Kolkata' },
+  { city: 'Dubai', country: 'UAE', timezone: 'Asia/Dubai' },
   { city: 'New York', country: 'USA', timezone: 'America/New_York' },
   { city: 'London', country: 'UK', timezone: 'Europe/London' },
-  { city: 'Tokyo', country: 'Japan', timezone: 'Asia/Tokyo' },
   { city: 'Sydney', country: 'Australia', timezone: 'Australia/Sydney' },
   { city: 'Paris', country: 'France', timezone: 'Europe/Paris' },
-  { city: 'Dubai', country: 'UAE', timezone: 'Asia/Dubai' },
-  { city: 'Hong Kong', country: 'China', timezone: 'Asia/Hong_Kong' },
-  { city: 'Singapore', country: 'Singapore', timezone: 'Asia/Singapore' },
-  { city: 'Los Angeles', country: 'USA', timezone: 'America/Los_Angeles' },
-  { city: 'Berlin', country: 'Germany', timezone: 'Europe/Berlin' },
-  { city: 'Mumbai', country: 'India', timezone: 'Asia/Kolkata' },
-  { city: 'São Paulo', country: 'Brazil', timezone: 'America/Sao_Paulo' },
   { city: 'Moscow', country: 'Russia', timezone: 'Europe/Moscow' },
+  { city: 'São Paulo', country: 'Brazil', timezone: 'America/Sao_Paulo' },
   { city: 'Johannesburg', country: 'South Africa', timezone: 'Africa/Johannesburg' },
+  { city: 'Cairo', country: 'Egypt', timezone: 'Africa/Cairo' },
+  { city: 'Berlin', country: 'Germany', timezone: 'Europe/Berlin' },
+  { city: 'Los Angeles', country: 'USA', timezone: 'America/Los_Angeles' },
   { city: 'Toronto', country: 'Canada', timezone: 'America/Toronto' },
   { city: 'Mexico City', country: 'Mexico', timezone: 'America/Mexico_City' },
-  { city: 'Bangkok', country: 'Thailand', timezone: 'Asia/Bangkok' },
-  { city: 'Cairo', country: 'Egypt', timezone: 'Africa/Cairo' },
   { city: 'Auckland', country: 'New Zealand', timezone: 'Pacific/Auckland' },
   { city: 'Istanbul', country: 'Turkey', timezone: 'Europe/Istanbul' },
 ];
@@ -51,7 +70,7 @@ const WorldClockPage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
   
-  // Handle search
+  // Enhanced search function that checks timezone as well
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
@@ -62,25 +81,24 @@ const WorldClockPage: React.FC = () => {
       const filtered = majorCities.filter(
         city => 
           city.city.toLowerCase().includes(term) || 
-          city.country.toLowerCase().includes(term)
+          city.country.toLowerCase().includes(term) ||
+          city.timezone.toLowerCase().replace('_', ' ').includes(term)
       );
       setFilteredCities(filtered);
     }
   };
   
-  // Get formatted time for a timezone
+  // Get formatted time for a timezone using date-fns-tz for more accurate handling
   const getTimeInTimezone = (timezone: string): { time: string, hours: number, minutes: number, seconds: number } => {
     try {
-      const date = new Date(currentTime);
-      const localTime = date.toLocaleString('en-US', { timeZone: timezone });
-      const timeObj = new Date(localTime);
+      // Use formatInTimeZone for more accurate timezone conversion
+      const formattedTime = formatInTimeZone(currentTime, timezone, 'HH:mm');
       
-      const hours = timeObj.getHours();
-      const minutes = timeObj.getMinutes();
-      const seconds = timeObj.getSeconds();
-      
-      // Format time as HH:MM
-      const formattedTime = format(timeObj, 'HH:mm');
+      // Get individual time components
+      const timeInZone = new Date(formatInTimeZone(currentTime, timezone, "yyyy-MM-dd'T'HH:mm:ss.SSS"));
+      const hours = timeInZone.getHours();
+      const minutes = timeInZone.getMinutes();
+      const seconds = timeInZone.getSeconds();
       
       return { 
         time: formattedTime, 
@@ -140,7 +158,7 @@ const WorldClockPage: React.FC = () => {
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="Search city or country..."
+                  placeholder="Search city, country or timezone..."
                   value={searchTerm}
                   onChange={handleSearch}
                   className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg pr-10 w-48 md:w-64"
