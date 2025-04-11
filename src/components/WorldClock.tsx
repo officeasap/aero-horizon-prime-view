@@ -146,48 +146,52 @@ const WorldClock: React.FC = () => {
                       </div>
                     </div>
                     
-                    {/* Watch UI based on the provided image */}
-                    <div className="relative w-24 h-24 bg-black rounded-full border-4 border-gray-dark/80 shadow-lg mb-2 flex items-center justify-center overflow-hidden">
+                    {/* Apple Watch UI based on the uploaded image */}
+                    <div className="relative w-32 h-32 bg-black rounded-full border-4 border-gray-800 shadow-lg mb-2 flex items-center justify-center overflow-hidden">
                       {/* Watch face */}
                       <div className="absolute inset-0 bg-black rounded-full">
                         {/* Hour markers */}
                         {[...Array(12)].map((_, i) => (
                           <div 
                             key={i} 
-                            className="absolute w-1 h-1 bg-purple-400/30 rounded-full" 
+                            className={cn(
+                              "absolute font-medium text-white/80",
+                              i % 3 === 0 ? "text-xs" : "text-[10px]"
+                            )}
                             style={{ 
-                              left: `${50 + 42 * Math.cos(((i * 30) - 90) * (Math.PI / 180))}%`,
-                              top: `${50 + 42 * Math.sin(((i * 30) - 90) * (Math.PI / 180))}%`
+                              transform: `rotate(${i * 30}deg) translate(0, -38px) rotate(-${i * 30}deg)`,
+                              left: '50%',
+                              top: '50%',
                             }}
-                          />
+                          >
+                            {i === 0 ? '12' : i}
+                          </div>
                         ))}
                         
-                        {/* Digital time display */}
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <div className="text-xs font-mono text-gray-light/30">
-                            {format(currentTime, 'EEE')}
-                          </div>
-                          <div className="text-xl font-bold text-green-400">
-                            {time}
-                          </div>
-                          <div className="text-xs font-mono text-purple-400/60 mt-1">
-                            {format(currentTime, 'MMM d')}
-                          </div>
+                        {/* Mini dials */}
+                        <div className="absolute left-1/2 top-[30%] -translate-x-1/2 text-xs text-yellow-500 font-medium">
+                          {format(currentTime, 'E')}
+                        </div>
+                        <div className="absolute right-[30%] top-1/2 -translate-y-1/2 text-xs text-yellow-500 font-medium">
+                          {format(currentTime, 'd')}
                         </div>
                         
                         {/* Clock hands */}
-                        <div className="absolute top-1/2 left-1/2 w-0.5 h-6 bg-white/40 -mt-6 origin-bottom rounded-t-full" style={handStyles.hourHand} />
-                        <div className="absolute top-1/2 left-1/2 w-0.5 h-8 bg-purple-400/80 -mt-8 origin-bottom rounded-t-full" style={handStyles.minuteHand} />
-                        <div className="absolute top-1/2 left-1/2 w-0.5 h-9 bg-green-400/80 -mt-9 origin-bottom rounded-t-full" style={handStyles.secondHand} />
+                        <div className="absolute top-1/2 left-1/2 w-1.5 h-12 bg-white/80 -mt-10 -ml-[3px] origin-bottom rounded-full" style={handStyles.hourHand} />
+                        <div className="absolute top-1/2 left-1/2 w-1 h-16 bg-white/90 -mt-14 -ml-[2px] origin-bottom rounded-full" style={handStyles.minuteHand} />
+                        <div className="absolute top-1/2 left-1/2 w-0.5 h-16 bg-orange-500 -mt-14 -ml-[1px] origin-bottom rounded-full" style={handStyles.secondHand} />
                         
                         {/* Center dot */}
-                        <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-purple-400 rounded-full -mt-1 -ml-1 z-10" />
+                        <div className="absolute top-1/2 left-1/2 w-3 h-3 bg-white rounded-full -mt-1.5 -ml-1.5 z-10" />
                       </div>
                     </div>
                     
-                    {/* Timezone info */}
-                    <div className="mt-1 text-sm text-gray-light">
-                      {city.timezone.replace('_', ' ').split('/').pop()}
+                    {/* Digital time display for accessibility */}
+                    <div className="mt-1 text-lg font-mono text-white">
+                      {time}
+                    </div>
+                    <div className="mt-0.5 text-xs text-gray-light">
+                      {format(currentTime, 'EEEE, MMMM d')}
                     </div>
                   </div>
                 );
