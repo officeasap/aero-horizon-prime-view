@@ -27,6 +27,11 @@ const majorCities = [
   { city: 'Dhaka', country: 'Bangladesh', timezone: 'Asia/Dhaka' },
   { city: 'Karachi', country: 'Pakistan', timezone: 'Asia/Karachi' },
   
+  // New African cities
+  { city: 'Nairobi', country: 'Kenya', timezone: 'Africa/Nairobi' },
+  { city: 'Kampala', country: 'Uganda', timezone: 'Africa/Kampala' },
+  { city: 'Cape Town', country: 'South Africa', timezone: 'Africa/Johannesburg' },
+  
   // Major global cities from before
   { city: 'Tokyo', country: 'Japan', timezone: 'Asia/Tokyo' },
   { city: 'Singapore', country: 'Singapore', timezone: 'Asia/Singapore' },
