@@ -1,6 +1,7 @@
 
 import React from 'react';
 import Header from '@/components/Header';
+import WorldClock from '@/components/WorldClock';
 import FlightSchedule from '@/components/FlightSchedule';
 import FlightTracker from '@/components/FlightTracker';
 import DelayedFlights from '@/components/DelayedFlights';
@@ -49,13 +50,18 @@ const Index = () => {
               </Link>
             </div>
           </div>
-          
-          {/* Flight Schedule in Hero */}
-          <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <FlightSchedule />
-          </div>
         </div>
       </section>
+      
+      {/* World Clock Section */}
+      <WorldClock />
+      
+      {/* Flight Schedule in Hero */}
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <FlightSchedule />
+        </div>
+      </div>
       
       {/* Features Section */}
       <section className="py-12 bg-gradient-to-b from-dark to-gray-dark/30">
