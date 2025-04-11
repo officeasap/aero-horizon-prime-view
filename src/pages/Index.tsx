@@ -1,7 +1,6 @@
 
 import React from 'react';
 import Header from '@/components/Header';
-import WorldClock from '@/components/WorldClock';
 import FlightSchedule from '@/components/FlightSchedule';
 import FlightTracker from '@/components/FlightTracker';
 import DelayedFlights from '@/components/DelayedFlights';
@@ -11,7 +10,7 @@ import AboutSection from '@/components/AboutSection';
 import ContactForm from '@/components/ContactForm';
 import Footer from '@/components/Footer';
 import BackgroundAircraft from '@/components/BackgroundAircraft';
-import { Plane, MapPin, BarChart3, Search } from 'lucide-react';
+import { Plane, MapPin, BarChart3, Search, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -48,13 +47,16 @@ const Index = () => {
                   Search Airports
                 </Button>
               </Link>
+              <Link to="/world-clock">
+                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto">
+                  <Clock className="h-4 w-4 mr-2" />
+                  World Clock
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
-      
-      {/* World Clock Section */}
-      <WorldClock />
       
       {/* Flight Schedule in Hero */}
       <div className="container mx-auto px-4 relative z-10">

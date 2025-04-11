@@ -11,6 +11,7 @@ import FlightStatus from "./pages/FlightStatus";
 import AirportsAirlines from "./pages/AirportsAirlines";
 import GlobalWeather from "./pages/GlobalWeather";
 import Contact from "./pages/Contact";
+import WorldClockPage from "./pages/WorldClock";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/airports-airlines" element={<AirportsAirlines />} />
           <Route path="/weather" element={<GlobalWeather />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/world-clock" element={<WorldClockPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
