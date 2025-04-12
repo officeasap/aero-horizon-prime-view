@@ -51,13 +51,16 @@ const Header = () => {
   ];
   
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300" ref={headerRef}>
+    <header 
+      className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300" 
+      ref={headerRef}
+    >
       <div className={cn(
-        "container flex items-center justify-between py-4 px-4",
+        "container flex items-center justify-between",
         isScrolled ? "bg-dark/90 backdrop-blur-md border-b border-purple/20" : "bg-dark",
-        isMobile ? "py-3" : "py-4"
+        isMobile ? "py-3 px-4" : "py-4 px-4"
       )}>
-        <Link to="/" className="flex items-center font-bold font-space text-xl md:text-2xl text-white">
+        <Link to="/" className="flex items-center font-bold font-space text-xl md:text-2xl text-white mr-8">
           ASAP<span className="text-purple">Tracker</span>
         </Link>
 
@@ -68,32 +71,37 @@ const Header = () => {
           </Button>
         )}
 
-        {/* Navigation Links - Centered */}
+        {/* Navigation Links */}
         <nav className={cn(
-          "lg:flex items-center gap-3 flex-grow justify-center",
+          "lg:flex items-center gap-2 flex-grow justify-center",
           isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-4 z-50 border-r border-purple/20",
           isMenuOpen ? "flex" : "hidden"
         )}>
-          {nav.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              className={cn(
-                "flex items-center justify-center gap-2 text-sm font-medium text-white transition-all duration-200 border border-transparent hover:border-purple rounded-full px-4 py-2 hover:text-purple purple-glow",
-                location.pathname === link.path ? "border-purple text-purple" : ""
-              )}
-              onClick={closeMenu}
-            >
-              {link.icon}
-              {link.name}
-            </Link>
-          ))}
+          <div className={cn(
+            "flex",
+            isMobile ? "flex-col w-full space-y-2" : "items-center space-x-2"
+          )}>
+            {nav.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={cn(
+                  "flex items-center justify-center gap-1.5 text-sm font-medium text-white transition-all duration-200 border border-transparent hover:border-purple rounded-full px-3 py-1.5 hover:text-purple purple-glow",
+                  location.pathname === link.path ? "border-purple text-purple" : ""
+                )}
+                onClick={closeMenu}
+              >
+                {link.icon}
+                <span className="text-[13px]">{link.name}</span>
+              </Link>
+            ))}
+          </div>
         </nav>
 
         {/* Subscribe Button - Desktop */}
         {!isMobile && (
-          <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer">
-            <Button variant="subscribe" className="purple-glow flex items-center gap-2">
+          <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer" className="ml-8">
+            <Button variant="subscribe" size="sm" className="purple-glow flex items-center gap-2">
               <MailOpen className="h-4 w-4" />
               Subscribe
             </Button>
