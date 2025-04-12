@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone, MailOpen, Clock } from 'lucide-react';
+import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -98,22 +98,13 @@ const Header = () => {
           </div>
         </nav>
 
-        {/* Subscribe Button - Desktop */}
-        {!isMobile && (
-          <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer" className="ml-8">
-            <Button variant="subscribe" size="sm" className="purple-glow flex items-center gap-2">
-              <MailOpen className="h-4 w-4" />
-              Subscribe
-            </Button>
-          </a>
-        )}
+        {/* Removed the desktop Subscribe button as requested */}
 
         {/* Mobile Menu Items */}
         {isMobile && isMenuOpen && (
           <div className="fixed bottom-8 left-8 right-8 flex flex-col gap-4">
-            <a href="https://app.asaptracker.com/signup" target="_blank" rel="noopener noreferrer" className="w-full block">
+            <a href="https://app.asaptracker.com" target="_blank" rel="noopener noreferrer" className="w-full block">
               <Button variant="subscribe" className="w-full purple-glow flex items-center justify-center gap-2">
-                <MailOpen className="h-4 w-4" />
                 Subscribe
               </Button>
             </a>
