@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -12,15 +11,14 @@ const Index = () => {
   return (
     <div className="min-h-screen text-white overflow-x-hidden relative">
       <Header />
-      <div className="relative">
+      
+      {/* Hero Section with Video Background */}
+      <section id="hero" className="relative h-screen flex items-center justify-center pt-16 pb-16">
         <VideoBackground />
         <BackgroundAircraft />
-      </div>
-      
-      {/* Hero Section */}
-      <section id="hero" className="relative h-screen flex items-center justify-center pt-16 pb-16 content-overlay">
+        
         {/* Content */}
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 relative z-10 content-overlay">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-space mb-4 animate-fade-in text-white">
               Real-Time <span className="text-purple animate-text-glow">Flight Services</span>
@@ -53,7 +51,7 @@ const Index = () => {
       </section>
       
       {/* Features Section */}
-      <section className="py-12 relative z-10 content-overlay">
+      <section className="py-12 relative z-10 bg-dark content-overlay">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
