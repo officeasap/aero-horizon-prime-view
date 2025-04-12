@@ -68,9 +68,11 @@ const AboutSection: React.FC = () => {
           <p className="text-gray-light max-w-2xl mx-auto mb-6">
             Join thousands of travelers who rely on ASAP Tracker for their journey planning and real-time updates.
           </p>
-          <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
-            Sign Up for Free
-          </Button>
+          <a href="https://app.asaptraker.com" target="_blank" rel="noopener noreferrer">
+            <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
+              Sign Up for Free
+            </Button>
+          </a>
         </div>
       </div>
     </section>
