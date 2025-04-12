@@ -1,11 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
-import { MapPin, Plane, Info, Filter, Search } from 'lucide-react';
+import { MapPin, Plane, Info, Filter, Search, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { fetchFlights, searchFlight, Flight } from '@/services/aviationService';
+import { 
+  fetchLiveFlights, 
+  fetchFlightStatus, 
+  fetchSuggestions,
+  Flight,
+  SuggestResult 
+} from '@/services/aviationService';
 import { toast } from 'sonner';
+import AutocompleteSearch from './AutocompleteSearch';
 
 // Sample flight tracking data for fallback
 const sampleFlightData = [
@@ -16,30 +23,39 @@ const sampleFlightData = [
 ];
 
 // Helper function to format flight data from API
-const formatFlightData = (flights: Flight[]) => {
-  return flights.map(flight => ({
-    id: flight.flight.iata,
-    from: flight.departure.airport,
-    to: flight.arrival.airport,
-    airline: flight.airline.name,
-    aircraft: flight.aircraft?.icao || 'Information unavailable',
-    altitude: flight.live?.altitude ? `${flight.live.altitude} ft` : 'Data unavailable',
-    speed: flight.live?.speed ? `${flight.live.speed} mph` : 'Data unavailable',
-    progress: calculateProgress(new Date(flight.departure.scheduled), new Date(flight.arrival.scheduled)),
+const formatFlightData = (flight: Flight) => {
+  // Calculate a pseudo-progress based on departure and current time
+  // This is an approximation since we don't have full flight path data
+  const calculateProgress = () => {
+    if (!flight.dep_time_utc || !flight.arr_time_utc) return 50;
+    
+    const now = new Date();
+    const departure = new Date(flight.dep_time_utc);
+    const arrival = new Date(flight.arr_time_utc);
+    
+    const totalDuration = arrival.getTime() - departure.getTime();
+    const elapsed = now.getTime() - departure.getTime();
+    
+    if (elapsed < 0) return 0;
+    if (elapsed > totalDuration) return 100;
+    
+    return Math.round((elapsed / totalDuration) * 100);
+  };
+  
+  return {
+    id: flight.flight_iata || 'Unknown',
+    from: flight.dep_name || flight.dep_city || flight.dep_iata || 'Unknown',
+    to: flight.arr_name || flight.arr_city || flight.arr_iata || 'Unknown',
+    airline: flight.airline_name || 'Unknown Airline',
+    aircraft: flight.aircraft_icao || 'Information unavailable',
+    altitude: flight.alt ? `${flight.alt} ft` : 'Data unavailable',
+    speed: flight.speed ? `${flight.speed} mph` : 'Data unavailable',
+    progress: calculateProgress(),
+    lat: flight.lat,
+    lng: flight.lng,
+    direction: flight.dir,
     raw: flight
-  }));
-};
-
-// Helper to calculate flight progress
-const calculateProgress = (departureTime: Date, arrivalTime: Date) => {
-  const now = new Date();
-  const totalDuration = arrivalTime.getTime() - departureTime.getTime();
-  const elapsed = now.getTime() - departureTime.getTime();
-  
-  if (elapsed < 0) return 0;
-  if (elapsed > totalDuration) return 100;
-  
-  return Math.round((elapsed / totalDuration) * 100);
+  };
 };
 
 const FlightTracker: React.FC = () => {
@@ -47,7 +63,9 @@ const FlightTracker: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'map' | 'list'>('map');
   const [flights, setFlights] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [flightSearchQuery, setFlightSearchQuery] = useState('');
+  const [selectedAirport, setSelectedAirport] = useState<SuggestResult | null>(null);
+  const [searchBy, setSearchBy] = useState<'flight' | 'airport'>('flight');
 
   useEffect(() => {
     // Load initial flight data
@@ -57,10 +75,11 @@ const FlightTracker: React.FC = () => {
   const loadFlights = async () => {
     setLoading(true);
     try {
-      const data = await fetchFlights({ flight_status: 'active' });
+      // Get live flights with positions
+      const data = await fetchLiveFlights({ limit: "25" });
       
       // Format the flight data
-      const formattedData = formatFlightData(data);
+      const formattedData = data.map(formatFlightData);
       
       // If we don't get enough data from the API, supplement with sample data
       if (formattedData.length < 2) {
@@ -85,32 +104,74 @@ const FlightTracker: React.FC = () => {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
+  const handleFlightSearch = async () => {
+    if (!flightSearchQuery.trim()) {
       toast.info("Please enter a flight number to search");
       return;
     }
     
     setLoading(true);
     try {
-      const data = await searchFlight(searchQuery);
+      // Try to get the flight status by IATA code
+      const flight = await fetchFlightStatus(flightSearchQuery.trim().toUpperCase());
       
-      if (data.length === 0) {
-        toast.info(`No flights found for "${searchQuery}"`);
+      if (!flight) {
+        toast.error(`No flight found with number ${flightSearchQuery}`);
         return;
       }
       
-      const formattedData = formatFlightData(data);
-      setFlights(formattedData);
+      const formattedFlight = formatFlightData(flight);
       
-      // Select the first flight automatically
-      if (formattedData.length > 0) {
-        setSelectedFlight(formattedData[0].id);
+      // Check if we already have this flight in our list
+      const existingIndex = flights.findIndex(f => f.id === formattedFlight.id);
+      
+      if (existingIndex !== -1) {
+        // Update existing flight
+        const updatedFlights = [...flights];
+        updatedFlights[existingIndex] = formattedFlight;
+        setFlights(updatedFlights);
+      } else {
+        // Add new flight to the top of the list
+        setFlights([formattedFlight, ...flights]);
       }
       
-      toast.success(`Found ${formattedData.length} flights matching "${searchQuery}"`);
+      // Select the flight automatically
+      setSelectedFlight(formattedFlight.id);
+      
+      toast.success(`Found flight ${formattedFlight.id}`);
     } catch (error) {
       console.error("Error searching flight:", error);
+      toast.error("Failed to search for flights. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAirportSearch = async () => {
+    if (!selectedAirport) {
+      toast.info("Please select an airport to search");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      // Get flights departing from the selected airport
+      let data: Flight[] = [];
+      if (selectedAirport.iata_code) {
+        data = await fetchLiveFlights({ dep_iata: selectedAirport.iata_code });
+      }
+      
+      if (data.length === 0) {
+        toast.info(`No active flights found from ${selectedAirport.name}`);
+        return;
+      }
+      
+      const formattedData = data.map(formatFlightData);
+      setFlights(formattedData);
+      
+      toast.success(`Found ${formattedData.length} flights from ${selectedAirport.name}`);
+    } catch (error) {
+      console.error("Error searching airport:", error);
       toast.error("Failed to search for flights. Please try again.");
     } finally {
       setLoading(false);
@@ -132,30 +193,92 @@ const FlightTracker: React.FC = () => {
           </div>
           
           <div className="glass-panel p-4 mb-6">
-            <div className="flex flex-col gap-4 mb-4">
-              <Input
-                type="text"
-                placeholder="Enter flight number (e.g., BA189)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
-              />
-              
-              <Button 
-                className="w-full bg-purple hover:bg-purple-600 text-white purple-glow"
-                onClick={handleSearch}
-                disabled={loading}
+            <div className="flex mb-4 gap-2">
+              <Button
+                variant={searchBy === 'flight' ? 'default' : 'outline'}
+                size="sm"
+                className={cn(
+                  searchBy === 'flight' 
+                    ? "bg-purple hover:bg-purple-600 text-white" 
+                    : "bg-transparent border-gray-light text-gray-light hover:text-white"
+                )}
+                onClick={() => setSearchBy('flight')}
               >
-                <Search className="h-4 w-4 mr-2" />
-                Search Flight
+                Flight Number
               </Button>
+              <Button
+                variant={searchBy === 'airport' ? 'default' : 'outline'}
+                size="sm"
+                className={cn(
+                  searchBy === 'airport' 
+                    ? "bg-purple hover:bg-purple-600 text-white" 
+                    : "bg-transparent border-gray-light text-gray-light hover:text-white"
+                )}
+                onClick={() => setSearchBy('airport')}
+              >
+                Airport
+              </Button>
+            </div>
+            
+            <div className="flex flex-col gap-4 mb-4">
+              {searchBy === 'flight' ? (
+                <>
+                  <Input
+                    type="text"
+                    placeholder="Enter flight number (e.g., BA189)"
+                    value={flightSearchQuery}
+                    onChange={(e) => setFlightSearchQuery(e.target.value.toUpperCase())}
+                    className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
+                    onKeyDown={(e) => e.key === 'Enter' && handleFlightSearch()}
+                  />
+                  
+                  <Button 
+                    className="w-full bg-purple hover:bg-purple-600 text-white purple-glow"
+                    onClick={handleFlightSearch}
+                    disabled={loading}
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Search className="h-4 w-4 mr-2" />}
+                    Search Flight
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <AutocompleteSearch 
+                      placeholder="Search airport by name or code" 
+                      onSelect={setSelectedAirport}
+                      type="airport"
+                    />
+                    {selectedAirport && (
+                      <div className="mt-2 text-sm">
+                        <span className="bg-purple/20 text-purple-200 px-2 py-1 rounded">
+                          {selectedAirport.name} ({selectedAirport.iata_code})
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <Button 
+                    className="w-full bg-purple hover:bg-purple-600 text-white purple-glow"
+                    onClick={handleAirportSearch}
+                    disabled={loading}
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Search className="h-4 w-4 mr-2" />}
+                    Search Airport
+                  </Button>
+                </>
+              )}
             </div>
             
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium">Active Flights</h3>
-              <button className="text-purple flex items-center gap-1 text-sm">
-                <Filter size={14} />
-                Filter
+              <button 
+                className="text-purple flex items-center gap-1 text-sm"
+                onClick={loadFlights}
+                disabled={loading}
+              >
+                {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Filter size={14} />}
+                Refresh
               </button>
             </div>
             

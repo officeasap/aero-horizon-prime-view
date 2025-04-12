@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { Clock, ArrowUpDown, Filter, AlertTriangle } from 'lucide-react';
+import { Clock, ArrowUpDown, Filter, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { fetchFlightsByReason, Flight } from '@/services/aviationService';
+import { fetchLiveFlights, Flight } from '@/services/aviationService';
 import { toast } from 'sonner';
 
 // Fallback data in case API doesn't return enough results
@@ -18,19 +18,46 @@ const delayedFlightsData = [
 
 // Helper function to format flight data from API
 const formatFlightData = (flights: Flight[]) => {
-  return flights.map(flight => ({
-    id: flight.flight.iata,
-    airline: flight.airline.name,
-    origin: flight.departure.airport,
-    destination: flight.arrival.airport,
-    scheduledTime: flight.departure.scheduled ? new Date(flight.departure.scheduled).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A',
-    estimatedTime: flight.departure.estimated ? new Date(flight.departure.estimated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A',
-    delay: flight.departure.delay || 0,
-    reason: flight.departure.delay > 0 ? (
-      flight.departure.delay > 100 ? 'Weather' : 
-      flight.departure.delay > 60 ? 'Air Traffic' : 'Technical'
-    ) : 'On Time'
-  }));
+  return flights.map(flight => {
+    // Format times from UTC timestamp
+    const formatTime = (timeString?: string) => {
+      if (!timeString) return 'N/A';
+      
+      try {
+        const date = new Date(timeString);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } catch (e) {
+        return 'N/A';
+      }
+    };
+
+    // Determine delay reason based on delay amount or random assignment
+    const determineDelayReason = (flight: Flight) => {
+      if (!flight.dep_delayed && !flight.arr_delayed) return 'On Time';
+      
+      const delay = flight.dep_delayed || flight.arr_delayed || 0;
+      
+      // Randomly assign a reason if not provided by API
+      const reasons = ['Weather', 'Technical', 'Air Traffic'];
+      const randomReason = reasons[Math.floor(Math.random() * reasons.length)];
+      
+      // Try to make a guess based on delay duration
+      if (delay > 120) return 'Weather';  // Long delays often weather-related
+      if (delay > 60) return 'Air Traffic';  // Medium delays often traffic-related
+      return 'Technical';  // Short delays often technical issues
+    };
+    
+    return {
+      id: flight.flight_iata || 'Unknown',
+      airline: flight.airline_name || 'Unknown Airline',
+      origin: flight.dep_name || flight.dep_iata || 'Unknown',
+      destination: flight.arr_name || flight.arr_iata || 'Unknown',
+      scheduledTime: formatTime(flight.dep_time || flight.dep_time_utc),
+      estimatedTime: formatTime(flight.dep_estimated || flight.dep_actual),
+      delay: flight.dep_delayed || flight.delayed || 0,
+      reason: determineDelayReason(flight)
+    };
+  });
 };
 
 type SortField = 'airline' | 'delay' | 'origin' | 'destination';
@@ -51,12 +78,22 @@ const DelayedFlights: React.FC = () => {
   const loadFlights = async (reason: string | null) => {
     setLoading(true);
     try {
-      let data: Flight[] = [];
-      if (reason) {
-        data = await fetchFlightsByReason(reason);
-      } else {
-        data = await fetchFlightsByReason('Weather'); // Default to weather if no reason specified
+      // Set up parameters for the API call
+      const params: Record<string, string> = {
+        status: 'delayed',
+        limit: '25'
+      };
+      
+      // Add additional filter for reasons if selected
+      if (reason === 'Weather') {
+        params.delay_reason = 'weather';
+      } else if (reason === 'Technical') {
+        params.delay_reason = 'technical';
+      } else if (reason === 'Air Traffic') {
+        params.delay_reason = 'air_traffic';
       }
+      
+      const data = await fetchLiveFlights(params);
       
       const formattedData = formatFlightData(data);
       
@@ -170,7 +207,7 @@ const DelayedFlights: React.FC = () => {
         <div className="glass-panel overflow-hidden">
           {loading ? (
             <div className="flex justify-center items-center p-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple"></div>
+              <Loader2 className="animate-spin h-12 w-12 text-purple" />
             </div>
           ) : (
             <div className="relative overflow-x-auto">
@@ -228,38 +265,46 @@ const DelayedFlights: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="text-sm">
-                  {sortedAndFilteredFlights.map((flight) => (
-                    <tr key={flight.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                      <td className="px-4 py-3 font-medium">{flight.id}</td>
-                      <td className="px-4 py-3">{flight.airline}</td>
-                      <td className="px-4 py-3">{flight.origin}</td>
-                      <td className="px-4 py-3">{flight.destination}</td>
-                      <td className="px-4 py-3">{flight.scheduledTime}</td>
-                      <td className="px-4 py-3 text-yellow-300">{flight.estimatedTime}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center">
-                          <Clock size={14} className="text-red-400 mr-1" />
+                  {sortedAndFilteredFlights.length > 0 ? (
+                    sortedAndFilteredFlights.map((flight, index) => (
+                      <tr key={`${flight.id}-${index}`} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td className="px-4 py-3 font-medium">{flight.id}</td>
+                        <td className="px-4 py-3">{flight.airline}</td>
+                        <td className="px-4 py-3">{flight.origin}</td>
+                        <td className="px-4 py-3">{flight.destination}</td>
+                        <td className="px-4 py-3">{flight.scheduledTime}</td>
+                        <td className="px-4 py-3 text-yellow-300">{flight.estimatedTime}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center">
+                            <Clock size={14} className="text-red-400 mr-1" />
+                            <span className={cn(
+                              flight.delay > 120 ? "text-red-400" : 
+                              flight.delay > 60 ? "text-orange-400" : 
+                              "text-yellow-400"
+                            )}>
+                              {flight.delay} min
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
                           <span className={cn(
-                            flight.delay > 120 ? "text-red-400" : 
-                            flight.delay > 60 ? "text-orange-400" : 
-                            "text-yellow-400"
+                            "px-2 py-1 rounded-full text-xs font-medium",
+                            flight.reason === 'Weather' && "bg-blue-900/30 text-blue-400",
+                            flight.reason === 'Technical' && "bg-red-900/30 text-red-400",
+                            flight.reason === 'Air Traffic' && "bg-yellow-900/30 text-yellow-400"
                           )}>
-                            {flight.delay} min
+                            {flight.reason}
                           </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={cn(
-                          "px-2 py-1 rounded-full text-xs font-medium",
-                          flight.reason === 'Weather' && "bg-blue-900/30 text-blue-400",
-                          flight.reason === 'Technical' && "bg-red-900/30 text-red-400",
-                          flight.reason === 'Air Traffic' && "bg-yellow-900/30 text-yellow-400"
-                        )}>
-                          {flight.reason}
-                        </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={8} className="px-4 py-6 text-center text-gray-light">
+                        No delayed flights found matching your criteria.
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -280,9 +325,10 @@ const DelayedFlights: React.FC = () => {
           
           <Button 
             className="bg-purple hover:bg-purple-600 text-white purple-glow"
-            onClick={() => window.open('https://app.asaptracker.com', '_blank')}
+            onClick={() => loadFlights(selectedReason)}
           >
-            Subscribe to Delay Alerts
+            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Filter className="mr-2 h-4 w-4" />}
+            Refresh Data
           </Button>
         </div>
       </div>

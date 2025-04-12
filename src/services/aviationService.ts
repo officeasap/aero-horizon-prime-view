@@ -1,84 +1,120 @@
 
 import { toast } from "sonner";
 
-const API_KEY = "92b18adb94cec63f7ab7489eed154775";
-const BASE_URL = "https://api.aviationstack.com/v1";
+const API_KEY = "880dd0d6-7487-4140-8585-787e7a357d46";
+const BASE_URL = "https://airlabs.co/api/v9";
 
+// Flight interface for AirLabs API
 export interface Flight {
-  flight_date: string;
-  flight_status: string;
-  departure: {
-    airport: string;
-    timezone: string;
-    iata: string;
-    icao: string;
-    terminal: string;
-    gate: string;
-    delay: number;
-    scheduled: string;
-    estimated: string;
-    actual: string;
-    estimated_runway: string;
-    actual_runway: string;
-  };
-  arrival: {
-    airport: string;
-    timezone: string;
-    iata: string;
-    icao: string;
-    terminal: string;
-    gate: string;
-    baggage: string;
-    delay: number;
-    scheduled: string;
-    estimated: string;
-    actual: string;
-    estimated_runway: string;
-    actual_runway: string;
-  };
-  airline: {
-    name: string;
-    iata: string;
-    icao: string;
-  };
-  flight: {
-    number: string;
-    iata: string;
-    icao: string;
-    codeshared: any;
-  };
-  aircraft: any;
-  live: any;
+  hex?: string;
+  reg_number?: string;
+  flag?: string;
+  lat?: number;
+  lng?: number;
+  alt?: number;
+  dir?: number;
+  speed?: number;
+  v_speed?: number;
+  squawk?: string;
+  flight_number?: string;
+  flight_icao?: string;
+  flight_iata?: string;
+  dep_icao?: string;
+  dep_iata?: string;
+  arr_icao?: string;
+  arr_iata?: string;
+  airline_icao?: string;
+  airline_iata?: string;
+  aircraft_icao?: string;
+  updated?: number;
+  status?: string;
+  // For scheduled flights
+  dep_time?: string;
+  arr_time?: string;
+  duration?: number;
+  delayed?: number;
+  dep_delayed?: number;
+  arr_delayed?: number;
+  aircraft_icao24?: string;
+  day_of_week?: number;
+  // For flight details
+  dep_name?: string;
+  dep_city?: string;
+  dep_country?: string;
+  arr_name?: string;
+  arr_city?: string;
+  arr_country?: string;
+  airline_name?: string;
+  dep_terminal?: string;
+  dep_gate?: string;
+  arr_terminal?: string;
+  arr_gate?: string;
+  dep_time_utc?: string;
+  arr_time_utc?: string;
+  dep_actual?: string;
+  arr_actual?: string;
+  dep_estimated?: string;
+  arr_estimated?: string;
 }
 
 export interface Airport {
-  id: string;
   name: string;
   iata_code: string;
   icao_code: string;
-  city: string;
-  country: string;
-  type: string;
+  lat: number;
+  lng: number;
+  country_code: string;
+  city?: string;
+  city_code?: string;
+  timezone?: string;
+  phone?: string;
+  website?: string;
+  distance?: number;
 }
 
 export interface Airline {
-  id: string;
   name: string;
   iata_code: string;
   icao_code: string;
-  country: string;
-  fleet_size: number;
-  main_hub: string;
+  fleet_size?: number;
+  fleet_average_age?: number;
+  country_code?: string;
+  country_name?: string;
+  callsign?: string;
+  logo?: string;
 }
 
-export async function fetchFlights(params: Record<string, string> = {}) {
+export interface SuggestResult {
+  name: string;
+  city?: string;
+  iata_code?: string;
+  icao_code?: string;
+  country_code?: string;
+  type: "airport" | "city" | "airline";
+}
+
+// Cache mechanism to reduce API calls
+const cache: Record<string, { data: any; timestamp: number }> = {};
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+const fetchWithCache = async (endpoint: string, params: Record<string, string> = {}): Promise<any> => {
+  // Add API key to params
+  const queryParams = new URLSearchParams({
+    api_key: API_KEY,
+    ...params
+  });
+  
+  const url = `${BASE_URL}/${endpoint}?${queryParams}`;
+  const cacheKey = url;
+  
+  // Check cache first
+  const cachedData = cache[cacheKey];
+  if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
+    return cachedData.data;
+  }
+  
   try {
-    const queryParams = new URLSearchParams({
-      access_key: API_KEY,
-      ...params
-    });
-    
-    const response = await fetch(`${BASE_URL}/flights?${queryParams}`);
+    const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
@@ -87,69 +123,145 @@ export async function fetchFlights(params: Record<string, string> = {}) {
     const data = await response.json();
     
     if (data.error) {
-      throw new Error(data.error.info || "Unknown API error");
+      throw new Error(data.error.message || "Unknown API error");
     }
     
-    return data.data as Flight[];
+    // Store in cache
+    cache[cacheKey] = {
+      data: data.response,
+      timestamp: Date.now()
+    };
+    
+    return data.response;
   } catch (error) {
-    console.error("Error fetching flights:", error);
+    console.error(`Error fetching ${endpoint}:`, error);
+    throw error;
+  }
+};
+
+// Fetch live flights
+export async function fetchLiveFlights(params: Record<string, string> = {}) {
+  try {
+    const data = await fetchWithCache("flights", params);
+    return data as Flight[];
+  } catch (error) {
+    console.error("Error fetching live flights:", error);
     toast.error("Failed to fetch flight data. Please try again later.");
     return [];
   }
 }
 
+// Fetch flight schedules (by route or other parameters)
+export async function fetchFlightSchedules(params: Record<string, string> = {}) {
+  try {
+    const data = await fetchWithCache("schedules", params);
+    return data as Flight[];
+  } catch (error) {
+    console.error("Error fetching flight schedules:", error);
+    toast.error("Failed to fetch flight schedules. Please try again later.");
+    return [];
+  }
+}
+
+// Fetch a specific flight status
+export async function fetchFlightStatus(flightIata: string) {
+  try {
+    const data = await fetchWithCache("flight", { flight_iata: flightIata });
+    return data as Flight;
+  } catch (error) {
+    console.error("Error fetching flight status:", error);
+    toast.error("Failed to fetch flight status. Please try again later.");
+    return null;
+  }
+}
+
+// Fetch airports list
+export async function fetchAirports(params: Record<string, string> = {}) {
+  try {
+    const data = await fetchWithCache("airports", params);
+    return data as Airport[];
+  } catch (error) {
+    console.error("Error fetching airports:", error);
+    toast.error("Failed to fetch airport data. Please try again later.");
+    return [];
+  }
+}
+
+// Fetch airlines list
+export async function fetchAirlines(params: Record<string, string> = {}) {
+  try {
+    const data = await fetchWithCache("airlines", params);
+    return data as Airline[];
+  } catch (error) {
+    console.error("Error fetching airlines:", error);
+    toast.error("Failed to fetch airline data. Please try again later.");
+    return [];
+  }
+}
+
+// Search suggestions for airports/cities/airlines
+export async function fetchSuggestions(query: string) {
+  try {
+    if (!query || query.length < 2) return [];
+    
+    const data = await fetchWithCache("suggest", { q: query });
+    return data as SuggestResult[];
+  } catch (error) {
+    console.error("Error fetching suggestions:", error);
+    toast.error("Failed to fetch search suggestions. Please try again later.");
+    return [];
+  }
+}
+
+// Legacy compatibility functions (can be removed later)
+export async function fetchFlights(params: Record<string, string> = {}) {
+  return fetchLiveFlights(params);
+}
+
 export async function fetchFlightsByReason(reason: string) {
+  // Map reason to AirLabs API parameters
   const reasonMap: Record<string, string> = {
     "Weather": "weather",
     "Technical": "technical",
     "Air Traffic": "air_traffic"
   };
   
-  return fetchFlights({
-    flight_status: "delayed",
-    delay_type: reasonMap[reason] || ""
+  return fetchLiveFlights({
+    status: "delayed",
+    delay_reason: reasonMap[reason] || ""
   });
 }
 
 export async function fetchFlightsByStatus(status: string) {
-  return fetchFlights({
-    flight_status: status.toLowerCase()
+  return fetchLiveFlights({
+    status: status.toLowerCase()
   });
 }
 
 export async function searchFlight(query: string) {
   if (!query) return [];
   
-  return fetchFlights({
-    flight_iata: query
-  });
+  if (/^[A-Z0-9]{2}\d+$/i.test(query)) {
+    // Looks like a flight number
+    return fetchLiveFlights({
+      flight_iata: query.toUpperCase()
+    });
+  } else {
+    // Try as airport code
+    return fetchLiveFlights({
+      dep_iata: query.toUpperCase()
+    });
+  }
 }
 
 export async function fetchAirportsAndAirlines(searchTerm: string = "") {
   try {
-    // For a real API, we would use the search term to filter results
-    // Since the Aviation Stack API doesn't directly support airport/airline lookup
-    // in the free tier, we're mocking this functionality
-    
-    // In a production app, you would modify this to use the correct endpoint and parameters
-    const response = await fetch(`${BASE_URL}/airports?access_key=${API_KEY}`);
-    
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+    if (!searchTerm || searchTerm.length < 2) {
+      // Get popular airports if no search term
+      return fetchAirports({ limit: "20" });
     }
     
-    const data = await response.json();
-    
-    // Filter results based on search term if provided
-    const filteredResults = searchTerm 
-      ? data.data.filter((item: any) => 
-          item.airport_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.iata_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.city?.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      : data.data;
-    
-    return filteredResults;
+    return fetchSuggestions(searchTerm);
   } catch (error) {
     console.error("Error fetching airports/airlines:", error);
     toast.error("Failed to fetch airport and airline data. Please try again later.");
@@ -158,7 +270,5 @@ export async function fetchAirportsAndAirlines(searchTerm: string = "") {
 }
 
 export async function fetchFlightDetails(flightId: string) {
-  return fetchFlights({
-    flight_iata: flightId
-  });
+  return fetchFlightStatus(flightId);
 }

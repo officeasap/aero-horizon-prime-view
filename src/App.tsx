@@ -1,46 +1,79 @@
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./App.css";
+import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import LiveFlightTracker from "./pages/LiveFlightTracker";
-import FlightStatus from "./pages/FlightStatus";
-import AirportsAirlines from "./pages/AirportsAirlines";
+import WorldClock from "./pages/WorldClock";
 import GlobalWeather from "./pages/GlobalWeather";
+import NotFound from "./pages/NotFound";
 import Contact from "./pages/Contact";
-import WorldClockPage from "./pages/WorldClock";
+import FlightStatus from "./pages/FlightStatus";
 import FlightSchedulePage from "./pages/FlightSchedulePage";
+import LiveFlightTracker from "./pages/LiveFlightTracker";
+import AirportsAirlines from "./pages/AirportsAirlines";
+import AirportAirlineSearchPage from "./pages/AirportAirlineSearchPage";
+import FlightStatusDetailPage from "./pages/FlightStatusDetailPage";
+import { Toaster } from "@/components/ui/toaster";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
-const App = () => {
-  // Create a client inside the component using useState to ensure it's only created once
+function App() {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/live-tracker" element={<LiveFlightTracker />} />
-            <Route path="/flight-status" element={<FlightStatus />} />
-            <Route path="/airports-airlines" element={<AirportsAirlines />} />
-            <Route path="/weather" element={<GlobalWeather />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/world-clock" element={<WorldClockPage />} />
-            <Route path="/flight-schedule" element={<FlightSchedulePage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <RouterProvider router={router} />
+      <Toaster />
     </QueryClientProvider>
   );
-};
+}
 
 export default App;
+
+// Update the routes in App.tsx to include our new pages
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Index />,
+    errorElement: <NotFound />
+  },
+  {
+    path: "/world-clock",
+    element: <WorldClock />
+  },
+  {
+    path: "/global-weather",
+    element: <GlobalWeather />
+  },
+  {
+    path: "/flight-status",
+    element: <FlightStatus />
+  },
+  {
+    path: "/flight-schedule",
+    element: <FlightSchedulePage />
+  },
+  {
+    path: "/live-flight-tracker",
+    element: <LiveFlightTracker />
+  },
+  {
+    path: "/airports-airlines",
+    element: <AirportsAirlines />
+  },
+  {
+    path: "/airport-airline-search",
+    element: <AirportAirlineSearchPage />
+  },
+  {
+    path: "/flight/:flightId",
+    element: <FlightStatusDetailPage />
+  },
+  {
+    path: "/contact",
+    element: <Contact />
+  },
+  {
+    path: "*",
+    element: <NotFound />
+  }
+]);
