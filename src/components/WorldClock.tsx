@@ -5,8 +5,10 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { timezoneData } from '@/data/timezones';
 
-// Define major cities with their time zones - expanded with more Asian cities
+// Define major cities with their time zones - our default display
 const majorCities = [
   // Indonesia cities
   { city: 'Jakarta', country: 'Indonesia', timezone: 'Asia/Jakarta' },
@@ -63,6 +65,9 @@ const WorldClock: React.FC = () => {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCities, setFilteredCities] = useState<City[]>(majorCities);
+  const [showCommandBox, setShowCommandBox] = useState(false);
+  const [allCities, setAllCities] = useState<City[]>([]);
+  const [selectedCity, setSelectedCity] = useState<City | null>(null);
   
   // Update time every second
   useEffect(() => {
@@ -73,26 +78,62 @@ const WorldClock: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
   
+  // Load all cities from the timezone data on component mount
+  useEffect(() => {
+    setAllCities(timezoneData);
+  }, []);
+  
   // Enhanced search function that checks timezone as well
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
+    setShowCommandBox(term.length > 0);
     
     if (term === '') {
       setFilteredCities(majorCities);
+      setSelectedCity(null);
     } else {
+      // Filter from the default cities first for immediate results
       const filtered = majorCities.filter(
         city => 
           city.city.toLowerCase().includes(term) || 
           city.country.toLowerCase().includes(term) ||
           city.timezone.toLowerCase().replace('_', ' ').includes(term)
       );
-      setFilteredCities(filtered);
+      setFilteredCities(filtered.length > 0 ? filtered : majorCities);
     }
   };
   
+  const handleCommandSelect = (city: City) => {
+    setSelectedCity(city);
+    setSearchTerm(city.city);
+    setShowCommandBox(false);
+    setFilteredCities([city]);
+  };
+  
+  const handleInputBlur = () => {
+    // Delay hiding the command box to allow for selection
+    setTimeout(() => {
+      setShowCommandBox(false);
+    }, 200);
+  };
+  
+  const handleInputFocus = () => {
+    if (searchTerm) {
+      setShowCommandBox(true);
+    }
+  };
+  
+  // Clear search and reset to default cities
+  const clearSearch = () => {
+    setSearchTerm('');
+    setFilteredCities(majorCities);
+    setSelectedCity(null);
+    setShowCommandBox(false);
+  };
+  
   // Get formatted time for a timezone using date-fns-tz for more accurate handling
-  const getTimeInTimezone = (timezone: string): { time: string, hours: number, minutes: number, seconds: number } => {
+  const getTimeInTimezone = (timezone: string): { time: string, hours: number, minutes: number, seconds: number, gmtOffset: string } => {
     try {
       // Use formatInTimeZone for more accurate timezone conversion
       const formattedTime = formatInTimeZone(currentTime, timezone, 'HH:mm');
@@ -103,15 +144,29 @@ const WorldClock: React.FC = () => {
       const minutes = timeInZone.getMinutes();
       const seconds = timeInZone.getSeconds();
       
+      // Calculate GMT offset
+      const offset = new Date().getTimezoneOffset();
+      const localTime = new Date(currentTime);
+      const targetTime = new Date(formatInTimeZone(currentTime, timezone, "yyyy-MM-dd'T'HH:mm:ss.SSS"));
+      const offsetMinutes = Math.round((targetTime.getTime() - localTime.getTime()) / 60000) + offset;
+      
+      const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60);
+      const offsetMins = Math.abs(offsetMinutes) % 60;
+      
+      const gmtOffset = `GMT${offsetMinutes >= 0 ? '+' : '-'}${String(offsetHours).padStart(2, '0')}${
+        offsetMins > 0 ? `:${String(offsetMins).padStart(2, '0')}` : ''
+      }`;
+      
       return { 
         time: formattedTime, 
         hours, 
         minutes, 
-        seconds 
+        seconds,
+        gmtOffset 
       };
     } catch (error) {
       console.error(`Error getting time for timezone ${timezone}:`, error);
-      return { time: "--:--", hours: 0, minutes: 0, seconds: 0 };
+      return { time: "--:--", hours: 0, minutes: 0, seconds: 0, gmtOffset: "GMT" };
     }
   };
   
@@ -138,14 +193,63 @@ const WorldClock: React.FC = () => {
               <h2 className="text-2xl font-semibold font-space">World Clock</h2>
             </div>
             <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search city, country or timezone..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg pr-10 w-48 md:w-64"
-              />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-light h-4 w-4" />
+              <div className="flex gap-2 items-center">
+                <div className="relative w-48 md:w-64">
+                  <Input
+                    type="text"
+                    placeholder="Search city, country or timezone..."
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
+                    className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg pr-10 w-full"
+                  />
+                  <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-light h-4 w-4" />
+                  
+                  {showCommandBox && (
+                    <div className="absolute mt-1 w-full z-50">
+                      <Command className="rounded-lg border border-purple/20 bg-gray-dark/90 backdrop-blur-md shadow-lg">
+                        <CommandInput placeholder="Search all cities..." />
+                        <CommandList>
+                          <CommandEmpty>No results found.</CommandEmpty>
+                          <CommandGroup heading="Cities">
+                            {allCities
+                              .filter(city => 
+                                city.city.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                city.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                city.timezone.toLowerCase().replace('_', ' ').includes(searchTerm.toLowerCase())
+                              )
+                              .slice(0, 10) // Limit to 10 results for performance
+                              .map((city, index) => (
+                                <CommandItem 
+                                  key={`${city.city}-${city.country}-${index}`}
+                                  onSelect={() => handleCommandSelect(city)}
+                                  className="flex items-center gap-2 cursor-pointer"
+                                >
+                                  <MapPin className="h-3 w-3 text-purple" />
+                                  <span>{city.city}, {city.country}</span>
+                                  <span className="ml-auto text-sm text-gray-light">
+                                    {getTimeInTimezone(city.timezone).time}
+                                  </span>
+                                </CommandItem>
+                              ))
+                            }
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </div>
+                  )}
+                </div>
+                
+                {searchTerm && (
+                  <button 
+                    onClick={clearSearch}
+                    className="text-white bg-purple/20 hover:bg-purple/30 p-2 rounded-md transition-colors"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
             </div>
           </div>
           
@@ -156,7 +260,7 @@ const WorldClock: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {filteredCities.map((city, index) => {
-                const { time, hours, minutes, seconds } = getTimeInTimezone(city.timezone);
+                const { time, hours, minutes, seconds, gmtOffset } = getTimeInTimezone(city.timezone);
                 const handStyles = getHandStyles(hours, minutes, seconds);
                 
                 return (
@@ -215,6 +319,9 @@ const WorldClock: React.FC = () => {
                     </div>
                     <div className="mt-0.5 text-xs text-gray-light">
                       {format(currentTime, 'EEEE, MMMM d')}
+                    </div>
+                    <div className="mt-0.5 text-xs text-purple">
+                      {gmtOffset}
                     </div>
                   </div>
                 );

@@ -74,11 +74,9 @@ const Header = () => {
           isMenuOpen ? "flex" : "hidden"
         )}>
           {nav.map((link) => (
-            <a
+            <Link
               key={link.name}
-              href={link.path}
-              target="_blank"
-              rel="noopener noreferrer"
+              to={link.path}
               className={cn(
                 "flex items-center gap-2 text-white hover:text-purple transition-colors duration-200 font-medium",
                 location.pathname === link.path && "text-purple"
@@ -87,20 +85,18 @@ const Header = () => {
             >
               {link.icon}
               {link.name}
-            </a>
+            </Link>
           ))}
           
           {/* Contact Button */}
-          <a 
-            href="/contact" 
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link 
+            to="/contact"
             className="flex items-center gap-2 text-white hover:text-purple transition-colors duration-200 font-medium"
             onClick={closeMenu}
           >
             <Phone className="h-4 w-4" />
             Contact
-          </a>
+          </Link>
         </nav>
 
         {/* Subscribe Button - Desktop */}
@@ -123,17 +119,15 @@ const Header = () => {
               </Button>
             </a>
             
-            <a 
-              href="/contact"
-              target="_blank"
-              rel="noopener noreferrer" 
+            <Link 
+              to="/contact"
               className="w-full block"
             >
               <Button variant="contact" className="w-full flex items-center justify-center gap-2">
                 <Phone className="h-4 w-4" />
                 Contact
               </Button>
-            </a>
+            </Link>
           </div>
         )}
       </div>
