@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -13,7 +14,7 @@ const Index = () => {
       <Header />
       
       {/* Hero Section with Video Background */}
-      <section id="hero" className="relative h-screen flex items-center justify-center pt-16 pb-16">
+      <section id="hero" className="relative h-[80vh] flex items-center justify-center pt-16 pb-16">
         <VideoBackground />
         <BackgroundAircraft />
         
