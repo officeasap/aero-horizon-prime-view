@@ -215,7 +215,7 @@ const FlightTracker = () => {
                         <TableRow key={`${flight.flight_icao || flight.flight_iata || 'unknown'}-${index}`} className="hover:bg-white/5">
                           <TableCell className="font-medium">
                             <div className="flex flex-col">
-                              <span>{flight.airline_name || flight.airline_iata || 'Unknown Airline'}</span>
+                              <span>{flight.airline_name || (flight.airline_iata ? `${flight.airline_iata} Airlines` : 'Airline information unavailable')}</span>
                               <span className="text-sm text-gray-light">{flight.flight_iata || flight.flight_icao || 'Unknown'}</span>
                             </div>
                           </TableCell>

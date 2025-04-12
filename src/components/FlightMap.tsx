@@ -37,7 +37,7 @@ const FlightMap: React.FC<FlightMapProps> = ({ selectedAirline, selectedFlight }
     return `
       <div class="p-2 max-w-xs">
         <div class="font-bold text-lg">${flight.flight_iata || flight.flight_icao || 'Unknown'}</div>
-        <div class="text-sm mb-2">${flight.airline_name || flight.airline_iata || 'Unknown Airline'}</div>
+        <div class="text-sm mb-2">${flight.airline_name || (flight.airline_iata ? `${flight.airline_iata} Airlines` : 'Airline information unavailable')}</div>
         <div class="grid grid-cols-2 gap-1 text-xs">
           <div class="font-semibold">From:</div>
           <div>${flight.dep_iata || 'N/A'}</div>

@@ -1,12 +1,9 @@
-
 import { toast } from "sonner";
 
 const API_KEY = "880dd0d6-7487-4140-8585-787e7a357d46";
 const BASE_URL = "https://airlabs.co/api/v9";
 
-// Updated Flight interface for AirLabs API to support both response formats
 export interface Flight {
-  // Common fields
   hex?: string;
   reg_number?: string;
   flag?: string;
@@ -30,7 +27,6 @@ export interface Flight {
   updated?: number;
   status?: string;
   
-  // For scheduled flights
   dep_time?: string;
   arr_time?: string;
   duration?: number;
@@ -40,7 +36,6 @@ export interface Flight {
   aircraft_icao24?: string;
   day_of_week?: number;
   
-  // For flight details
   dep_name?: string;
   dep_city?: string;
   dep_country?: string;
@@ -59,7 +54,6 @@ export interface Flight {
   dep_estimated?: string;
   arr_estimated?: string;
   
-  // Support for nested objects in some API responses
   flight?: {
     iata?: string;
     icao?: string;
@@ -201,12 +195,19 @@ export interface SuggestResult {
   type: "airport" | "city" | "airline";
 }
 
-// Cache mechanism to reduce API calls
+interface AirlineCache {
+  [key: string]: {
+    name: string;
+    timestamp: number;
+  };
+}
+
 const cache: Record<string, { data: any; timestamp: number }> = {};
+const airlineCache: AirlineCache = {};
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const AIRLINE_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours for airlines
 
 const fetchWithCache = async (endpoint: string, params: Record<string, string> = {}): Promise<any> => {
-  // Add API key to params
   const queryParams = new URLSearchParams({
     api_key: API_KEY,
     ...params
@@ -215,7 +216,6 @@ const fetchWithCache = async (endpoint: string, params: Record<string, string> =
   const url = `${BASE_URL}/${endpoint}?${queryParams}`;
   const cacheKey = url;
   
-  // Check cache first
   const cachedData = cache[cacheKey];
   if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
     return cachedData.data;
@@ -234,7 +234,6 @@ const fetchWithCache = async (endpoint: string, params: Record<string, string> =
       throw new Error(data.error.message || "Unknown API error");
     }
     
-    // Store in cache
     cache[cacheKey] = {
       data: data.response,
       timestamp: Date.now()
@@ -247,10 +246,12 @@ const fetchWithCache = async (endpoint: string, params: Record<string, string> =
   }
 };
 
-// 1. Live Flight Tracking 
 export async function fetchLiveFlights(params: Record<string, string> = {}) {
   try {
     const data = await fetchWithCache("flights", params);
+    if (Array.isArray(data) && data.length > 0) {
+      return await enhanceFlightData(data as Flight[]);
+    }
     return data as Flight[];
   } catch (error) {
     console.error("Error fetching live flights:", error);
@@ -259,10 +260,12 @@ export async function fetchLiveFlights(params: Record<string, string> = {}) {
   }
 }
 
-// 2. Flight Schedules
 export async function fetchFlightSchedules(params: Record<string, string> = {}) {
   try {
     const data = await fetchWithCache("schedules", params);
+    if (Array.isArray(data) && data.length > 0) {
+      return await enhanceFlightData(data as Flight[]);
+    }
     return data as Flight[];
   } catch (error) {
     console.error("Error fetching flight schedules:", error);
@@ -271,7 +274,6 @@ export async function fetchFlightSchedules(params: Record<string, string> = {}) 
   }
 }
 
-// 3. Airports Lookup
 export async function fetchAirports(params: Record<string, string> = {}) {
   try {
     const data = await fetchWithCache("airports", params);
@@ -283,7 +285,6 @@ export async function fetchAirports(params: Record<string, string> = {}) {
   }
 }
 
-// 4. Nearby Airports
 export async function fetchNearbyAirports(lat: number, lng: number, distance: number = 100) {
   try {
     const data = await fetchWithCache("nearby", {
@@ -299,7 +300,6 @@ export async function fetchNearbyAirports(lat: number, lng: number, distance: nu
   }
 }
 
-// 5. World Cities Database
 export async function fetchCities(params: Record<string, string> = {}) {
   try {
     const data = await fetchWithCache("cities", params);
@@ -311,7 +311,6 @@ export async function fetchCities(params: Record<string, string> = {}) {
   }
 }
 
-// 6. Airlines Search
 export async function fetchAirlines(params: Record<string, string> = {}) {
   try {
     const data = await fetchWithCache("airlines", params);
@@ -323,7 +322,6 @@ export async function fetchAirlines(params: Record<string, string> = {}) {
   }
 }
 
-// 7. Name Suggestion / Autocomplete
 export async function fetchSuggestions(query: string) {
   try {
     if (!query || query.length < 2) return [];
@@ -337,7 +335,6 @@ export async function fetchSuggestions(query: string) {
   }
 }
 
-// 8. Aircraft Fleets Info
 export async function fetchFleets(params: Record<string, string> = {}) {
   try {
     const data = await fetchWithCache("fleets", params);
@@ -349,7 +346,6 @@ export async function fetchFleets(params: Record<string, string> = {}) {
   }
 }
 
-// 9. Global Routes Database
 export async function fetchRoutes(params: Record<string, string> = {}) {
   try {
     const data = await fetchWithCache("routes", params);
@@ -361,7 +357,6 @@ export async function fetchRoutes(params: Record<string, string> = {}) {
   }
 }
 
-// 10. Timezones List
 export async function fetchTimezones(params: Record<string, string> = {}) {
   try {
     const data = await fetchWithCache("timezones", params);
@@ -373,7 +368,6 @@ export async function fetchTimezones(params: Record<string, string> = {}) {
   }
 }
 
-// 11. Taxes List
 export async function fetchTaxes(params: Record<string, string> = {}) {
   try {
     const data = await fetchWithCache("taxes", params);
@@ -385,7 +379,6 @@ export async function fetchTaxes(params: Record<string, string> = {}) {
   }
 }
 
-// 12. Countries Info
 export async function fetchCountries(params: Record<string, string> = {}) {
   try {
     const data = await fetchWithCache("countries", params);
@@ -397,10 +390,92 @@ export async function fetchCountries(params: Record<string, string> = {}) {
   }
 }
 
-// Fetch a specific flight status
+export async function fetchAirlineByIATA(iataCode: string): Promise<string> {
+  if (!iataCode) return "Airline information unavailable";
+  
+  const cachedAirline = airlineCache[iataCode];
+  if (cachedAirline && Date.now() - cachedAirline.timestamp < AIRLINE_CACHE_DURATION) {
+    return cachedAirline.name;
+  }
+  
+  try {
+    const data = await fetchWithCache("airlines", { iata_code: iataCode });
+    
+    if (Array.isArray(data) && data.length > 0) {
+      const airlineName = data[0].name || `${iataCode} Airlines`;
+      
+      airlineCache[iataCode] = {
+        name: airlineName,
+        timestamp: Date.now()
+      };
+      
+      return airlineName;
+    }
+    
+    return `${iataCode} Airlines`;
+  } catch (error) {
+    console.error(`Error fetching airline for IATA ${iataCode}:`, error);
+    return `${iataCode} Airlines`;
+  }
+}
+
+export function getAirlineName(flight: Flight): string {
+  if (flight.airline_name) return flight.airline_name;
+  
+  if (flight.airline?.name) return flight.airline.name;
+  
+  const iataCode = flight.airline_iata || flight.airline?.iata || "";
+  if (iataCode) return `${iataCode} Airlines`;
+  
+  return "Airline information unavailable";
+}
+
+export async function enhanceFlightData(flights: Flight[]): Promise<Flight[]> {
+  if (!flights || flights.length === 0) return flights;
+  
+  const airlinesToFetch = flights
+    .filter(flight => !flight.airline_name && (flight.airline_iata || flight.airline?.iata))
+    .map(flight => flight.airline_iata || flight.airline?.iata || "")
+    .filter(iata => iata && !airlineCache[iata]);
+  
+  const uniqueIatas = [...new Set(airlinesToFetch)];
+  
+  await Promise.all(
+    uniqueIatas.map(iata => fetchAirlineByIATA(iata))
+  );
+  
+  return flights.map(flight => {
+    const iataCode = flight.airline_iata || flight.airline?.iata || "";
+    
+    if (flight.airline_name) return flight;
+    
+    if (iataCode && airlineCache[iataCode]) {
+      return {
+        ...flight,
+        airline_name: airlineCache[iataCode].name
+      };
+    }
+    
+    return {
+      ...flight,
+      airline_name: iataCode ? `${iataCode} Airlines` : "Airline information unavailable"
+    };
+  });
+}
+
 export async function fetchFlightStatus(flightIata: string) {
   try {
     const data = await fetchWithCache("flight", { flight_iata: flightIata });
+    if (data) {
+      const iataCode = data.airline_iata || data.airline?.iata || "";
+      if (!data.airline_name && iataCode) {
+        const airlineName = await fetchAirlineByIATA(iataCode);
+        return {
+          ...data,
+          airline_name: airlineName
+        } as Flight;
+      }
+    }
     return data as Flight;
   } catch (error) {
     console.error("Error fetching flight status:", error);
@@ -409,11 +484,9 @@ export async function fetchFlightStatus(flightIata: string) {
   }
 }
 
-// Search airports and airlines
 export async function fetchAirportsAndAirlines(searchTerm: string = "") {
   try {
     if (!searchTerm || searchTerm.length < 2) {
-      // Get popular airports if no search term
       return fetchAirports({ limit: "20" });
     }
     
@@ -425,13 +498,11 @@ export async function fetchAirportsAndAirlines(searchTerm: string = "") {
   }
 }
 
-// Legacy compatibility functions
 export async function fetchFlights(params: Record<string, string> = {}) {
   return fetchLiveFlights(params);
 }
 
 export async function fetchFlightsByReason(reason: string) {
-  // Map reason to AirLabs API parameters
   const reasonMap: Record<string, string> = {
     "Weather": "weather",
     "Technical": "technical",
@@ -454,12 +525,10 @@ export async function searchFlight(query: string) {
   if (!query) return [];
   
   if (/^[A-Z0-9]{2}\d+$/i.test(query)) {
-    // Looks like a flight number
     return fetchLiveFlights({
       flight_iata: query.toUpperCase()
     });
   } else {
-    // Try as airport code
     return fetchLiveFlights({
       dep_iata: query.toUpperCase()
     });
@@ -470,7 +539,6 @@ export async function fetchFlightDetails(flightId: string) {
   return fetchFlightStatus(flightId);
 }
 
-// Get user's current position (browser geolocation API)
 export async function getUserPosition(): Promise<{ lat: number; lng: number } | null> {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {

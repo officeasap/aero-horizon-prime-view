@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchFlightStatus, Flight } from '@/services/aviationService';
@@ -44,7 +43,6 @@ const FlightStatusDetail: React.FC = () => {
     loadFlightDetails();
   }, [flightId]);
 
-  // Format date string to display in a user-friendly format
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
     
@@ -63,7 +61,6 @@ const FlightStatusDetail: React.FC = () => {
     }
   };
 
-  // Calculate delay in minutes and return appropriate status
   const getStatusWithDelay = (scheduledTime?: string, actualTime?: string, delayed?: number) => {
     if (delayed && delayed > 0) {
       let statusClass = "bg-yellow-900/30 text-yellow-400";
@@ -85,7 +82,6 @@ const FlightStatusDetail: React.FC = () => {
     };
   };
 
-  // Calculate flight progress
   const calculateProgress = () => {
     if (!flight?.dep_time_utc || !flight?.arr_time_utc) return 0;
     
@@ -102,10 +98,8 @@ const FlightStatusDetail: React.FC = () => {
     return Math.round((elapsed / totalDuration) * 100);
   };
 
-  // Get flight status based on API or calculated values
   const getFlightStatus = () => {
     if (flight?.status) {
-      // If API provides a status, use it
       const status = flight.status.toLowerCase();
       
       if (status === 'landed' || status === 'arrived') {
@@ -133,12 +127,10 @@ const FlightStatusDetail: React.FC = () => {
       }
     }
     
-    // If no status or not recognized, calculate based on other properties
     if (flight?.dep_delayed && flight.dep_delayed > 0) {
       return getStatusWithDelay(flight.dep_time_utc, flight.dep_actual, flight.dep_delayed);
     }
     
-    // Check if the flight has already departed
     if (flight?.dep_actual && new Date(flight.dep_actual) < new Date()) {
       return {
         text: "In Flight",
@@ -210,7 +202,7 @@ const FlightStatusDetail: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium">
-                      {flight.airline_name || "Unknown Airline"}
+                      {flight.airline_name || (flight.airline_iata ? `${flight.airline_iata} Airlines` : "Airline information unavailable")}
                     </h3>
                     <p className="text-sm text-gray-light">
                       {flight.aircraft_icao || "Aircraft information unavailable"}
@@ -233,7 +225,6 @@ const FlightStatusDetail: React.FC = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-                {/* Departure Information */}
                 <div>
                   <h4 className="text-lg font-medium mb-4">Departure</h4>
                   
@@ -298,7 +289,6 @@ const FlightStatusDetail: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Arrival Information */}
                 <div>
                   <h4 className="text-lg font-medium mb-4">Arrival</h4>
                   
@@ -364,7 +354,6 @@ const FlightStatusDetail: React.FC = () => {
                 </div>
               </div>
               
-              {/* Flight information summary */}
               <div className="border-t border-white/10 p-6">
                 <h4 className="text-lg font-medium mb-4">Flight Information</h4>
                 
