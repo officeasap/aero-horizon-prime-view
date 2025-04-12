@@ -3,6 +3,7 @@ import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BackgroundAircraft from '@/components/BackgroundAircraft';
+import VideoBackground from '@/components/VideoBackground';
 import { Plane, MapPin, BarChart3, Search, Clock, Calendar, Cloud, AlertTriangle, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AboutSection from '@/components/AboutSection';
@@ -14,14 +15,13 @@ const Index = () => {
       <BackgroundAircraft />
       
       {/* Hero Section */}
-      <section id="hero" className="pt-32 pb-16 relative">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-radial-gradient from-purple/10 via-transparent to-transparent z-0"></div>
+      <section id="hero" className="relative h-screen flex items-center justify-center pt-16 pb-16">
+        <VideoBackground />
         
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-10">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-space mb-4 animate-fade-in">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-space mb-4 animate-fade-in text-white">
               Real-Time <span className="text-purple animate-text-glow">Flight Services</span>
             </h1>
             <p className="text-xl text-gray-light mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
