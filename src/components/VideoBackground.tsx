@@ -1,11 +1,21 @@
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 const VideoBackground = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  useEffect(() => {
+    // Set a slower playback rate when the video element is available
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.6; // Slows down to 60% of normal speed
+    }
+  }, []);
+
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
       {/* Video Element */}
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
