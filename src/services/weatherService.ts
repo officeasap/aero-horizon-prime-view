@@ -694,7 +694,228 @@ const weatherData = {
       { day: 'Thu', temp: 54, condition: 'Partly Cloudy', icon: 'Cloud' },
       { day: 'Fri', temp: 53, condition: 'Cloudy', icon: 'Cloud' },
     ]
-  }
+  },
+  // Adding the requested African cities
+  'Nairobi': {
+    current: { 
+      temp: 70, 
+      condition: 'Partly Cloudy', 
+      humidity: 65, 
+      wind: 6, 
+      visibility: 8.5,
+      uv: 7,
+      icon: 'Cloud',
+      localTime: generateLocalTime(3),
+      forecast: 'Partly cloudy with a chance of afternoon showers. Pleasant temperatures.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 72, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Tue', temp: 74, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Wed', temp: 71, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Thu', temp: 69, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Fri', temp: 72, condition: 'Partly Cloudy', icon: 'Cloud' },
+    ]
+  },
+  'Kampala': {
+    current: { 
+      temp: 75, 
+      condition: 'Partly Cloudy', 
+      humidity: 70, 
+      wind: 5, 
+      visibility: 7.5,
+      uv: 6,
+      icon: 'Cloud',
+      localTime: generateLocalTime(3),
+      forecast: 'Partly cloudy with high humidity. Chance of isolated thunderstorms in the afternoon.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 76, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Tue', temp: 77, condition: 'Thunderstorm', icon: 'CloudLightning' },
+      { day: 'Wed', temp: 74, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Thu', temp: 73, condition: 'Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 75, condition: 'Partly Cloudy', icon: 'Cloud' },
+    ]
+  },
+  'Lagos': {
+    current: { 
+      temp: 84, 
+      condition: 'Hot', 
+      humidity: 75, 
+      wind: 8, 
+      visibility: 6.0,
+      uv: 8,
+      icon: 'Sun',
+      localTime: generateLocalTime(1),
+      forecast: 'Hot and humid with a chance of afternoon showers. Typical tropical weather.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 85, condition: 'Hot', icon: 'Sun' },
+      { day: 'Tue', temp: 86, condition: 'Thunderstorm', icon: 'CloudLightning' },
+      { day: 'Wed', temp: 84, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Thu', temp: 83, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 85, condition: 'Hot', icon: 'Sun' },
+    ]
+  },
+  'Casablanca': {
+    current: { 
+      temp: 72, 
+      condition: 'Sunny', 
+      humidity: 65, 
+      wind: 10, 
+      visibility: 9.0,
+      uv: 7,
+      icon: 'Sun',
+      localTime: generateLocalTime(1),
+      forecast: 'Sunny with a pleasant breeze from the Atlantic. Perfect weather for exploring the city.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 73, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Tue', temp: 74, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Wed', temp: 72, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Thu', temp: 70, condition: 'Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 71, condition: 'Sunny', icon: 'Sun' },
+    ]
+  },
+  'Dar es Salaam': {
+    current: { 
+      temp: 82, 
+      condition: 'Partly Cloudy', 
+      humidity: 78, 
+      wind: 7, 
+      visibility: 7.0,
+      uv: 8,
+      icon: 'Cloud',
+      localTime: generateLocalTime(3),
+      forecast: 'Warm and humid with partly cloudy skies. Typical coastal tropical weather.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 83, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Tue', temp: 84, condition: 'Thunderstorm', icon: 'CloudLightning' },
+      { day: 'Wed', temp: 81, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Thu', temp: 80, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 82, condition: 'Sunny', icon: 'Sun' },
+    ]
+  },
+  'Kigali': {
+    current: { 
+      temp: 73, 
+      condition: 'Sunny', 
+      humidity: 60, 
+      wind: 5, 
+      visibility: 9.5,
+      uv: 7,
+      icon: 'Sun',
+      localTime: generateLocalTime(2),
+      forecast: 'Sunny with comfortable temperatures. The Land of a Thousand Hills enjoying beautiful weather.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 74, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Tue', temp: 75, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Wed', temp: 73, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Thu', temp: 72, condition: 'Rain', icon: 'CloudRain' },
+      { day: 'Fri', temp: 74, condition: 'Sunny', icon: 'Sun' },
+    ]
+  },
+  'Addis Ababa': {
+    current: { 
+      temp: 68, 
+      condition: 'Partly Cloudy', 
+      humidity: 55, 
+      wind: 8, 
+      visibility: 10.0,
+      uv: 6,
+      icon: 'Cloud',
+      localTime: generateLocalTime(3),
+      forecast: 'Mild temperatures with partly cloudy skies. Pleasant high-altitude climate.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 70, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Tue', temp: 71, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Wed', temp: 69, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Thu', temp: 67, condition: 'Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 68, condition: 'Partly Cloudy', icon: 'Cloud' },
+    ]
+  },
+  'Ouagadougou': {
+    current: { 
+      temp: 89, 
+      condition: 'Hot', 
+      humidity: 40, 
+      wind: 7, 
+      visibility: 8.5,
+      uv: 9,
+      icon: 'Sun',
+      localTime: generateLocalTime(0),
+      forecast: 'Hot and dry conditions with clear skies. Typical Sahel climate.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 90, condition: 'Hot', icon: 'Sun' },
+      { day: 'Tue', temp: 91, condition: 'Hot', icon: 'Sun' },
+      { day: 'Wed', temp: 89, condition: 'Hot', icon: 'Sun' },
+      { day: 'Thu', temp: 88, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 90, condition: 'Hot', icon: 'Sun' },
+    ]
+  },
+  'Bamako': {
+    current: { 
+      temp: 88, 
+      condition: 'Hot', 
+      humidity: 45, 
+      wind: 6, 
+      visibility: 7.0,
+      uv: 8,
+      icon: 'Sun',
+      localTime: generateLocalTime(0),
+      forecast: 'Hot and dry with occasional dust. Niger River provides some cooling effect.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 89, condition: 'Hot', icon: 'Sun' },
+      { day: 'Tue', temp: 90, condition: 'Hot', icon: 'Sun' },
+      { day: 'Wed', temp: 88, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Thu', temp: 87, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 88, condition: 'Hot', icon: 'Sun' },
+    ]
+  },
+  'Niamey': {
+    current: { 
+      temp: 91, 
+      condition: 'Hot', 
+      humidity: 35, 
+      wind: 8, 
+      visibility: 6.5,
+      uv: 9,
+      icon: 'Sun',
+      localTime: generateLocalTime(1),
+      forecast: 'Very hot and dry conditions with clear skies. Typical desert climate.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 92, condition: 'Hot', icon: 'Sun' },
+      { day: 'Tue', temp: 93, condition: 'Hot', icon: 'Sun' },
+      { day: 'Wed', temp: 91, condition: 'Hot', icon: 'Sun' },
+      { day: 'Thu', temp: 90, condition: 'Hot', icon: 'Sun' },
+      { day: 'Fri', temp: 92, condition: 'Hot', icon: 'Sun' },
+    ]
+  },
+  'Lusaka': {
+    current: { 
+      temp: 76, 
+      condition: 'Sunny', 
+      humidity: 50, 
+      wind: 6, 
+      visibility: 9.0,
+      uv: 7,
+      icon: 'Sun',
+      localTime: generateLocalTime(2),
+      forecast: 'Sunny and pleasant with low humidity. Typical high plateau climate.'
+    },
+    forecast: [
+      { day: 'Mon', temp: 77, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Tue', temp: 78, condition: 'Sunny', icon: 'Sun' },
+      { day: 'Wed', temp: 75, condition: 'Partly Cloudy', icon: 'Cloud' },
+      { day: 'Thu', temp: 74, condition: 'Cloudy', icon: 'Cloud' },
+      { day: 'Fri', temp: 76, condition: 'Sunny', icon: 'Sun' },
+    ]
+  },
 };
 
 export async function fetchWeatherData(city: string): Promise<WeatherData | null> {
