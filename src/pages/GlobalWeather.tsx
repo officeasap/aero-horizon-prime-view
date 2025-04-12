@@ -7,9 +7,11 @@ import Footer from '@/components/Footer';
 import { Globe, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import CountryCityDropdown from '@/components/CountryCityDropdown';
 
 const GlobalWeather = () => {
   const [showMockData, setShowMockData] = useState(false);
+  const [selectedCity, setSelectedCity] = useState<string>('');
   
   return (
     <div className="min-h-screen bg-dark text-white overflow-x-hidden">
@@ -45,6 +47,16 @@ const GlobalWeather = () => {
         </div>
       </section>
       
+      {/* City Selection Section */}
+      <div className="container mx-auto px-4 mb-6">
+        <div className="max-w-xl mx-auto">
+          <CountryCityDropdown 
+            onSelectCity={setSelectedCity} 
+            selectedCity={selectedCity}
+          />
+        </div>
+      </div>
+      
       {/* Weather Toggle Section */}
       <div className="container mx-auto px-4 mb-8">
         <div className="flex justify-center space-x-4">
@@ -68,9 +80,9 @@ const GlobalWeather = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 pb-12">
         {showMockData ? (
-          <WeatherForecast />
+          <WeatherForecast selectedCity={selectedCity} />
         ) : (
-          <OpenWeatherWidget />
+          <OpenWeatherWidget selectedCity={selectedCity} />
         )}
       </div>
       

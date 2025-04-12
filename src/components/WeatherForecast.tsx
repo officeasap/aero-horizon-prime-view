@@ -19,7 +19,11 @@ const iconMap = {
   'CloudLightning': CloudLightning,
 };
 
-const WeatherForecast: React.FC = () => {
+interface WeatherForecastProps {
+  selectedCity?: string;
+}
+
+const WeatherForecast: React.FC<WeatherForecastProps> = ({ selectedCity: propSelectedCity }) => {
   const [selectedCity, setSelectedCity] = useState<string>('New York');
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCities, setFilteredCities] = useState<string[]>([]);
@@ -44,6 +48,13 @@ const WeatherForecast: React.FC = () => {
     
     loadInitialData();
   }, []);
+
+  // Handle prop city changes
+  useEffect(() => {
+    if (propSelectedCity && propSelectedCity !== selectedCity) {
+      loadWeatherData(propSelectedCity);
+    }
+  }, [propSelectedCity]);
 
   const loadWeatherData = async (city: string) => {
     setLoading(true);

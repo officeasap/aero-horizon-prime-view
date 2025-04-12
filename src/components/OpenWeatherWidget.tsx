@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Loader2, MapPin, Droplets, Wind, Eye, Sunrise, Sunset, ThermometerSun, ThermometerSnowflake, Info } from 'lucide-react';
+import { Cloud, CloudRain, CloudSnow, Sun, Wind, Droplets, Eye, Clock, Search, MapPin, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,352 +8,389 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { fetchWeatherByCity, fetchWeatherByCoords, OpenWeatherData } from '@/services/openWeatherService';
 import { toast } from 'sonner';
-import { Card, CardContent } from '@/components/ui/card';
 
-const OpenWeatherWidget: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [weatherData, setWeatherData] = useState<OpenWeatherData | null>(null);
+// Icon mapping based on OpenWeather icon codes
+const weatherIconMap: Record<string, React.ReactNode> = {
+  '01d': <Sun className="text-yellow-400" />,
+  '01n': <Sun className="text-gray-300" />,
+  '02d': <Cloud className="text-gray-300" />,
+  '02n': <Cloud className="text-gray-400" />,
+  '03d': <Cloud className="text-gray-300" />,
+  '03n': <Cloud className="text-gray-400" />,
+  '04d': <Cloud className="text-gray-300" />,
+  '04n': <Cloud className="text-gray-400" />,
+  '09d': <CloudRain className="text-blue-300" />,
+  '09n': <CloudRain className="text-blue-400" />,
+  '10d': <CloudRain className="text-blue-300" />,
+  '10n': <CloudRain className="text-blue-400" />,
+  '11d': <CloudRain className="text-blue-300" />,
+  '11n': <CloudRain className="text-blue-400" />,
+  '13d': <CloudSnow className="text-blue-100" />,
+  '13n': <CloudSnow className="text-blue-200" />,
+  '50d': <Wind className="text-gray-300" />,
+  '50n': <Wind className="text-gray-400" />,
+};
+
+// Weather condition background classes based on conditions
+const weatherBackgroundMap: Record<string, string> = {
+  'Clear': 'from-yellow-500/20 to-orange-500/20',
+  'Clouds': 'from-blue-400/20 to-gray-400/20',
+  'Rain': 'from-blue-600/20 to-gray-700/20',
+  'Drizzle': 'from-blue-500/20 to-gray-600/20',
+  'Thunderstorm': 'from-purple-800/20 to-gray-900/20',
+  'Snow': 'from-blue-100/20 to-gray-200/20',
+  'Mist': 'from-gray-400/20 to-gray-600/20',
+  'Smoke': 'from-gray-500/20 to-gray-700/20',
+  'Haze': 'from-yellow-200/20 to-gray-500/20',
+  'Dust': 'from-yellow-300/20 to-brown-500/20',
+  'Fog': 'from-gray-300/20 to-gray-500/20',
+  'Sand': 'from-yellow-400/20 to-yellow-600/20',
+  'Ash': 'from-gray-600/20 to-gray-800/20',
+  'Squall': 'from-blue-700/20 to-gray-800/20',
+  'Tornado': 'from-gray-700/20 to-gray-900/20',
+};
+
+interface OpenWeatherWidgetProps {
+  selectedCity?: string;
+}
+
+const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: propSelectedCity }) => {
+  const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [usingGeolocation, setUsingGeolocation] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [weatherData, setWeatherData] = useState<OpenWeatherData | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string>('');
+  const [geoPermissionStatus, setGeoPermissionStatus] = useState<'granted' | 'denied' | 'prompt' | 'unknown'>('unknown');
 
+  // Handle geolocation
   useEffect(() => {
-    // Try to get user's location on initial load
+    const checkGeoPermission = async () => {
+      try {
+        if ('permissions' in navigator) {
+          const permission = await (navigator as any).permissions.query({ name: 'geolocation' });
+          setGeoPermissionStatus(permission.state);
+          
+          if (permission.state === 'granted') {
+            getLocationWeather();
+          } else {
+            // Default to London if no permission
+            fetchCityWeather('London');
+          }
+        } else {
+          // Try to get location anyway for browsers without permission API
+          getLocationWeather();
+        }
+      } catch (e) {
+        console.error('Error checking geolocation permission:', e);
+        fetchCityWeather('London');
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+    
+    checkGeoPermission();
+  }, []);
+
+  // Listen for prop city changes
+  useEffect(() => {
+    if (propSelectedCity && propSelectedCity !== selectedCity) {
+      setSelectedCity(propSelectedCity);
+      fetchCityWeather(propSelectedCity);
+    }
+  }, [propSelectedCity]);
+
+  const getLocationWeather = () => {
     if (navigator.geolocation) {
+      setLoading(true);
       navigator.geolocation.getCurrentPosition(
         async (position) => {
-          setUsingGeolocation(true);
-          await fetchWeatherByLocation(position.coords.latitude, position.coords.longitude);
-          setInitialLoading(false);
+          try {
+            const { latitude, longitude } = position.coords;
+            const data = await fetchWeatherByCoords(latitude, longitude);
+            if (data) {
+              setWeatherData(data);
+              setSelectedCity(data.location.name);
+            }
+          } catch (error) {
+            console.error('Error fetching weather by coordinates:', error);
+            setError('Failed to fetch weather for your location');
+            toast.error('Could not get weather for your location');
+            fetchCityWeather('London'); // Fallback
+          } finally {
+            setLoading(false);
+          }
         },
-        (error) => {
-          console.log("Geolocation error or permission denied:", error);
-          // Default to a popular city if geolocation is unavailable
-          handleCitySearch("New York");
-          setInitialLoading(false);
+        (err) => {
+          console.error('Geolocation error:', err);
+          setError('Geolocation permission denied');
+          fetchCityWeather('London'); // Fallback
+          setLoading(false);
         }
       );
     } else {
-      // Geolocation not supported by the browser
-      handleCitySearch("New York");
-      setInitialLoading(false);
-    }
-  }, []);
-
-  const fetchWeatherByLocation = async (lat: number, lon: number) => {
-    setLoading(true);
-    try {
-      const data = await fetchWeatherByCoords(lat, lon);
-      if (data) {
-        setWeatherData(data);
-        toast.success(`Weather data loaded for ${data.location.name}`);
-      }
-    } catch (error) {
-      console.error("Error fetching weather by location:", error);
-      toast.error("Failed to load weather by location");
-    } finally {
-      setLoading(false);
+      setError('Geolocation is not supported by your browser');
+      fetchCityWeather('London'); // Fallback
     }
   };
 
-  const handleCitySearch = async (city: string = searchTerm) => {
-    if (!city.trim()) {
-      toast.error("Please enter a city name");
-      return;
-    }
-
+  const fetchCityWeather = async (city: string) => {
     setLoading(true);
+    setError(null);
     try {
       const data = await fetchWeatherByCity(city);
       if (data) {
         setWeatherData(data);
-        toast.success(`Weather data loaded for ${data.location.name}`);
+        setSelectedCity(data.location.name);
+      } else {
+        setError(`Could not find weather data for ${city}`);
+        toast.error(`Could not find weather data for ${city}`);
       }
     } catch (error) {
-      console.error("Error searching city:", error);
-      toast.error("Failed to search city");
+      console.error('Error fetching weather:', error);
+      setError('Failed to fetch weather data');
+      toast.error('Failed to fetch weather data');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleSearch = () => {
+    if (!searchInput.trim()) {
+      toast.error('Please enter a city name');
+      return;
+    }
+    fetchCityWeather(searchInput);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handleCitySearch();
+      handleSearch();
     }
   };
 
-  const getWeatherBackground = (condition: string) => {
-    switch (condition.toLowerCase()) {
-      case 'clear':
-        return 'from-yellow-500/20 to-orange-500/20';
-      case 'clouds':
-        return 'from-blue-400/20 to-gray-400/20';
-      case 'rain':
-      case 'drizzle':
-        return 'from-blue-600/20 to-gray-700/20';
-      case 'thunderstorm':
-        return 'from-purple-800/20 to-gray-900/20';
-      case 'snow':
-        return 'from-blue-100/20 to-gray-200/20';
-      case 'mist':
-      case 'fog':
-      case 'haze':
-        return 'from-gray-400/20 to-gray-600/20';
-      default:
-        return 'from-blue-400/20 to-blue-600/20';
-    }
-  };
-
-  const getWeatherIcon = (iconCode: string) => {
-    return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-  };
-  
+  // Format timestamp to time
   const formatTime = (timestamp: number, timezone: number) => {
-    if (!timestamp || !timezone) return '';
     const date = new Date((timestamp + timezone) * 1000);
-    return date.toUTCString().slice(17, 22);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const renderWeatherSkeletons = () => (
-    <div className="space-y-4">
-      <div className="glass-panel p-6 rounded-2xl">
-        <div className="flex justify-between items-start">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-40" />
-            <Skeleton className="h-4 w-24" />
+  // Format day name
+  const formatDay = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString('en-US', { weekday: 'short' });
+  };
+
+  // Get background class based on weather condition
+  const getWeatherBackground = (condition: string) => {
+    return weatherBackgroundMap[condition] || 'from-blue-400/20 to-gray-600/20';
+  };
+
+  if (initialLoading) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="glass-panel p-6 rounded-2xl">
+          <div className="flex justify-between items-start">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <div className="text-right space-y-2">
+              <Skeleton className="h-10 w-16 ml-auto" />
+              <Skeleton className="h-4 w-20 ml-auto" />
+            </div>
           </div>
-          <div className="text-right space-y-2">
-            <Skeleton className="h-10 w-20 ml-auto" />
-            <Skeleton className="h-4 w-20 ml-auto" />
+          <div className="flex mt-8 justify-center">
+            <Skeleton className="h-20 w-20 rounded-full" />
           </div>
-        </div>
-        <div className="flex mt-8 justify-center">
-          <Skeleton className="h-24 w-24 rounded-full" />
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-        </div>
-        <div className="mt-8">
-          <Skeleton className="h-6 w-32 mb-4" />
-          <div className="grid grid-cols-5 gap-2">
-            {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-32 w-full" />
-            ))}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+          </div>
+          <div className="mt-8">
+            <Skeleton className="h-6 w-32 mb-4" />
+            <div className="grid grid-cols-5 gap-2">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-24 w-full" />
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="w-full lg:w-1/3">
-          <div className="glass-panel p-4 mb-4">
-            <div className="relative mb-4 flex">
-              <Input
-                type="text"
-                placeholder="Search for a city..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg pr-10"
-              />
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="absolute right-0 top-0 h-full text-gray-light hover:text-white"
-                onClick={() => handleCitySearch()}
-                disabled={loading}
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-              </Button>
-            </div>
-            
-            {usingGeolocation && weatherData && (
-              <div className="text-xs text-gray-light flex items-center justify-center gap-1 mb-4">
-                <MapPin className="h-3 w-3" />
-                <span>Using your current location</span>
-              </div>
-            )}
-            
-            <div className="text-center">
-              <p className="text-sm text-gray-light mb-2">Search for any city around the world to get real-time weather data</p>
-              
-              {!weatherData && !initialLoading && (
-                <div className="glass-panel p-4 mt-4 text-center">
-                  <Info className="h-5 w-5 mx-auto mb-2 text-purple" />
-                  <p className="text-sm text-gray-light">
-                    Enter a city name above to see current weather and 5-day forecast
-                  </p>
-                </div>
-              )}
-            </div>
+    <div className="max-w-4xl mx-auto">
+      <div className="max-w-xl mx-auto mb-8">
+        <div className="flex flex-col md:flex-row gap-2">
+          <div className="relative flex-grow">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-light h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="Search city (e.g., London, New York, Tokyo...)"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleKeyPress}
+              className="pl-9 bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light"
+            />
+          </div>
+          <Button 
+            className="bg-purple hover:bg-purple-600 text-white purple-glow"
+            onClick={handleSearch}
+            disabled={loading}
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Search className="h-4 w-4 mr-2" />}
+            Search
+          </Button>
+          <Button
+            variant="outline"
+            className="border-gray-dark text-gray-light hover:text-white"
+            onClick={getLocationWeather}
+            disabled={loading || geoPermissionStatus === 'denied'}
+          >
+            <MapPin className="h-4 w-4 mr-2" />
+            My Location
+          </Button>
+        </div>
+      </div>
+
+      {error ? (
+        <div className="glass-panel p-6 rounded-2xl bg-red-900/20 border border-red-800/30">
+          <div className="text-center">
+            <h3 className="text-xl font-medium text-red-300 mb-2">Error Loading Weather</h3>
+            <p className="text-red-200">{error}</p>
+            <Button 
+              className="mt-4 bg-purple hover:bg-purple-600 text-white purple-glow"
+              onClick={() => fetchCityWeather('London')}
+            >
+              Try London Instead
+            </Button>
           </div>
         </div>
-        
-        <div className="w-full lg:w-2/3">
-          {initialLoading ? (
-            renderWeatherSkeletons()
-          ) : loading && !weatherData ? (
-            <div className="flex justify-center items-center h-64">
-              <Loader2 className="h-8 w-8 animate-spin text-purple" />
-              <span className="ml-2 text-gray-light">Loading weather data...</span>
-            </div>
-          ) : weatherData ? (
-            <div 
-              className={cn(
-                "glass-panel overflow-hidden rounded-2xl p-6 bg-gradient-to-br transition-all duration-500",
-                getWeatherBackground(weatherData.current.condition)
-              )}
-            >
-              <div className="flex flex-col md:flex-row md:justify-between md:items-start">
-                <div>
-                  <h3 className="text-2xl font-medium">
-                    {weatherData.location.name}, {weatherData.location.country}
-                  </h3>
-                  <p className="text-gray-light flex items-center gap-1">
-                    <MapPin className="h-4 w-4" /> 
-                    {weatherData.location.lat?.toFixed(2)}°, {weatherData.location.lon?.toFixed(2)}°
-                  </p>
-                </div>
-                <div className="text-right mt-4 md:mt-0">
-                  <div className="text-4xl font-light">{weatherData.current.temp}°C</div>
-                  <p className="text-purple capitalize">{weatherData.current.description}</p>
-                </div>
-              </div>
-              
-              <div className="flex mt-8 justify-center">
-                <div className="relative">
-                  <img 
-                    src={getWeatherIcon(weatherData.current.icon)} 
-                    alt={weatherData.current.condition}
-                    className="h-24 w-24 object-contain"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                <div className="bg-white/5 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm text-gray-light">
-                    <Droplets className="h-4 w-4 text-purple" />
-                    <span>Humidity</span>
-                  </div>
-                  <div className="text-lg font-medium">{weatherData.current.humidity}%</div>
-                  <Progress 
-                    value={weatherData.current.humidity} 
-                    className="h-1 mt-2 bg-white/10" 
-                  />
-                </div>
-                <div className="bg-white/5 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm text-gray-light">
-                    <Wind className="h-4 w-4 text-purple" />
-                    <span>Wind Speed</span>
-                  </div>
-                  <div className="text-lg font-medium">{weatherData.current.wind} m/s</div>
-                  <Progress 
-                    value={(weatherData.current.wind / 20) * 100} 
-                    className="h-1 mt-2 bg-white/10" 
-                  />
-                </div>
-                <div className="bg-white/5 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm text-gray-light">
-                    <Eye className="h-4 w-4 text-purple" />
-                    <span>Visibility</span>
-                  </div>
-                  <div className="text-lg font-medium">
-                    {weatherData.current.visibility} km
-                  </div>
-                  <Progress 
-                    value={(weatherData.current.visibility || 10) / 10 * 100} 
-                    className="h-1 mt-2 bg-white/10" 
-                  />
-                </div>
-                <div className="bg-white/5 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm text-gray-light">
-                    <ThermometerSun className="h-4 w-4 text-purple" />
-                    <span>Feels Like</span>
-                  </div>
-                  <div className="text-lg font-medium">
-                    {weatherData.current.feels_like}°C
-                  </div>
-                  <Progress 
-                    value={((weatherData.current.feels_like || 0) + 20) / 60 * 100} 
-                    className="h-1 mt-2 bg-white/10" 
-                  />
-                </div>
-              </div>
-              
-              <div className="flex flex-wrap justify-between mt-6 bg-white/5 p-3 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Sunrise className="h-4 w-4 text-yellow-300" />
-                  <span className="text-sm">Sunrise: {formatTime(weatherData.current.sunrise || 0, weatherData.current.timezone || 0)}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Sunset className="h-4 w-4 text-orange-300" />
-                  <span className="text-sm">Sunset: {formatTime(weatherData.current.sunset || 0, weatherData.current.timezone || 0)}</span>
-                </div>
-              </div>
-              
-              <div className="mt-8">
-                <h4 className="font-medium mb-4">5-Day Forecast</h4>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                  {weatherData.forecast.map((day, index) => (
-                    <Card key={index} className="bg-white/10 border-none overflow-hidden">
-                      <CardContent className="p-3 text-center">
-                        <div className="text-sm font-medium mb-1">{day.day}</div>
-                        <img 
-                          src={getWeatherIcon(day.icon)} 
-                          alt={day.condition}
-                          className="w-12 h-12 mx-auto"
-                        />
-                        <div className="flex justify-center items-center gap-2 text-xs mt-1">
-                          <div className="flex items-center">
-                            <ThermometerSun className="h-3 w-3 text-orange-300 mr-1" />
-                            <span>{day.temp.max}°</span>
-                          </div>
-                          <div className="text-gray-400">|</div>
-                          <div className="flex items-center">
-                            <ThermometerSnowflake className="h-3 w-3 text-blue-300 mr-1" />
-                            <span>{day.temp.min}°</span>
-                          </div>
-                        </div>
-                        <div className="text-xs mt-2 text-gray-300 capitalize">{day.condition}</div>
-                        <div className="flex justify-between text-xs mt-2 text-gray-400">
-                          <div className="flex items-center">
-                            <Droplets className="h-3 w-3 mr-1" />
-                            <span>{day.humidity}%</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Wind className="h-3 w-3 mr-1" />
-                            <span>{day.wind} m/s</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="mt-6 text-xs text-gray-light text-center">
-                <p>Weather data provided by OpenWeather API</p>
-              </div>
-            </div>
-          ) : (
-            <div className="glass-panel p-8 text-center">
-              <Info className="h-10 w-10 mx-auto mb-4 text-purple" />
-              <h3 className="text-xl font-medium mb-2">No Weather Data</h3>
-              <p className="text-gray-light">
-                Search for a city to see weather information, or allow location access for automatic weather updates.
+      ) : weatherData ? (
+        <div 
+          className={cn(
+            "glass-panel overflow-hidden rounded-2xl p-6 bg-gradient-to-br transition-all duration-500",
+            getWeatherBackground(weatherData.current.condition)
+          )}
+        >
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="text-2xl font-medium">{weatherData.location.name}, {weatherData.location.country}</h3>
+              <p className="text-gray-light flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                <span>
+                  {weatherData.current.timezone ? 
+                    formatTime(Math.floor(Date.now() / 1000), weatherData.current.timezone / 3600) : 
+                    new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  }
+                </span>
               </p>
+            </div>
+            <div className="text-right">
+              <div className="text-4xl font-light">{weatherData.current.temp}°C</div>
+              <div className="text-purple">
+                {weatherData.current.feels_like && (
+                  <span>Feels like {weatherData.current.feels_like}°C</span>
+                )}
+              </div>
+              <p className="text-white">{weatherData.current.condition}</p>
+            </div>
+          </div>
+          
+          <div className="flex mt-8 justify-center">
+            <div className="text-center">
+              <div className="mx-auto w-20 h-20 flex items-center justify-center">
+                {weatherIconMap[weatherData.current.icon] || <Cloud className="text-white h-16 w-16 opacity-80" />}
+              </div>
+              <p className="text-gray-light mt-2">{weatherData.current.description}</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+            <div className="bg-white/5 p-3 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-gray-light">
+                <Droplets className="h-4 w-4 text-purple" />
+                <span>Humidity</span>
+              </div>
+              <div className="text-lg font-medium">{weatherData.current.humidity}%</div>
+              <Progress 
+                value={weatherData.current.humidity} 
+                className="h-1 mt-2 bg-white/10" 
+              />
+            </div>
+            <div className="bg-white/5 p-3 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-gray-light">
+                <Wind className="h-4 w-4 text-purple" />
+                <span>Wind Speed</span>
+              </div>
+              <div className="text-lg font-medium">{weatherData.current.wind} m/s</div>
+              <Progress 
+                value={(weatherData.current.wind / 20) * 100} 
+                className="h-1 mt-2 bg-white/10" 
+              />
+            </div>
+            <div className="bg-white/5 p-3 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-gray-light">
+                <Eye className="h-4 w-4 text-purple" />
+                <span>Visibility</span>
+              </div>
+              <div className="text-lg font-medium">
+                {weatherData.current.visibility || "N/A"} km
+              </div>
+              <Progress 
+                value={weatherData.current.visibility ? (weatherData.current.visibility / 10) * 100 : 0} 
+                className="h-1 mt-2 bg-white/10" 
+              />
+            </div>
+            <div className="bg-white/5 p-3 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-gray-light">
+                <Cloud className="h-4 w-4 text-purple" />
+                <span>Pressure</span>
+              </div>
+              <div className="text-lg font-medium">
+                {weatherData.current.pressure || "N/A"} hPa
+              </div>
+              <Progress 
+                value={weatherData.current.pressure ? ((weatherData.current.pressure - 980) / 40) * 100 : 0} 
+                className="h-1 mt-2 bg-white/10" 
+              />
+            </div>
+          </div>
+          
+          <div className="mt-8">
+            <h4 className="font-medium mb-3">5-Day Forecast</h4>
+            <div className="grid grid-cols-5 gap-2">
+              {weatherData.forecast.map((day, index) => (
+                <div key={index} className="bg-white/10 rounded-lg p-3 text-center">
+                  <div className="text-sm font-medium">{formatDay(day.date)}</div>
+                  <div className="my-2">
+                    {weatherIconMap[day.icon] || <Cloud className="mx-auto text-white h-6 w-6 opacity-80" />}
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-medium">{day.temp.max}°</span>
+                    <span className="text-gray-light text-xs"> / {day.temp.min}°</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {weatherData.location.lat && weatherData.location.lon && (
+            <div className="mt-6 pt-4 border-t border-white/10 text-center text-xs text-gray-light">
+              <p>Location: {weatherData.location.lat.toFixed(2)}°N, {weatherData.location.lon.toFixed(2)}°E</p>
             </div>
           )}
         </div>
-      </div>
+      ) : (
+        <div className="glass-panel p-8 rounded-2xl text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple mx-auto"></div>
+          <p className="mt-4 text-gray-light">Loading weather data...</p>
+        </div>
+      )}
     </div>
   );
 };
