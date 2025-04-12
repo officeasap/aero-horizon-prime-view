@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -105,17 +106,12 @@
     @apply bg-panel border border-purple/30 rounded-lg shadow-md;
   }
   
-  .main-nav-link {
-    @apply px-3 py-2 relative text-white hover:text-purple transition-all duration-200;
+  .nav-item {
+    @apply px-3 py-1.5 text-sm font-medium text-white border border-transparent hover:border-purple rounded-full hover:text-purple transition-all duration-200 flex items-center gap-2 purple-glow;
   }
   
-  .main-nav-link.active {
-    @apply text-purple;
-  }
-  
-  .main-nav-link.active::after {
-    content: '';
-    @apply absolute bottom-0 left-0 right-0 h-0.5 bg-purple opacity-80;
+  .nav-item.active {
+    @apply border-purple text-purple;
   }
 }
 

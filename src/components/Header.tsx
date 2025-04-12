@@ -47,6 +47,7 @@ const Header = () => {
     { name: 'Airports & Airlines', path: '/airports-airlines', icon: <MapPin className="h-4 w-4" /> },
     { name: 'Weather', path: '/weather', icon: <Cloud className="h-4 w-4" /> },
     { name: 'World Clock', path: '/world-clock', icon: <Clock className="h-4 w-4" /> },
+    { name: 'Contact', path: '/contact', icon: <Phone className="h-4 w-4" /> }
   ];
   
   return (
@@ -69,8 +70,8 @@ const Header = () => {
 
         {/* Navigation Links - Centered */}
         <nav className={cn(
-          "lg:flex items-center gap-6 flex-grow justify-center",
-          isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-6 z-50 border-r border-purple/20",
+          "lg:flex items-center gap-3 flex-grow justify-center",
+          isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-4 z-50 border-r border-purple/20",
           isMenuOpen ? "flex" : "hidden"
         )}>
           {nav.map((link) => (
@@ -78,8 +79,8 @@ const Header = () => {
               key={link.name}
               to={link.path}
               className={cn(
-                "flex items-center gap-2 text-white hover:text-purple transition-colors duration-200 font-medium",
-                location.pathname === link.path && "text-purple"
+                "flex items-center justify-center gap-2 text-sm font-medium text-white transition-all duration-200 border border-transparent hover:border-purple rounded-full px-4 py-2 hover:text-purple purple-glow",
+                location.pathname === link.path ? "border-purple text-purple" : ""
               )}
               onClick={closeMenu}
             >
@@ -87,16 +88,6 @@ const Header = () => {
               {link.name}
             </Link>
           ))}
-          
-          {/* Contact Button */}
-          <Link 
-            to="/contact"
-            className="flex items-center gap-2 text-white hover:text-purple transition-colors duration-200 font-medium"
-            onClick={closeMenu}
-          >
-            <Phone className="h-4 w-4" />
-            Contact
-          </Link>
         </nav>
 
         {/* Subscribe Button - Desktop */}
@@ -118,16 +109,6 @@ const Header = () => {
                 Subscribe
               </Button>
             </a>
-            
-            <Link 
-              to="/contact"
-              className="w-full block"
-            >
-              <Button variant="contact" className="w-full flex items-center justify-center gap-2">
-                <Phone className="h-4 w-4" />
-                Contact
-              </Button>
-            </Link>
           </div>
         )}
       </div>

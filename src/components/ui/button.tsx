@@ -21,12 +21,14 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         contact: "bg-dark hover:bg-dark/80 text-white border border-purple rounded-full",
         subscribe: "bg-purple hover:bg-purple/90 text-white rounded-full",
+        nav: "bg-transparent border border-purple/80 text-white hover:text-purple rounded-full purple-glow",
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
+        compact: "h-9 px-3 py-1 text-sm",
       },
     },
     defaultVariants: {
