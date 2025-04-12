@@ -1,3 +1,4 @@
+
 import "./App.css";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -12,6 +13,7 @@ import LiveFlightTracker from "./pages/LiveFlightTracker";
 import AirportsAirlines from "./pages/AirportsAirlines";
 import AirportAirlineSearchPage from "./pages/AirportAirlineSearchPage";
 import FlightStatusDetailPage from "./pages/FlightStatusDetailPage";
+import NearbyAirportsPage from "./pages/NearbyAirportsPage";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
@@ -63,6 +65,10 @@ const router = createBrowserRouter([
   {
     path: "/airport-airline-search",
     element: <AirportAirlineSearchPage />
+  },
+  {
+    path: "/nearby-airports",
+    element: <NearbyAirportsPage />
   },
   {
     path: "/flight/:flightId",
