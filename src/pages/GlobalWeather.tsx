@@ -2,10 +2,15 @@
 import React from 'react';
 import Header from '@/components/Header';
 import WeatherForecast from '@/components/WeatherForecast';
+import OpenWeatherWidget from '@/components/OpenWeatherWidget';
 import Footer from '@/components/Footer';
 import { Globe, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 const GlobalWeather = () => {
+  const [showMockData, setShowMockData] = useState(false);
+  
   return (
     <div className="min-h-screen bg-dark text-white overflow-x-hidden">
       <Header />
@@ -40,9 +45,33 @@ const GlobalWeather = () => {
         </div>
       </section>
       
+      {/* Weather Toggle Section */}
+      <div className="container mx-auto px-4 mb-8">
+        <div className="flex justify-center space-x-4">
+          <Button 
+            variant={!showMockData ? "default" : "outline"} 
+            className={!showMockData ? "bg-purple text-white" : "border-gray-light text-gray-light"} 
+            onClick={() => setShowMockData(false)}
+          >
+            Live Weather API
+          </Button>
+          <Button 
+            variant={showMockData ? "default" : "outline"} 
+            className={showMockData ? "bg-purple text-white" : "border-gray-light text-gray-light"} 
+            onClick={() => setShowMockData(true)}
+          >
+            Mock Weather Data
+          </Button>
+        </div>
+      </div>
+      
       {/* Main Content */}
-      <div className="container mx-auto px-4">
-        <WeatherForecast />
+      <div className="container mx-auto px-4 pb-12">
+        {showMockData ? (
+          <WeatherForecast />
+        ) : (
+          <OpenWeatherWidget />
+        )}
       </div>
       
       {/* Footer */}
