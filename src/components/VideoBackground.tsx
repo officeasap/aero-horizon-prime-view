@@ -7,7 +7,7 @@ const VideoBackground = () => {
   useEffect(() => {
     // Set a slower playback rate when the video element is available
     if (videoRef.current) {
-      videoRef.current.playbackRate = 0.55; // Slows down to 55% of normal speed
+      videoRef.current.playbackRate = 0.45; // Slows down to 45% of normal speed
     }
   }, []);
 
