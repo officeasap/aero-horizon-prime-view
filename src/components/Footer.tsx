@@ -121,9 +121,11 @@ const Footer = () => {
                 placeholder="Your email" 
                 className="bg-dark border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
               />
-              <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
-                Subscribe
-              </Button>
+              <a href="https://app.asaptracker.com/subscribe" target="_blank" rel="noopener noreferrer">
+                <Button className="bg-purple hover:bg-purple-600 text-white purple-glow w-full">
+                  Subscribe
+                </Button>
+              </a>
             </div>
           </div>
         </div>
