@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone, Clock } from 'lucide-react';
@@ -100,14 +99,10 @@ const Header = () => {
 
         {/* Removed the desktop Subscribe button as requested */}
 
-        {/* Mobile Menu Items */}
+        {/* Mobile Menu Items - Subscribe button has been completely removed */}
         {isMobile && isMenuOpen && (
           <div className="fixed bottom-8 left-8 right-8 flex flex-col gap-4">
-            <a href="https://app.asaptracker.com" target="_blank" rel="noopener noreferrer" className="w-full block">
-              <Button variant="subscribe" className="w-full purple-glow flex items-center justify-center gap-2">
-                Subscribe
-              </Button>
-            </a>
+            {/* The Subscribe button has been removed here as requested */}
           </div>
         )}
       </div>
