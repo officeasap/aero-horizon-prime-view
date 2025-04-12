@@ -41,8 +41,10 @@ const LiveFlightTracker = () => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="map" className="mt-0">
-            <FlightMap />
+          <TabsContent value="map" className="mt-0 w-full">
+            <div className="bg-gradient-to-b from-purple/5 to-transparent p-1 rounded-xl">
+              <FlightMap />
+            </div>
           </TabsContent>
           
           <TabsContent value="list" className="mt-0">

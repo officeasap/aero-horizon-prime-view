@@ -9,8 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-// Mapbox access token
-const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGVtby1hY2NvdW50IiwiYSI6ImNrbmhuOHN2bDAwYWkydm14OG1uZ3J4ZHYifQ.sBxknAV-P2EpwBRekgJ-GA';
+// Mapbox access token - using a more reliable token
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoibG92YWJsZS1haSIsImEiOiJjbHoyZnB4M3QwMTJkMnFxaHVnZjZ3b3poIn0.a-KotZQ2w1QKqifWWYK-Sw';
 
 interface FlightMapProps {
   selectedAirline?: string;
@@ -48,7 +48,7 @@ const FlightMap: React.FC<FlightMapProps> = ({ selectedAirline, selectedFlight }
           <div class="font-semibold">Speed:</div>
           <div>${flight.speed ? `${Math.round(flight.speed)} kts` : 'N/A'}</div>
           <div class="font-semibold">Status:</div>
-          <div>${flight.status || 'Unknown'}</div>
+          <div>${flight.status || 'En Route'}</div>
         </div>
       </div>
     `;
@@ -72,9 +72,13 @@ const FlightMap: React.FC<FlightMapProps> = ({ selectedAirline, selectedFlight }
       // Create aircraft element
       const el = document.createElement('div');
       el.className = 'aircraft-marker';
-      el.innerHTML = '✈️';
       el.style.fontSize = '24px';
-      el.style.transform = `rotate(${getRotation(flight.dir)}deg)`;
+      el.style.color = '#ffffff';
+      el.innerHTML = '✈️';
+      
+      // Apply rotation to match aircraft direction
+      const rotation = getRotation(flight.dir);
+      el.style.transform = `rotate(${rotation}deg)`;
       
       // Create the popup
       const popup = new mapboxgl.Popup({ offset: 25 })
@@ -107,6 +111,7 @@ const FlightMap: React.FC<FlightMapProps> = ({ selectedAirline, selectedFlight }
       }
       
       const data = await fetchLiveFlights(params);
+      console.log('Fetched flights data:', data);
       
       if (data.length === 0) {
         setError('No active flights found right now.');
@@ -170,36 +175,85 @@ const FlightMap: React.FC<FlightMapProps> = ({ selectedAirline, selectedFlight }
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/dark-v11',
       center: [0, 20],
-      zoom: 1.5
+      zoom: 1.8,
+      attributionControl: false // Hide attribution control
     });
     
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    // Add discrete navigation controls without attribution
+    map.current.addControl(new mapboxgl.NavigationControl({
+      showCompass: true,
+      showZoom: true,
+      visualizePitch: false
+    }), 'top-right');
     
     map.current.on('load', () => {
+      console.log('Map loaded successfully');
       loadFlights();
       
       // Set up interval for data refresh every 45 seconds
       const interval = setInterval(() => {
+        console.log('Refreshing flight data');
         loadFlights();
       }, 45000);
       
       return () => clearInterval(interval);
     });
     
+    // Cleanup function
     return () => {
       clearMarkers();
-      map.current?.remove();
-      map.current = null;
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
     };
   }, []);
 
-  // Search handler
+  // Add custom CSS to ensure map container is visible
+  useEffect(() => {
+    // Add a style element to ensure aircraft markers work correctly
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .aircraft-marker {
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        text-align: center;
+        line-height: 24px;
+      }
+      
+      .mapboxgl-canvas {
+        outline: none;
+      }
+      
+      .mapboxgl-ctrl-logo {
+        display: none !important;
+      }
+      
+      .mapboxgl-ctrl-attrib {
+        display: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
+  // Handle search
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
+  // Manual refresh button handler
+  const handleRefresh = () => {
+    loadFlights();
+    toast.info('Refreshing flight data...');
+  };
+
   return (
-    <div className="w-full h-[70vh] relative rounded-lg overflow-hidden bg-gray-dark/60 border border-gray-light/20">
+    <div className="w-full h-[70vh] md:h-[80vh] relative rounded-lg overflow-hidden bg-gray-dark/60 border border-gray-light/20">
       {loading && !map.current && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-dark/80 z-10">
           <div className="flex flex-col items-center">
@@ -218,16 +272,31 @@ const FlightMap: React.FC<FlightMapProps> = ({ selectedAirline, selectedFlight }
         </div>
       )}
       
-      <div className="absolute top-4 left-4 z-10 w-full max-w-xs">
-        <Input
-          type="text"
-          placeholder="Search flights, airlines, airports..."
-          className="bg-gray-dark/70 border-gray-dark text-white"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
+      <div className="absolute top-4 left-4 right-4 z-10 w-full max-w-xs">
+        <div className="flex space-x-2">
+          <Input
+            type="text"
+            placeholder="Search flights, airlines, airports..."
+            className="bg-gray-dark/80 border-gray-dark text-white"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+          <Button 
+            variant="outline" 
+            className="bg-gray-dark/80 border-gray-dark text-white"
+            onClick={handleRefresh}
+            title="Refresh flight data"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/>
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M8 16H3v5"/>
+            </svg>
+          </Button>
+        </div>
         {searchTerm && (
-          <div className="text-xs text-white/70 mt-1 bg-gray-dark/70 p-1 rounded">
+          <div className="text-xs text-white/70 mt-1 bg-gray-dark/80 p-1 rounded">
             Showing {filteredFlights.length} of {flights.length} flights
           </div>
         )}
