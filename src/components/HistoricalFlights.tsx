@@ -29,22 +29,22 @@ const historicalFlightsData = [
   { id: 'AA9988', airline: 'American Airlines', origin: 'Miami', destination: 'New York', date: '2025-04-10', scheduledTime: '14:50', actualTime: 'Scheduled', status: 'Scheduled', delay: 0 },
 ];
 
-// Helper function to format flight data from API
+// Updated helper function to format flight data from API to match the Flight interface
 const formatFlightData = (flights: Flight[]) => {
   return flights.map(flight => ({
-    id: flight.flight.iata || 'Unknown',
-    airline: flight.airline.name || 'Unknown Airline',
-    origin: flight.departure.airport || 'Unknown',
-    destination: flight.arrival.airport || 'Unknown',
-    date: flight.flight_date || format(new Date(), 'yyyy-MM-dd'),
-    scheduledTime: flight.departure.scheduled 
-      ? new Date(flight.departure.scheduled).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+    id: flight.flight_iata || 'Unknown',
+    airline: flight.airline_name || 'Unknown Airline',
+    origin: flight.dep_iata || 'Unknown',
+    destination: flight.arr_iata || 'Unknown',
+    date: format(new Date(), 'yyyy-MM-dd'), // Default to today since flight_date isn't in the interface
+    scheduledTime: flight.dep_time 
+      ? new Date(flight.dep_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
       : 'N/A',
-    actualTime: flight.departure.actual 
-      ? new Date(flight.departure.actual).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-      : (flight.flight_status === 'scheduled' ? 'Scheduled' : 'N/A'),
-    status: flight.flight_status ? flight.flight_status.charAt(0).toUpperCase() + flight.flight_status.slice(1) : 'Unknown',
-    delay: flight.departure.delay || 0
+    actualTime: flight.dep_actual
+      ? new Date(flight.dep_actual).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+      : (flight.status === 'scheduled' ? 'Scheduled' : 'N/A'),
+    status: flight.status ? flight.status.charAt(0).toUpperCase() + flight.status.slice(1) : 'Unknown',
+    delay: flight.delayed || 0
   }));
 };
 

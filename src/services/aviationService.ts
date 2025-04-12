@@ -1,11 +1,11 @@
-
 import { toast } from "sonner";
 
 const API_KEY = "880dd0d6-7487-4140-8585-787e7a357d46";
 const BASE_URL = "https://airlabs.co/api/v9";
 
-// Flight interface for AirLabs API
+// Updated Flight interface for AirLabs API to support both response formats
 export interface Flight {
+  // Common fields
   hex?: string;
   reg_number?: string;
   flag?: string;
@@ -28,6 +28,7 @@ export interface Flight {
   aircraft_icao?: string;
   updated?: number;
   status?: string;
+  
   // For scheduled flights
   dep_time?: string;
   arr_time?: string;
@@ -37,6 +38,7 @@ export interface Flight {
   arr_delayed?: number;
   aircraft_icao24?: string;
   day_of_week?: number;
+  
   // For flight details
   dep_name?: string;
   dep_city?: string;
@@ -55,6 +57,44 @@ export interface Flight {
   arr_actual?: string;
   dep_estimated?: string;
   arr_estimated?: string;
+  
+  // Support for nested objects in some API responses
+  flight?: {
+    iata?: string;
+    icao?: string;
+    number?: string;
+  };
+  airline?: {
+    name?: string;
+    iata?: string;
+    icao?: string;
+  };
+  departure?: {
+    airport?: string;
+    timezone?: string;
+    iata?: string;
+    icao?: string;
+    terminal?: string;
+    gate?: string;
+    delay?: number;
+    scheduled?: string;
+    estimated?: string;
+    actual?: string;
+  };
+  arrival?: {
+    airport?: string;
+    timezone?: string;
+    iata?: string;
+    icao?: string;
+    terminal?: string;
+    gate?: string;
+    delay?: number;
+    scheduled?: string;
+    estimated?: string;
+    actual?: string;
+  };
+  flight_date?: string;
+  flight_status?: string;
 }
 
 export interface Airport {

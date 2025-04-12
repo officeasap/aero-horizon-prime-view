@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Plane, Search, ArrowDownUp, Filter, Clock } from 'lucide-react';
+import { Plane, Search, ArrowDownUp, Filter, Clock, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
