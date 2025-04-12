@@ -202,9 +202,22 @@ interface AirlineCache {
   };
 }
 
+interface AirportCache {
+  data: Airport[];
+  timestamp: number;
+  isComprehensive: boolean;
+}
+
 const cache: Record<string, { data: any; timestamp: number }> = {};
 const airlineCache: AirlineCache = {};
+const airportCache: AirportCache = {
+  data: [],
+  timestamp: 0,
+  isComprehensive: false
+};
+
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const AIRPORT_CACHE_DURATION = 60 * 60 * 1000; // 1 hour for airports
 const AIRLINE_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours for airlines
 
 const fetchWithCache = async (endpoint: string, params: Record<string, string> = {}): Promise<any> => {
@@ -276,6 +289,31 @@ export async function fetchFlightSchedules(params: Record<string, string> = {}) 
 
 export async function fetchAirports(params: Record<string, string> = {}) {
   try {
+    if (params.comprehensive === "true") {
+      if (airportCache.isComprehensive && 
+          Date.now() - airportCache.timestamp < AIRPORT_CACHE_DURATION) {
+        console.log("Using comprehensive airport cache", airportCache.data.length);
+        return filterAirports(airportCache.data, params);
+      }
+      
+      const limit = parseInt(params.limit || "1000");
+      const data = await fetchWithCache("airports", {
+        ...params,
+        limit: limit.toString()
+      });
+      
+      if (Array.isArray(data) && data.length > 0) {
+        airportCache.data = data;
+        airportCache.timestamp = Date.now();
+        airportCache.isComprehensive = true;
+        console.log(`Cached ${data.length} airports comprehensively`);
+        
+        return filterAirports(data, params);
+      }
+      
+      return data as Airport[];
+    }
+    
     const data = await fetchWithCache("airports", params);
     return data as Airport[];
   } catch (error) {
@@ -283,6 +321,29 @@ export async function fetchAirports(params: Record<string, string> = {}) {
     toast.error("Failed to fetch airport data. Please try again later.");
     return [];
   }
+}
+
+function filterAirports(airports: Airport[], filters: Record<string, string>): Airport[] {
+  const { comprehensive, limit, ...actualFilters } = filters;
+  
+  if (Object.keys(actualFilters).length === 0) {
+    return airports;
+  }
+  
+  return airports.filter(airport => {
+    return Object.entries(actualFilters).every(([key, value]) => {
+      if (!value) return true;
+      
+      const airportValue = (airport as any)[key];
+      if (!airportValue) return false;
+      
+      if (typeof airportValue === 'string') {
+        return airportValue.toLowerCase().includes(value.toLowerCase());
+      }
+      
+      return airportValue === value;
+    });
+  });
 }
 
 export async function fetchNearbyAirports(lat: number, lng: number, distance: number = 100) {
@@ -487,10 +548,41 @@ export async function fetchFlightStatus(flightIata: string) {
 export async function fetchAirportsAndAirlines(searchTerm: string = "") {
   try {
     if (!searchTerm || searchTerm.length < 2) {
-      return fetchAirports({ limit: "20" });
+      const airports = await fetchAirports({ 
+        comprehensive: "true",
+        limit: "100" 
+      });
+      
+      if (airports.length === 0 && airportCache.data.length > 0) {
+        return airportCache.data.slice(0, 100);
+      }
+      
+      return airports;
     }
     
-    return fetchSuggestions(searchTerm);
+    const suggestions = await fetchSuggestions(searchTerm);
+    if (suggestions.length > 0) {
+      return suggestions;
+    }
+    
+    if (airportCache.isComprehensive) {
+      const filteredAirports = airportCache.data.filter(airport => 
+        (airport.name && airport.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (airport.iata_code && airport.iata_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (airport.icao_code && airport.icao_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (airport.city && airport.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (airport.country_code && airport.country_code.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+      
+      if (filteredAirports.length > 0) {
+        return filteredAirports.slice(0, 100);
+      }
+    }
+    
+    return fetchAirports({ 
+      name: searchTerm.trim(),
+      limit: "100"
+    });
   } catch (error) {
     console.error("Error fetching airports/airlines:", error);
     toast.error("Failed to fetch airport and airline data. Please try again later.");
@@ -562,4 +654,91 @@ export async function getUserPosition(): Promise<{ lat: number; lng: number } | 
       { timeout: 10000 }
     );
   });
+}
+
+/**
+ * Fetches a comprehensive list of global airports including those from all regions
+ */
+export async function fetchComprehensiveAirports(): Promise<Airport[]> {
+  try {
+    if (airportCache.isComprehensive && 
+        Date.now() - airportCache.timestamp < AIRPORT_CACHE_DURATION) {
+      return airportCache.data;
+    }
+    
+    const params = {
+      limit: "1000"
+    };
+    
+    const data = await fetchWithCache("airports", params);
+    
+    if (Array.isArray(data) && data.length > 0) {
+      airportCache.data = data;
+      airportCache.timestamp = Date.now();
+      airportCache.isComprehensive = true;
+      console.log(`Cached ${data.length} airports comprehensively`);
+      
+      return data;
+    }
+    
+    return data as Airport[];
+  } catch (error) {
+    console.error("Error fetching comprehensive airports:", error);
+    toast.error("Failed to fetch global airport data. Please try again later.");
+    return [];
+  }
+}
+
+/**
+ * Searches for airports by region, country, or other criteria
+ */
+export async function searchAirportsByRegion(
+  region: string, 
+  limit: number = 50
+): Promise<Airport[]> {
+  try {
+    let airports: Airport[] = [];
+    
+    if (airportCache.isComprehensive && 
+        Date.now() - airportCache.timestamp < AIRPORT_CACHE_DURATION) {
+      airports = airportCache.data;
+    } else {
+      airports = await fetchComprehensiveAirports();
+    }
+    
+    const filteredAirports = airports.filter(airport => {
+      const countryCode = airport.country_code?.toLowerCase() || '';
+      const city = airport.city?.toLowerCase() || '';
+      const name = airport.name.toLowerCase();
+      const regionLower = region.toLowerCase();
+      
+      return countryCode.includes(regionLower) || 
+             city.includes(regionLower) || 
+             name.includes(regionLower);
+    });
+    
+    return filteredAirports.slice(0, limit);
+  } catch (error) {
+    console.error("Error searching airports by region:", error);
+    toast.error("Failed to search airports by region. Please try again later.");
+    return [];
+  }
+}
+
+/**
+ * Fetches a comprehensive list of global airlines
+ */
+export async function fetchComprehensiveAirlines(): Promise<Airline[]> {
+  try {
+    const params = {
+      limit: "500"
+    };
+    
+    const data = await fetchWithCache("airlines", params);
+    return data as Airline[];
+  } catch (error) {
+    console.error("Error fetching comprehensive airlines:", error);
+    toast.error("Failed to fetch global airline data. Please try again later.");
+    return [];
+  }
 }

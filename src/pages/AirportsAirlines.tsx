@@ -1,237 +1,295 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Search, Building2, Plane } from 'lucide-react';
+import { Search, Building2, Plane, MapPin, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { fetchAirportsAndAirlines } from '@/services/aviationService';
+import { 
+  fetchAirportsAndAirlines, 
+  fetchComprehensiveAirports,
+  fetchComprehensiveAirlines,
+  searchAirportsByRegion,
+  Airport, 
+  Airline 
+} from '@/services/aviationService';
 import { toast } from 'sonner';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-// Sample airport data for fallback
-const airports = [
-  { name: 'Hartsfield-Jackson Atlanta International Airport', city: 'Atlanta', country: 'United States', code: 'ATL', icao: 'KATL', type: 'International' },
-  { name: 'Beijing Capital International Airport', city: 'Beijing', country: 'China', code: 'PEK', icao: 'ZBAA', type: 'International' },
-  { name: 'Los Angeles International Airport', city: 'Los Angeles', country: 'United States', code: 'LAX', icao: 'KLAX', type: 'International' },
-  { name: 'Dubai International Airport', city: 'Dubai', country: 'United Arab Emirates', code: 'DXB', icao: 'OMDB', type: 'International' },
-  { name: 'Tokyo Haneda Airport', city: 'Tokyo', country: 'Japan', code: 'HND', icao: 'RJTT', type: 'International' },
-  { name: 'London Heathrow Airport', city: 'London', country: 'United Kingdom', code: 'LHR', icao: 'EGLL', type: 'International' },
-  { name: 'Charles de Gaulle Airport', city: 'Paris', country: 'France', code: 'CDG', icao: 'LFPG', type: 'International' },
-  { name: 'Singapore Changi Airport', city: 'Singapore', country: 'Singapore', code: 'SIN', icao: 'WSSS', type: 'International' },
-  // Asian airports
-  { name: 'Soekarno-Hatta International Airport', city: 'Jakarta', country: 'Indonesia', code: 'CGK', icao: 'WIII', type: 'International' },
-  { name: 'Ngurah Rai International Airport', city: 'Denpasar', country: 'Indonesia', code: 'DPS', icao: 'WADD', type: 'International' },
-  { name: 'Incheon International Airport', city: 'Seoul', country: 'South Korea', code: 'ICN', icao: 'RKSI', type: 'International' },
-  { name: 'Hong Kong International Airport', city: 'Hong Kong', country: 'China', code: 'HKG', icao: 'VHHH', type: 'International' },
-  // Additional major international airports
-  { name: 'Suvarnabhumi Airport', city: 'Bangkok', country: 'Thailand', code: 'BKK', icao: 'VTBS', type: 'International' },
-  { name: 'Kuala Lumpur International Airport', city: 'Kuala Lumpur', country: 'Malaysia', code: 'KUL', icao: 'WMKK', type: 'International' },
-  { name: 'Indira Gandhi International Airport', city: 'Delhi', country: 'India', code: 'DEL', icao: 'VIDP', type: 'International' },
-  { name: 'Shanghai Pudong International Airport', city: 'Shanghai', country: 'China', code: 'PVG', icao: 'ZSPD', type: 'International' },
-  { name: 'Sydney Kingsford Smith Airport', city: 'Sydney', country: 'Australia', code: 'SYD', icao: 'YSSY', type: 'International' },
-  { name: 'Narita International Airport', city: 'Tokyo', country: 'Japan', code: 'NRT', icao: 'RJAA', type: 'International' },
-  { name: 'Changi International Airport', city: 'Singapore', country: 'Singapore', code: 'SIN', icao: 'WSSS', type: 'International' },
-  { name: 'Taiwan Taoyuan International Airport', city: 'Taipei', country: 'Taiwan', code: 'TPE', icao: 'RCTP', type: 'International' },
+const regions = [
+  { name: "Africa", code: "africa" },
+  { name: "Asia", code: "asia" },
+  { name: "Europe", code: "europe" },
+  { name: "Middle East", code: "middle east" },
+  { name: "North America", code: "north america" },
+  { name: "Oceania", code: "oceania" },
+  { name: "South America", code: "south america" }
 ];
 
-// Sample airline data for fallback
-const airlines = [
-  { name: 'Emirates', code: 'EK', country: 'United Arab Emirates', fleet: 265, hub: 'Dubai International Airport' },
-  { name: 'British Airways', code: 'BA', country: 'United Kingdom', fleet: 280, hub: 'London Heathrow Airport' },
-  { name: 'Singapore Airlines', code: 'SQ', country: 'Singapore', fleet: 127, hub: 'Singapore Changi Airport' },
-  { name: 'Lufthansa', code: 'LH', country: 'Germany', fleet: 279, hub: 'Frankfurt Airport' },
-  { name: 'Qatar Airways', code: 'QR', country: 'Qatar', fleet: 234, hub: 'Hamad International Airport' },
-  { name: 'United Airlines', code: 'UA', country: 'United States', fleet: 860, hub: 'O\'Hare International Airport' },
-  { name: 'Delta Air Lines', code: 'DL', country: 'United States', fleet: 850, hub: 'Hartsfield-Jackson Atlanta International Airport' },
-  { name: 'American Airlines', code: 'AA', country: 'United States', fleet: 956, hub: 'Dallas/Fort Worth International Airport' },
-  // Asian airlines
-  { name: 'Garuda Indonesia', code: 'GA', country: 'Indonesia', fleet: 142, hub: 'Soekarno-Hatta International Airport' },
-  { name: 'AirAsia', code: 'AK', country: 'Malaysia', fleet: 255, hub: 'Kuala Lumpur International Airport' },
-  { name: 'Cathay Pacific', code: 'CX', country: 'Hong Kong', fleet: 155, hub: 'Hong Kong International Airport' },
-  { name: 'Japan Airlines', code: 'JL', country: 'Japan', fleet: 167, hub: 'Tokyo Narita Airport' },
-  // Additional major airlines
-  { name: 'Air China', code: 'CA', country: 'China', fleet: 428, hub: 'Beijing Capital International Airport' },
-  { name: 'China Eastern Airlines', code: 'MU', country: 'China', fleet: 573, hub: 'Shanghai Pudong International Airport' },
-  { name: 'Korean Air', code: 'KE', country: 'South Korea', fleet: 169, hub: 'Incheon International Airport' },
-  { name: 'All Nippon Airways', code: 'NH', country: 'Japan', fleet: 217, hub: 'Tokyo Haneda Airport' },
-  { name: 'Thai Airways', code: 'TG', country: 'Thailand', fleet: 75, hub: 'Suvarnabhumi Airport' },
-  { name: 'Malaysia Airlines', code: 'MH', country: 'Malaysia', fleet: 81, hub: 'Kuala Lumpur International Airport' },
-  { name: 'EVA Air', code: 'BR', country: 'Taiwan', fleet: 86, hub: 'Taiwan Taoyuan International Airport' },
-  { name: 'Philippine Airlines', code: 'PR', country: 'Philippines', fleet: 75, hub: 'Ninoy Aquino International Airport' },
+const africanCountryCodes = [
+  "DZ", "AO", "BJ", "BW", "BF", "BI", "CM", "CV", "CF", "TD", "KM", "CG", "CD", 
+  "DJ", "EG", "GQ", "ER", "ET", "GA", "GM", "GH", "GN", "GW", "CI", "KE", "LS", 
+  "LR", "LY", "MG", "MW", "ML", "MR", "MU", "MA", "MZ", "NA", "NE", "NG", "RW", 
+  "ST", "SN", "SC", "SL", "SO", "ZA", "SS", "SD", "SZ", "TZ", "TG", "TN", "UG", 
+  "ZM", "ZW"
 ];
 
 const AirportsAirlines = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('airports');
   const [loading, setLoading] = useState(false);
-  const [airportData, setAirportData] = useState(airports);
-  const [airlineData, setAirlineData] = useState(airlines);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [airportData, setAirportData] = useState<Airport[]>([]);
+  const [airlineData, setAirlineData] = useState<Airline[]>([]);
+  const [filteredAirports, setFilteredAirports] = useState<Airport[]>([]);
+  const [filteredAirlines, setFilteredAirlines] = useState<Airline[]>([]);
   const [page, setPage] = useState(1);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const itemsPerPage = 8;
+  const [selectedRegion, setSelectedRegion] = useState<string>('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const itemsPerPage = 15;
   
   useEffect(() => {
-    // Initial search with empty term
-    handleSearch();
-  }, [activeTab]);
+    loadComprehensiveData();
+  }, []);
   
-  const handleSearch = async () => {
+  useEffect(() => {
+    if (activeTab === 'airports') {
+      applyFilters();
+    } else {
+      filterAirlines();
+    }
+  }, [activeTab, selectedRegion, airportData, airlineData, page]);
+  
+  const loadComprehensiveData = async () => {
+    setInitialLoading(true);
+    try {
+      const airports = await fetchComprehensiveAirports();
+      setAirportData(airports);
+      setFilteredAirports(airports.slice(0, itemsPerPage));
+      
+      const airlines = await fetchComprehensiveAirlines();
+      setAirlineData(airlines);
+      setFilteredAirlines(airlines.slice(0, itemsPerPage));
+      
+      toast.success(`Loaded ${airports.length} airports and ${airlines.length} airlines`);
+    } catch (error) {
+      console.error("Error loading comprehensive data:", error);
+      toast.error("Failed to load comprehensive aviation data");
+    } finally {
+      setInitialLoading(false);
+    }
+  };
+  
+  const refreshData = async () => {
+    setIsRefreshing(true);
+    try {
+      await loadComprehensiveData();
+      toast.success("Aviation data refreshed successfully");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+  
+  const applyFilters = () => {
     setLoading(true);
     try {
-      // In a real app, this would be an API call to search for airports/airlines
-      // For now, we'll simulate with sample data
-      const results = await fetchAirportsAndAirlines(searchTerm);
+      let filtered = [...airportData];
       
-      if (results.length === 0) {
-        // If API returns no results, fallback to sample data
-        if (activeTab === 'airports') {
-          const filteredAirports = airports.filter(airport => 
-            airport.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-            airport.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            airport.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            airport.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            airport.icao.toLowerCase().includes(searchTerm.toLowerCase())
-          );
-          setAirportData(filteredAirports);
-          
-          if (filteredAirports.length === 0) {
-            toast.info("No airports found matching your search.");
-          }
-        } else {
-          const filteredAirlines = airlines.filter(airline => 
-            airline.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-            airline.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            airline.country.toLowerCase().includes(searchTerm.toLowerCase())
-          );
-          setAirlineData(filteredAirlines);
-          
-          if (filteredAirlines.length === 0) {
-            toast.info("No airlines found matching your search.");
-          }
-        }
-      } else {
-        // Process API results
-        toast.success(`Found ${results.length} results for "${searchTerm}"`);
+      if (searchTerm) {
+        filtered = filtered.filter(airport => 
+          (airport.name && airport.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airport.iata_code && airport.iata_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airport.icao_code && airport.icao_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airport.city && airport.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airport.country_code && airport.country_code.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
       }
-    } catch (error) {
-      console.error("Error searching:", error);
-      toast.error("Failed to search. Using sample data instead.");
       
-      // Fallback to sample data
-      if (activeTab === 'airports') {
-        const filteredAirports = airports.filter(airport => 
-          airport.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-          airport.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          airport.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          airport.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          airport.icao.toLowerCase().includes(searchTerm.toLowerCase())
+      if (selectedRegion === 'africa') {
+        filtered = filtered.filter(airport => 
+          africanCountryCodes.includes(airport.country_code)
         );
-        setAirportData(filteredAirports);
-      } else {
-        const filteredAirlines = airlines.filter(airline => 
-          airline.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-          airline.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          airline.country.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setAirlineData(filteredAirlines);
+      } else if (selectedRegion) {
+        filtered = filtered.filter(airport => {
+          const countryCode = airport.country_code?.toLowerCase() || '';
+          const city = airport.city?.toLowerCase() || '';
+          const name = airport.name.toLowerCase();
+          
+          return countryCode.includes(selectedRegion.toLowerCase()) || 
+                 city.includes(selectedRegion.toLowerCase()) || 
+                 name.includes(selectedRegion.toLowerCase());
+        });
+      }
+      
+      setFilteredAirports(filtered.slice(0, page * itemsPerPage));
+      
+      if (filtered.length === 0 && searchTerm) {
+        toast.info("No airports found matching your criteria");
       }
     } finally {
       setLoading(false);
-      setPage(1); // Reset to first page when searching
-      setShowSuggestions(false); // Close suggestions after search
     }
+  };
+  
+  const filterAirlines = () => {
+    setLoading(true);
+    try {
+      let filtered = [...airlineData];
+      
+      if (searchTerm) {
+        filtered = filtered.filter(airline => 
+          (airline.name && airline.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airline.iata_code && airline.iata_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airline.icao_code && airline.icao_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airline.country_name && airline.country_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airline.country_code && airline.country_code.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+      }
+      
+      if (selectedRegion === 'africa') {
+        filtered = filtered.filter(airline => 
+          africanCountryCodes.includes(airline.country_code || '')
+        );
+      } else if (selectedRegion) {
+        filtered = filtered.filter(airline => {
+          const countryCode = airline.country_code?.toLowerCase() || '';
+          const countryName = airline.country_name?.toLowerCase() || '';
+          
+          return countryCode.includes(selectedRegion.toLowerCase()) || 
+                 countryName.includes(selectedRegion.toLowerCase());
+        });
+      }
+      
+      setFilteredAirlines(filtered.slice(0, page * itemsPerPage));
+      
+      if (filtered.length === 0 && searchTerm) {
+        toast.info("No airlines found matching your criteria");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleSearch = () => {
+    setPage(1);
+    if (activeTab === 'airports') {
+      applyFilters();
+    } else {
+      filterAirlines();
+    }
+  };
+  
+  const handleRegionSelect = (region: string) => {
+    setSelectedRegion(region);
+    setPage(1);
   };
   
   const handleSelect = (value: string) => {
     setSearchTerm(value);
     setShowSuggestions(false);
-    handleSearch();
+    setPage(1);
+    
+    if (activeTab === 'airports') {
+      applyFilters();
+    } else {
+      filterAirlines();
+    }
   };
   
-  const loadMore = async () => {
-    setLoading(true);
-    try {
-      setPage(prev => prev + 1);
-      toast.success("Loading more results...");
-      
-      // In a real app, this would fetch the next page of results
-      // For now, we'll simulate with a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // No additional data to load in our sample app
-      toast.info("All available data has been loaded.");
-    } catch (error) {
-      console.error("Error loading more data:", error);
-      toast.error("Failed to load more data. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const loadMore = () => {
+    setPage(prev => prev + 1);
   };
   
   const viewDetails = (type: string, id: string) => {
     toast.info(`Viewing details for ${type} ${id}`);
-    // In a real app, this would navigate to a details page or open a modal
   };
   
-  // Filter suggestions based on search term
   const getSearchSuggestions = () => {
     if (!searchTerm) return [];
     
     if (activeTab === 'airports') {
-      return airports.filter(airport => 
-        airport.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        airport.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        airport.icao.toLowerCase().includes(searchTerm.toLowerCase())
-      ).slice(0, 5);
+      return airportData
+        .filter(airport => 
+          (airport.name && airport.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airport.iata_code && airport.iata_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airport.icao_code && airport.icao_code.toLowerCase().includes(searchTerm.toLowerCase()))
+        )
+        .slice(0, 7);
     } else {
-      return airlines.filter(airline => 
-        airline.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        airline.code.toLowerCase().includes(searchTerm.toLowerCase())
-      ).slice(0, 5);
+      return airlineData
+        .filter(airline => 
+          (airline.name && airline.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airline.iata_code && airline.iata_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (airline.icao_code && airline.icao_code.toLowerCase().includes(searchTerm.toLowerCase()))
+        )
+        .slice(0, 7);
     }
   };
   
-  // Calculate paginated data
-  const paginatedAirports = airportData.slice(0, page * itemsPerPage);
-  const paginatedAirlines = airlineData.slice(0, page * itemsPerPage);
+  const displayedAirportsCount = filteredAirports.length;
+  const totalAirportsCount = activeTab === 'airports' && searchTerm ? 
+    airportData.filter(airport => 
+      (airport.name && airport.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (airport.iata_code && airport.iata_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (airport.icao_code && airport.icao_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (airport.city && airport.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (airport.country_code && airport.country_code.toLowerCase().includes(searchTerm.toLowerCase()))
+    ).length : 
+    airportData.length;
   
-  const hasMoreAirports = paginatedAirports.length < airportData.length;
-  const hasMoreAirlines = paginatedAirlines.length < airlineData.length;
+  const displayedAirlinesCount = filteredAirlines.length;
+  const totalAirlinesCount = activeTab === 'airlines' && searchTerm ? 
+    airlineData.filter(airline => 
+      (airline.name && airline.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (airline.iata_code && airline.iata_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (airline.icao_code && airline.icao_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (airline.country_name && airline.country_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (airline.country_code && airline.country_code.toLowerCase().includes(searchTerm.toLowerCase()))
+    ).length : 
+    airlineData.length;
+  
+  const hasMoreAirports = displayedAirportsCount < totalAirportsCount;
+  const hasMoreAirlines = displayedAirlinesCount < totalAirlinesCount;
   
   return (
     <div className="min-h-screen bg-dark text-white overflow-x-hidden">
       <Header />
       
-      {/* Page Title Section */}
       <section className="pt-32 pb-8 relative">
         <div className="absolute inset-0 bg-radial-gradient from-purple/10 via-transparent to-transparent z-0"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold font-space mb-4 animate-fade-in">
-              Airports & <span className="text-purple animate-text-glow">Airlines</span>
+              Global <span className="text-purple animate-text-glow">Aviation</span> Directory
             </h1>
             <p className="text-xl text-gray-light animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Comprehensive database of global airports and airlines with detailed information.
+              Comprehensive database of global airports and airlines, including key African hubs and other regions.
             </p>
           </div>
         </div>
       </section>
       
-      {/* Main Content */}
       <section className="py-8 w-full max-w-6xl mx-auto">
         <div className="px-4">
           <div className="glass-panel p-4 mb-6">
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
               <Popover open={showSuggestions} onOpenChange={setShowSuggestions}>
                 <PopoverTrigger asChild>
                   <div className="relative w-full md:w-auto flex-1">
                     <Input
                       type="text"
-                      placeholder={`Search ${activeTab === 'airports' ? 'airports' : 'airlines'} by name or code...`}
+                      placeholder={`Search ${activeTab === 'airports' ? 'airports' : 'airlines'} by name, code, city or country...`}
                       value={searchTerm}
                       onChange={(e) => {
                         setSearchTerm(e.target.value);
@@ -252,7 +310,7 @@ const AirportsAirlines = () => {
                     </button>
                   </div>
                 </PopoverTrigger>
-                <PopoverContent className="p-0 w-full md:w-[300px] bg-gray-dark border-gray-600" align="start">
+                <PopoverContent className="p-0 w-full md:w-[350px] bg-gray-dark border-gray-600" align="start">
                   <Command className="bg-gray-dark">
                     <CommandInput 
                       placeholder={`Search ${activeTab === 'airports' ? 'airports' : 'airlines'}...`} 
@@ -263,11 +321,11 @@ const AirportsAirlines = () => {
                     <CommandList className="text-white">
                       <CommandEmpty className="py-2 px-4 text-gray-light">No results found</CommandEmpty>
                       <CommandGroup>
-                        {getSearchSuggestions().map((item: any) => (
+                        {getSearchSuggestions().map((item: any, index) => (
                           <CommandItem 
-                            key={item.code} 
+                            key={`${activeTab === 'airports' ? item.icao_code : item.icao_code}-${index}`} 
                             className="flex items-center px-4 py-2 hover:bg-purple/20 cursor-pointer"
-                            onSelect={() => handleSelect(item.code)}
+                            onSelect={() => handleSelect(activeTab === 'airports' ? item.iata_code : item.iata_code)}
                           >
                             <div className="flex flex-col">
                               <span className="font-medium">{item.name}</span>
@@ -275,12 +333,12 @@ const AirportsAirlines = () => {
                                 {activeTab === 'airports' ? (
                                   <>
                                     <Building2 className="h-3 w-3" /> 
-                                    {item.code} / {item.icao} - {item.city}, {item.country}
+                                    {item.iata_code} / {item.icao_code} - {item.city || 'N/A'}, {item.country_code}
                                   </>
                                 ) : (
                                   <>
                                     <Plane className="h-3 w-3" /> 
-                                    {item.code} - {item.country}
+                                    {item.iata_code} - {item.country_name || item.country_code || 'N/A'}
                                   </>
                                 )}
                               </span>
@@ -293,31 +351,103 @@ const AirportsAirlines = () => {
                 </PopoverContent>
               </Popover>
               
-              <Tabs 
-                defaultValue="airports" 
-                className="w-full md:w-auto" 
-                value={activeTab}
-                onValueChange={setActiveTab}
+              <div className="flex items-center gap-2">
+                <Tabs 
+                  defaultValue="airports" 
+                  className="w-full md:w-auto" 
+                  value={activeTab}
+                  onValueChange={setActiveTab}
+                >
+                  <TabsList className="bg-gray-dark/50">
+                    <TabsTrigger value="airports" className="data-[state=active]:bg-purple">
+                      <Building2 className="h-4 w-4 mr-2" />
+                      Airports
+                    </TabsTrigger>
+                    <TabsTrigger value="airlines" className="data-[state=active]:bg-purple">
+                      <Plane className="h-4 w-4 mr-2" />
+                      Airlines
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="bg-transparent border-gray-600 hover:bg-white/5"
+                  onClick={refreshData}
+                  disabled={isRefreshing}
+                >
+                  <RefreshCw className={cn(
+                    "h-4 w-4", 
+                    isRefreshing && "animate-spin"
+                  )} />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Button
+                variant={selectedRegion === '' ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleRegionSelect('')}
+                className={cn(
+                  selectedRegion === '' ? "bg-purple hover:bg-purple-600" : "bg-transparent border-gray-600 hover:bg-white/5"
+                )}
               >
-                <TabsList className="bg-gray-dark/50">
-                  <TabsTrigger value="airports" className="data-[state=active]:bg-purple">
-                    <Building2 className="h-4 w-4 mr-2" />
-                    Airports
-                  </TabsTrigger>
-                  <TabsTrigger value="airlines" className="data-[state=active]:bg-purple">
-                    <Plane className="h-4 w-4 mr-2" />
-                    Airlines
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+                All Regions
+              </Button>
+              
+              <Button
+                variant={selectedRegion === 'africa' ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleRegionSelect('africa')}
+                className={cn(
+                  selectedRegion === 'africa' ? "bg-purple hover:bg-purple-600" : "bg-transparent border-gray-600 hover:bg-white/5"
+                )}
+              >
+                <MapPin className="h-3.5 w-3.5 mr-1" />
+                Africa
+              </Button>
+              
+              {regions.filter(r => r.code !== 'africa').map(region => (
+                <Button
+                  key={region.code}
+                  variant={selectedRegion === region.code ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleRegionSelect(region.code)}
+                  className={cn(
+                    selectedRegion === region.code ? "bg-purple hover:bg-purple-600" : "bg-transparent border-gray-600 hover:bg-white/5"
+                  )}
+                >
+                  {region.name}
+                </Button>
+              ))}
+            </div>
+            
+            <div className="text-sm text-gray-light mb-4">
+              {activeTab === 'airports' ? (
+                <p>Displaying {displayedAirportsCount} of {totalAirportsCount} airports
+                  {selectedRegion && ` in ${regions.find(r => r.code === selectedRegion)?.name || selectedRegion}`}
+                  {searchTerm && ` matching "${searchTerm}"`}
+                </p>
+              ) : (
+                <p>Displaying {displayedAirlinesCount} of {totalAirlinesCount} airlines
+                  {selectedRegion && ` in ${regions.find(r => r.code === selectedRegion)?.name || selectedRegion}`}
+                  {searchTerm && ` matching "${searchTerm}"`}
+                </p>
+              )}
             </div>
           </div>
           
-          {/* Airlines & Airports Content */}
           <Tabs defaultValue="airports" className="w-full" value={activeTab}>
             <TabsContent value="airports" className="mt-0">
               <div className="glass-panel overflow-hidden">
-                {loading && page === 1 ? (
+                {initialLoading ? (
+                  <div className="flex flex-col justify-center items-center p-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple mb-4"></div>
+                    <p className="text-gray-light">Loading comprehensive airport database...</p>
+                  </div>
+                ) : loading && page === 1 ? (
                   <div className="flex justify-center items-center p-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple"></div>
                   </div>
@@ -335,19 +465,32 @@ const AirportsAirlines = () => {
                         </tr>
                       </thead>
                       <tbody className="text-sm">
-                        {paginatedAirports.length > 0 ? (
-                          paginatedAirports.map((airport, index) => (
-                            <tr key={airport.code} className={cn(
+                        {filteredAirports.length > 0 ? (
+                          filteredAirports.map((airport, index) => (
+                            <tr key={`${airport.iata_code || airport.icao_code || index}`} className={cn(
                               "border-b border-white/5 hover:bg-white/5 transition-colors",
-                              index % 2 === 0 ? 'bg-white/[0.02]' : ''
+                              index % 2 === 0 ? 'bg-white/[0.02]' : '',
+                              africanCountryCodes.includes(airport.country_code) && 'bg-purple/[0.03]'
                             )}>
                               <td className="px-4 py-3 font-medium">{airport.name}</td>
-                              <td className="px-4 py-3">{airport.code}</td>
-                              <td className="px-4 py-3">{airport.icao}</td>
-                              <td className="px-4 py-3">{airport.city}, {airport.country}</td>
                               <td className="px-4 py-3">
-                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-900/30 text-blue-400">
-                                  {airport.type}
+                                <span className={cn(
+                                  "px-2 py-1 rounded-full text-xs font-medium",
+                                  africanCountryCodes.includes(airport.country_code) 
+                                    ? "bg-purple/20 text-purple-200" 
+                                    : "bg-blue-900/30 text-blue-400"
+                                )}>
+                                  {airport.iata_code || 'N/A'}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">{airport.icao_code || 'N/A'}</td>
+                              <td className="px-4 py-3">
+                                {airport.city ? `${airport.city}, ` : ''}
+                                {airport.country_code || 'Unknown'}
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-900/30 text-green-400">
+                                  International
                                 </span>
                               </td>
                               <td className="px-4 py-3">
@@ -355,7 +498,7 @@ const AirportsAirlines = () => {
                                   variant="outline" 
                                   size="sm" 
                                   className="bg-transparent border-purple/50 text-purple hover:bg-purple/20"
-                                  onClick={() => viewDetails('airport', airport.code)}
+                                  onClick={() => viewDetails('airport', airport.iata_code || airport.icao_code || '')}
                                 >
                                   View Details
                                 </Button>
@@ -365,6 +508,7 @@ const AirportsAirlines = () => {
                         ) : (
                           <tr>
                             <td colSpan={6} className="px-4 py-8 text-center text-gray-light">
+                              <AlertCircle className="mx-auto h-8 w-8 mb-2 text-gray-light/70" />
                               No airports found matching your search criteria
                             </td>
                           </tr>
@@ -378,7 +522,12 @@ const AirportsAirlines = () => {
             
             <TabsContent value="airlines" className="mt-0">
               <div className="glass-panel overflow-hidden">
-                {loading && page === 1 ? (
+                {initialLoading ? (
+                  <div className="flex flex-col justify-center items-center p-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple mb-4"></div>
+                    <p className="text-gray-light">Loading comprehensive airline database...</p>
+                  </div>
+                ) : loading && page === 1 ? (
                   <div className="flex justify-center items-center p-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple"></div>
                   </div>
@@ -389,30 +538,40 @@ const AirportsAirlines = () => {
                         <tr>
                           <th className="px-4 py-3">Airline Name</th>
                           <th className="px-4 py-3">IATA Code</th>
+                          <th className="px-4 py-3">ICAO Code</th>
                           <th className="px-4 py-3">Country</th>
                           <th className="px-4 py-3">Fleet Size</th>
-                          <th className="px-4 py-3">Main Hub</th>
                           <th className="px-4 py-3">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="text-sm">
-                        {paginatedAirlines.length > 0 ? (
-                          paginatedAirlines.map((airline, index) => (
-                            <tr key={airline.code} className={cn(
+                        {filteredAirlines.length > 0 ? (
+                          filteredAirlines.map((airline, index) => (
+                            <tr key={`${airline.iata_code || airline.icao_code || index}`} className={cn(
                               "border-b border-white/5 hover:bg-white/5 transition-colors",
-                              index % 2 === 0 ? 'bg-white/[0.02]' : ''
+                              index % 2 === 0 ? 'bg-white/[0.02]' : '',
+                              africanCountryCodes.includes(airline.country_code || '') && 'bg-purple/[0.03]'
                             )}>
                               <td className="px-4 py-3 font-medium">{airline.name}</td>
-                              <td className="px-4 py-3">{airline.code}</td>
-                              <td className="px-4 py-3">{airline.country}</td>
-                              <td className="px-4 py-3">{airline.fleet}</td>
-                              <td className="px-4 py-3">{airline.hub}</td>
+                              <td className="px-4 py-3">
+                                <span className={cn(
+                                  "px-2 py-1 rounded-full text-xs font-medium",
+                                  africanCountryCodes.includes(airline.country_code || '') 
+                                    ? "bg-purple/20 text-purple-200" 
+                                    : "bg-blue-900/30 text-blue-400"
+                                )}>
+                                  {airline.iata_code || 'N/A'}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">{airline.icao_code || 'N/A'}</td>
+                              <td className="px-4 py-3">{airline.country_name || airline.country_code || 'Unknown'}</td>
+                              <td className="px-4 py-3">{airline.fleet_size || 'N/A'}</td>
                               <td className="px-4 py-3">
                                 <Button 
                                   variant="outline" 
                                   size="sm" 
                                   className="bg-transparent border-purple/50 text-purple hover:bg-purple/20"
-                                  onClick={() => viewDetails('airline', airline.code)}
+                                  onClick={() => viewDetails('airline', airline.iata_code || airline.icao_code || '')}
                                 >
                                   View Details
                                 </Button>
@@ -422,6 +581,7 @@ const AirportsAirlines = () => {
                         ) : (
                           <tr>
                             <td colSpan={6} className="px-4 py-8 text-center text-gray-light">
+                              <AlertCircle className="mx-auto h-8 w-8 mb-2 text-gray-light/70" />
                               No airlines found matching your search criteria
                             </td>
                           </tr>
@@ -444,7 +604,7 @@ const AirportsAirlines = () => {
               >
                 {loading && page > 1 ? (
                   <span className="flex items-center">
-                    <span className="animate-spin h-4 w-4 mr-2 border-t-2 border-b-2 border-white rounded-full"></span>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Loading...
                   </span>
                 ) : 'Load More'}
@@ -461,7 +621,6 @@ const AirportsAirlines = () => {
         </div>
       </section>
       
-      {/* Footer */}
       <Footer />
     </div>
   );
