@@ -18,20 +18,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
-function App() {
-  const [queryClient] = useState(() => new QueryClient());
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <Toaster />
-    </QueryClientProvider>
-  );
-}
-
-export default App;
-
-// Update the routes in App.tsx to include our new pages
+// Define the router before the App component
 const router = createBrowserRouter([
   {
     path: "/",
@@ -83,3 +70,16 @@ const router = createBrowserRouter([
     element: <NotFound />
   }
 ]);
+
+function App() {
+  const [queryClient] = useState(() => new QueryClient());
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <Toaster />
+    </QueryClientProvider>
+  );
+}
+
+export default App;
