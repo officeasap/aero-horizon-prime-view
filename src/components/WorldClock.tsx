@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Clock, Search, Globe, MapPin } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -16,6 +15,26 @@ const majorCities = [
   { city: 'Java (Surabaya)', country: 'Indonesia', timezone: 'Asia/Jakarta' },
   { city: 'Makassar', country: 'Indonesia', timezone: 'Asia/Makassar' },
   
+  // New African cities requested
+  { city: 'Ouagadougou', country: 'Burkina Faso', timezone: 'Africa/Ouagadougou' },
+  { city: 'Juba', country: 'South Sudan', timezone: 'Africa/Juba' },
+  { city: 'Tripoli', country: 'Libya', timezone: 'Africa/Tripoli' },
+  { city: 'Yaoundé', country: 'Cameroon', timezone: 'Africa/Douala' },
+  { city: 'Bamako', country: 'Mali', timezone: 'Africa/Bamako' },
+  { city: 'Niamey', country: 'Niger', timezone: 'Africa/Niamey' },
+  { city: 'Lusaka', country: 'Zambia', timezone: 'Africa/Lusaka' },
+  { city: 'Harare', country: 'Zimbabwe', timezone: 'Africa/Harare' },
+  { city: 'Kigali', country: 'Rwanda', timezone: 'Africa/Kigali' },
+  { city: 'Gitega', country: 'Burundi', timezone: 'Africa/Bujumbura' },
+  { city: 'Monrovia', country: 'Liberia', timezone: 'Africa/Monrovia' },
+  { city: 'Antananarivo', country: 'Madagascar', timezone: 'Africa/Antananarivo' },
+  { city: 'Mogadishu', country: 'Somalia', timezone: 'Africa/Mogadishu' },
+  
+  // Other African cities from before
+  { city: 'Nairobi', country: 'Kenya', timezone: 'Africa/Nairobi' },
+  { city: 'Kampala', country: 'Uganda', timezone: 'Africa/Kampala' },
+  { city: 'Cape Town', country: 'South Africa', timezone: 'Africa/Johannesburg' },
+  
   // More Asian cities
   { city: 'Shanghai', country: 'China', timezone: 'Asia/Shanghai' },
   { city: 'Seoul', country: 'South Korea', timezone: 'Asia/Seoul' },
@@ -26,11 +45,6 @@ const majorCities = [
   { city: 'Yangon', country: 'Myanmar', timezone: 'Asia/Yangon' },
   { city: 'Dhaka', country: 'Bangladesh', timezone: 'Asia/Dhaka' },
   { city: 'Karachi', country: 'Pakistan', timezone: 'Asia/Karachi' },
-  
-  // New African cities
-  { city: 'Nairobi', country: 'Kenya', timezone: 'Africa/Nairobi' },
-  { city: 'Kampala', country: 'Uganda', timezone: 'Africa/Kampala' },
-  { city: 'Cape Town', country: 'South Africa', timezone: 'Africa/Johannesburg' },
   
   // Major global cities from before
   { city: 'Tokyo', country: 'Japan', timezone: 'Asia/Tokyo' },

@@ -1,4 +1,3 @@
-
 // A comprehensive list of major cities worldwide with their time zones
 export const timezoneData = [
   // Africa
@@ -20,6 +19,19 @@ export const timezoneData = [
   { city: 'Khartoum', country: 'Sudan', timezone: 'Africa/Khartoum' },
   { city: 'Kinshasa', country: 'Democratic Republic of the Congo', timezone: 'Africa/Kinshasa' },
   { city: 'Luanda', country: 'Angola', timezone: 'Africa/Luanda' },
+  { city: 'Ouagadougou', country: 'Burkina Faso', timezone: 'Africa/Ouagadougou' },
+  { city: 'Juba', country: 'South Sudan', timezone: 'Africa/Juba' },
+  { city: 'Tripoli', country: 'Libya', timezone: 'Africa/Tripoli' },
+  { city: 'Yaoundé', country: 'Cameroon', timezone: 'Africa/Douala' },
+  { city: 'Bamako', country: 'Mali', timezone: 'Africa/Bamako' },
+  { city: 'Niamey', country: 'Niger', timezone: 'Africa/Niamey' },
+  { city: 'Lusaka', country: 'Zambia', timezone: 'Africa/Lusaka' },
+  { city: 'Harare', country: 'Zimbabwe', timezone: 'Africa/Harare' },
+  { city: 'Kigali', country: 'Rwanda', timezone: 'Africa/Kigali' },
+  { city: 'Gitega', country: 'Burundi', timezone: 'Africa/Bujumbura' },
+  { city: 'Monrovia', country: 'Liberia', timezone: 'Africa/Monrovia' },
+  { city: 'Antananarivo', country: 'Madagascar', timezone: 'Africa/Antananarivo' },
+  { city: 'Mogadishu', country: 'Somalia', timezone: 'Africa/Mogadishu' },
 
   // Americas
   { city: 'Anchorage', country: 'USA', timezone: 'America/Anchorage' },
