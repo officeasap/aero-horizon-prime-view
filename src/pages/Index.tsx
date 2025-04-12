@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -10,9 +11,11 @@ import AboutSection from '@/components/AboutSection';
 const Index = () => {
   return (
     <div className="min-h-screen text-white overflow-x-hidden relative">
-      <VideoBackground />
       <Header />
-      <BackgroundAircraft />
+      <div className="relative">
+        <VideoBackground />
+        <BackgroundAircraft />
+      </div>
       
       {/* Hero Section */}
       <section id="hero" className="relative h-screen flex items-center justify-center pt-16 pb-16">

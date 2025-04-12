@@ -12,7 +12,7 @@ const VideoBackground = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 w-full h-full z-[-1] overflow-hidden">
+    <div className="absolute top-16 bottom-16 left-0 right-0 overflow-hidden">
       {/* Video Element */}
       <video
         ref={videoRef}
