@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -10,14 +9,13 @@ import AboutSection from '@/components/AboutSection';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-dark text-white overflow-x-hidden">
+    <div className="min-h-screen text-white overflow-x-hidden relative">
+      <VideoBackground />
       <Header />
       <BackgroundAircraft />
       
       {/* Hero Section */}
       <section id="hero" className="relative h-screen flex items-center justify-center pt-16 pb-16">
-        <VideoBackground />
-        
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
@@ -52,7 +50,7 @@ const Index = () => {
       </section>
       
       {/* Features Section */}
-      <section className="py-12 bg-gradient-to-b from-dark to-gray-dark/30">
+      <section className="py-12 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">

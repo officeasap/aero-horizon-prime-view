@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -45,7 +46,7 @@
   }
 
   body {
-    @apply bg-dark text-foreground font-inter;
+    @apply text-foreground font-inter;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -64,17 +65,17 @@
   }
 
   .video-bg {
-    @apply absolute inset-0 object-cover w-full h-full;
+    @apply fixed inset-0 object-cover w-full h-full;
   }
 
   .video-overlay {
-    @apply absolute inset-0 bg-dark/60 bg-gradient-to-b from-transparent via-dark/50 to-dark;
+    @apply fixed inset-0 bg-black/50 bg-gradient-to-b from-transparent via-dark/50 to-dark;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-panel backdrop-blur-md border border-purple/20 rounded-2xl shadow-lg;
+    @apply bg-panel/80 backdrop-blur-md border border-purple/20 rounded-2xl shadow-lg;
   }
 
   .purple-glow {
@@ -110,7 +111,7 @@
   }
   
   .accent-panel {
-    @apply bg-panel border border-purple/30 rounded-lg shadow-md;
+    @apply bg-panel/90 backdrop-blur-sm border border-purple/30 rounded-lg shadow-md;
   }
   
   .nav-item {
