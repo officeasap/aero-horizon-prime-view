@@ -18,7 +18,7 @@ const Index = () => {
       </div>
       
       {/* Hero Section */}
-      <section id="hero" className="relative h-screen flex items-center justify-center pt-16 pb-16">
+      <section id="hero" className="relative h-screen flex items-center justify-center pt-16 pb-16 content-overlay">
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
@@ -53,7 +53,7 @@ const Index = () => {
       </section>
       
       {/* Features Section */}
-      <section className="py-12 relative z-10">
+      <section className="py-12 relative z-10 content-overlay">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">

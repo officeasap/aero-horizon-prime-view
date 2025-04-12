@@ -72,7 +72,7 @@
   }
   
   .video-container {
-    @apply absolute top-16 bottom-16 left-0 right-0 overflow-hidden z-0;
+    @apply fixed top-16 bottom-16 left-0 right-0 overflow-hidden z-0 w-full;
   }
   
   .video-element {
