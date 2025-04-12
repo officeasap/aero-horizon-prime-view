@@ -7,7 +7,7 @@ const VideoBackground = () => {
   useEffect(() => {
     // Set a slower playback rate when the video element is available
     if (videoRef.current) {
-      videoRef.current.playbackRate = 0.45; // Slows down to 45% of normal speed
+      videoRef.current.playbackRate = 0.49; // Slows down to 49% of normal speed
     }
   }, []);
 
@@ -20,6 +20,7 @@ const VideoBackground = () => {
         loop
         muted
         playsInline
+        id="homepage-video"
         className="absolute inset-0 object-cover w-full h-full"
       >
         <source
@@ -29,7 +30,7 @@ const VideoBackground = () => {
         Your browser does not support the video tag.
       </video>
       
-      {/* Overlay with improved dark translucent overlay for better text contrast */}
+      {/* Dark overlay for better text contrast */}
       <div className="absolute inset-0 bg-black/50 bg-gradient-to-t from-dark via-dark/40 to-transparent z-10"></div>
     </div>
   );
