@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +11,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Column 1 - About */}
           <div>
-            <Link to="/" className="flex items-center mb-6">
+            <a href="/" className="flex items-center mb-6">
               <img 
                 src="/lovable-uploads/28f1aa86-908f-4a07-837d-7a69fa78941c.png" 
                 alt="ASAP Tracker Logo" 
@@ -22,7 +21,7 @@ const Footer = () => {
                 <span className="text-[#A259FF]">ASAP</span>
                 <span className="text-white ml-2">TRACKER</span>
               </div>
-            </Link>
+            </a>
             <p className="text-gray-light mb-6 text-sm">
               Comprehensive flight tracking and monitoring solutions for travelers, aviation professionals, and businesses.
             </p>
@@ -47,29 +46,39 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/" className="text-gray-light hover:text-purple transition-colors text-sm">
                   Home
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/live-tracker" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/flight-schedule" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
+                  Flight Schedule
+                </a>
+              </li>
+              <li>
+                <a href="/live-tracker" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
                   Live Flight Tracker
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/flight-status" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/flight-status" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
                   Flight Status
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/airports-airlines" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/airports-airlines" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
                   Airports & Airlines
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/weather" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/weather" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
                   Global Weather
-                </Link>
+                </a>
+              </li>
+              <li>
+                <a href="/world-clock" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
+                  World Clock
+                </a>
               </li>
             </ul>
           </div>

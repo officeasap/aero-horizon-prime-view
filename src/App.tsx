@@ -12,6 +12,7 @@ import AirportsAirlines from "./pages/AirportsAirlines";
 import GlobalWeather from "./pages/GlobalWeather";
 import Contact from "./pages/Contact";
 import WorldClockPage from "./pages/WorldClock";
+import FlightSchedulePage from "./pages/FlightSchedulePage";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/weather" element={<GlobalWeather />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/world-clock" element={<WorldClockPage />} />
+          <Route path="/flight-schedule" element={<FlightSchedulePage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

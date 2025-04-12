@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone, MailOpen } from 'lucide-react';
+import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone, MailOpen, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -41,10 +41,12 @@ const Header = () => {
 
   const nav = [
     { name: 'Home', path: '/', icon: <Building2 className="h-4 w-4" /> },
+    { name: 'Flight Schedule', path: '/flight-schedule', icon: <Clock className="h-4 w-4" /> },
     { name: 'Live Flight Tracker', path: '/live-tracker', icon: <Plane className="h-4 w-4" /> },
     { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-4 w-4" /> },
     { name: 'Airports & Airlines', path: '/airports-airlines', icon: <MapPin className="h-4 w-4" /> },
     { name: 'Weather', path: '/weather', icon: <Cloud className="h-4 w-4" /> },
+    { name: 'World Clock', path: '/world-clock', icon: <Clock className="h-4 w-4" /> },
   ];
   
   return (
@@ -72,9 +74,11 @@ const Header = () => {
           isMenuOpen ? "flex" : "hidden"
         )}>
           {nav.map((link) => (
-            <Link
+            <a
               key={link.name}
-              to={link.path}
+              href={link.path}
+              target="_blank"
+              rel="noopener noreferrer"
               className={cn(
                 "flex items-center gap-2 text-white hover:text-purple transition-colors duration-200 font-medium",
                 location.pathname === link.path && "text-purple"
@@ -83,14 +87,20 @@ const Header = () => {
             >
               {link.icon}
               {link.name}
-            </Link>
+            </a>
           ))}
           
           {/* Contact Button */}
-          <Link to="/contact" className="flex items-center gap-2 text-white hover:text-purple transition-colors duration-200 font-medium">
+          <a 
+            href="/contact" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-white hover:text-purple transition-colors duration-200 font-medium"
+            onClick={closeMenu}
+          >
             <Phone className="h-4 w-4" />
             Contact
-          </Link>
+          </a>
         </nav>
 
         {/* Subscribe Button - Desktop */}
@@ -113,12 +123,17 @@ const Header = () => {
               </Button>
             </a>
             
-            <Link to="/contact" className="w-full block">
+            <a 
+              href="/contact"
+              target="_blank"
+              rel="noopener noreferrer" 
+              className="w-full block"
+            >
               <Button variant="contact" className="w-full flex items-center justify-center gap-2">
                 <Phone className="h-4 w-4" />
                 Contact
               </Button>
-            </Link>
+            </a>
           </div>
         )}
       </div>
