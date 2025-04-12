@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone, Clock } from 'lucide-react';
@@ -41,7 +42,7 @@ const Header = () => {
   const nav = [
     { name: 'Home', path: '/', icon: <Building2 className="h-4 w-4" /> },
     { name: 'Flight Schedule', path: '/flight-schedule', icon: <Clock className="h-4 w-4" /> },
-    { name: 'Live Flight Tracker', path: '/live-tracker', icon: <Plane className="h-4 w-4" /> },
+    { name: 'Live Flight Tracker', path: '/live-flight-tracker', icon: <Plane className="h-4 w-4" /> }, // Updated path
     { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-4 w-4" /> },
     { name: 'Airports & Airlines', path: '/airports-airlines', icon: <MapPin className="h-4 w-4" /> },
     { name: 'Weather', path: '/weather', icon: <Cloud className="h-4 w-4" /> },
