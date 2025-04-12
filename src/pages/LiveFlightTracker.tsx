@@ -2,7 +2,10 @@
 import React from 'react';
 import Header from '@/components/Header';
 import FlightTracker from '@/components/FlightTracker';
+import FlightMap from '@/components/FlightMap';
 import Footer from '@/components/Footer';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MapPin, List } from 'lucide-react';
 
 const LiveFlightTracker = () => {
   return (
@@ -25,7 +28,28 @@ const LiveFlightTracker = () => {
       </section>
       
       {/* Main Content */}
-      <FlightTracker />
+      <section className="py-10 container mx-auto px-4">
+        <Tabs defaultValue="map" className="w-full">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
+            <TabsTrigger value="map" className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              <span>Map View</span>
+            </TabsTrigger>
+            <TabsTrigger value="list" className="flex items-center gap-2">
+              <List className="h-4 w-4" />
+              <span>List View</span>
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="map" className="mt-0">
+            <FlightMap />
+          </TabsContent>
+          
+          <TabsContent value="list" className="mt-0">
+            <FlightTracker />
+          </TabsContent>
+        </Tabs>
+      </section>
       
       {/* Footer */}
       <Footer />
