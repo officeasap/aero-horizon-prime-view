@@ -15,8 +15,8 @@ const AboutSection: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="glass-panel p-6">
-            <h3 className="text-xl font-semibold mb-4 font-space">Our Mission</h3>
+          <div className="glass-panel p-6 bg-[#1A1A1A] border-2 border-[#8B0000]">
+            <h3 className="text-xl font-semibold mb-4 font-space text-white">Our Mission</h3>
             <p className="text-gray-light mb-6">
               ASAP Tracker is dedicated to providing travelers with accurate, up-to-date information about flight schedules, delays, and weather conditions around the globe. Our goal is to help you make informed decisions and have a smoother travel experience.
             </p>
@@ -25,37 +25,37 @@ const AboutSection: React.FC = () => {
             </p>
           </div>
           
-          <div className="glass-panel p-6">
-            <h3 className="text-xl font-semibold mb-4 font-space">Why Choose Us</h3>
+          <div className="glass-panel p-6 bg-[#1A1A1A] border-2 border-[#8B0000]">
+            <h3 className="text-xl font-semibold mb-4 font-space text-white">Why Choose Us</h3>
             <div className="space-y-4">
               <div className="flex items-start">
-                <CheckCircle className="text-red h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
+                <CheckCircle className="text-[#8B0000] h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium">Real-Time Updates</h4>
+                  <h4 className="font-medium text-white">Real-Time Updates</h4>
                   <p className="text-sm text-gray-light">Our system pulls data from multiple sources to provide you with the most current information.</p>
                 </div>
               </div>
               
               <div className="flex items-start">
-                <Globe className="text-red h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
+                <Globe className="text-[#8B0000] h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium">Global Coverage</h4>
+                  <h4 className="font-medium text-white">Global Coverage</h4>
                   <p className="text-sm text-gray-light">Track flights and weather conditions at airports around the world.</p>
                 </div>
               </div>
               
               <div className="flex items-start">
-                <Clock className="text-red h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
+                <Clock className="text-[#8B0000] h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium">24/7 Availability</h4>
+                  <h4 className="font-medium text-white">24/7 Availability</h4>
                   <p className="text-sm text-gray-light">Access our services anytime, from anywhere, on any device.</p>
                 </div>
               </div>
               
               <div className="flex items-start">
-                <Shield className="text-red h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
+                <Shield className="text-[#8B0000] h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium">Reliable & Secure</h4>
+                  <h4 className="font-medium text-white">Reliable & Secure</h4>
                   <p className="text-sm text-gray-light">Trust in our secure platform and dependable information.</p>
                 </div>
               </div>
