@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { fetchFlightsByStatus, Flight } from '@/services/aviationService';
@@ -19,7 +18,6 @@ interface FlightData {
   delay: number;
 }
 
-// Sample flight data for fallback
 const sampleHistoricalFlights: FlightData[] = [
   { id: 'BA282', airline: 'British Airways', origin: 'London', destination: 'Los Angeles', date: '2025-04-11', scheduledTime: '10:30', actualTime: '10:45', status: 'Landed', delay: 15 },
   { id: 'EK214', airline: 'Emirates', origin: 'Dubai', destination: 'Houston', date: '2025-04-11', scheduledTime: '08:15', actualTime: '09:30', status: 'Landed', delay: 75 },
@@ -32,14 +30,13 @@ const sampleHistoricalFlights: FlightData[] = [
   { id: 'AA9988', airline: 'American Airlines', origin: 'Miami', destination: 'New York', date: '2025-04-10', scheduledTime: '14:50', actualTime: 'Scheduled', status: 'Scheduled', delay: 0 },
 ];
 
-// Updated helper function to format flight data from API to match the Flight interface
 const formatFlightData = (flights: Flight[]): FlightData[] => {
   return flights.map(flight => ({
     id: flight.flight_iata || flight.flight_icao || 'Unknown',
     airline: flight.airline_name || 'Unknown Airline',
     origin: flight.dep_name || flight.dep_city || flight.dep_iata || 'Unknown',
     destination: flight.arr_name || flight.arr_city || flight.arr_iata || 'Unknown',
-    date: format(new Date(), 'yyyy-MM-dd'), // Default to today since flight_date isn't in the interface
+    date: format(new Date(), 'yyyy-MM-dd'),
     scheduledTime: flight.dep_time 
       ? new Date(flight.dep_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
       : 'N/A',
@@ -58,8 +55,6 @@ const HistoricalFlights: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Initial load - could fetch recently landed flights
-    // For now, we're using sample data
   }, []);
 
   const fetchHistoricalFlights = async (status: string = 'landed') => {
