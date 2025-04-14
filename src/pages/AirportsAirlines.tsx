@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -185,7 +184,6 @@ const AirportsAirlines = () => {
   };
   
   const checkForIATACode = async () => {
-    // Check if the search term matches IATA code format (3 letters)
     const formattedSearch = searchTerm.trim().toUpperCase();
     if (/^[A-Z]{3}$/.test(formattedSearch) && activeTab === 'airports') {
       setLoading(true);
@@ -201,10 +199,12 @@ const AirportsAirlines = () => {
         } else {
           console.error(`No airport found for IATA code: ${formattedSearch}`);
           toast.error(`No airport found with IATA code "${formattedSearch}"`);
+          setFilteredAirports([]);
         }
       } catch (error) {
         console.error(`Error fetching IATA code ${formattedSearch}:`, error);
         toast.error(`Error searching for IATA code "${formattedSearch}"`);
+        setFilteredAirports([]);
       } finally {
         setLoading(false);
       }
@@ -216,10 +216,8 @@ const AirportsAirlines = () => {
     setPage(1);
     setSearchPerformed(true);
     
-    // First check if it's an IATA code search
     const isIATAFound = await checkForIATACode();
     if (!isIATAFound) {
-      // If not an IATA code or no results found, do regular filtering
       if (activeTab === 'airports') {
         applyFilters();
       } else {

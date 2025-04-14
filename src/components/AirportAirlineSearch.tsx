@@ -151,10 +151,12 @@ const AirportAirlineSearch: React.FC = () => {
         } else {
           console.error(`No airport found for IATA code: ${formattedSearch}`);
           toast.error(`No airport found with IATA code "${formattedSearch}"`);
+          setDisplayedAirports([]);
         }
       } catch (error) {
         console.error(`Error fetching IATA code ${formattedSearch}:`, error);
         toast.error(`Error searching for IATA code "${formattedSearch}"`);
+        setDisplayedAirports([]);
       } finally {
         setIsLoading(false);
       }

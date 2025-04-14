@@ -786,18 +786,31 @@ export async function fetchAirportByIATA(iataCode: string): Promise<Airport | nu
   try {
     console.log(`Fetching airport by IATA code: ${formattedCode}`);
     
-    // First try a direct API call to ensure freshest data
-    const response = await fetch(`${BASE_URL}/airports?api_key=${API_KEY}&iata_code=${formattedCode}`);
+    const url = `${BASE_URL}/airports?api_key=${API_KEY}&iata_code=${formattedCode}`;
+    console.log(`Making direct API call to: ${url}`);
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
     const data = await response.json();
     
     console.log(`Direct API response for IATA ${formattedCode}:`, data);
     
-    if (data.response && Array.isArray(data.response) && data.response.length > 0) {
-      console.log(`Found airport for IATA ${formattedCode} from direct API call:`, data.response[0]);
-      return data.response[0] as Airport;
+    if (data && data.response) {
+      if (Array.isArray(data.response) && data.response.length > 0) {
+        console.log(`Found airport for IATA ${formattedCode} from direct API call:`, data.response[0]);
+        return data.response[0] as Airport;
+      } else {
+        console.log(`API returned empty result for IATA ${formattedCode}:`, data);
+      }
+    } else {
+      console.error(`Invalid API response structure for IATA ${formattedCode}:`, data);
     }
     
-    // If direct call fails, try cached approach
+    console.log(`Direct API call failed, trying cached approach for IATA ${formattedCode}`);
     const airports = await fetchAirports({ iata_code: formattedCode });
     
     if (airports && airports.length > 0) {
@@ -805,7 +818,6 @@ export async function fetchAirportByIATA(iataCode: string): Promise<Airport | nu
       return airports[0];
     }
     
-    // If that fails too, try to find in the comprehensive cache
     if (airportCache.isComprehensive) {
       const cachedAirport = airportCache.data.find(airport => 
         airport.iata_code && airport.iata_code.toUpperCase() === formattedCode
