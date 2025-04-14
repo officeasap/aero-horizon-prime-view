@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Clock, ArrowUpDown, Filter, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,6 @@ import { cn } from '@/lib/utils';
 import { fetchLiveFlights, Flight } from '@/services/aviationService';
 import { toast } from 'sonner';
 
-// Fallback data in case API doesn't return enough results
 const delayedFlightsData = [
   { id: 'UA3245', airline: 'United Airlines', origin: 'Chicago', destination: 'Denver', scheduledTime: '10:15', estimatedTime: '11:40', delay: 85, reason: 'Weather' },
   { id: 'AA1408', airline: 'American Airlines', origin: 'Dallas', destination: 'Miami', scheduledTime: '12:30', estimatedTime: '13:15', delay: 45, reason: 'Technical' },
@@ -16,10 +14,8 @@ const delayedFlightsData = [
   { id: 'AS1233', airline: 'Alaska Airlines', origin: 'Seattle', destination: 'San Francisco', scheduledTime: '13:25', estimatedTime: '14:10', delay: 45, reason: 'Air Traffic' },
 ];
 
-// Helper function to format flight data from API
 const formatFlightData = (flights: Flight[]) => {
   return flights.map(flight => {
-    // Format times from UTC timestamp
     const formatTime = (timeString?: string) => {
       if (!timeString) return 'N/A';
       
@@ -31,20 +27,17 @@ const formatFlightData = (flights: Flight[]) => {
       }
     };
 
-    // Determine delay reason based on delay amount or random assignment
     const determineDelayReason = (flight: Flight) => {
       if (!flight.dep_delayed && !flight.arr_delayed) return 'On Time';
       
       const delay = flight.dep_delayed || flight.arr_delayed || 0;
       
-      // Randomly assign a reason if not provided by API
       const reasons = ['Weather', 'Technical', 'Air Traffic'];
       const randomReason = reasons[Math.floor(Math.random() * reasons.length)];
       
-      // Try to make a guess based on delay duration
-      if (delay > 120) return 'Weather';  // Long delays often weather-related
-      if (delay > 60) return 'Air Traffic';  // Medium delays often traffic-related
-      return 'Technical';  // Short delays often technical issues
+      if (delay > 120) return 'Weather';
+      if (delay > 60) return 'Air Traffic';
+      return 'Technical';
     };
     
     return {
@@ -71,20 +64,17 @@ const DelayedFlights: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Load initial data with no filter
     loadFlights(null);
   }, []);
 
   const loadFlights = async (reason: string | null) => {
     setLoading(true);
     try {
-      // Set up parameters for the API call
       const params: Record<string, string> = {
         status: 'delayed',
         limit: '25'
       };
       
-      // Add additional filter for reasons if selected
       if (reason === 'Weather') {
         params.delay_reason = 'weather';
       } else if (reason === 'Technical') {
@@ -97,7 +87,6 @@ const DelayedFlights: React.FC = () => {
       
       const formattedData = formatFlightData(data);
       
-      // If we don't get enough data from the API, supplement with sample data
       if (formattedData.length < 3) {
         const filteredSampleData = reason 
           ? delayedFlightsData.filter(flight => flight.reason === reason)
@@ -115,7 +104,6 @@ const DelayedFlights: React.FC = () => {
       console.error("Error loading flights:", error);
       toast.error("Failed to load flight data. Using sample data instead.");
       
-      // Fallback to sample data
       const filteredSampleData = reason 
         ? delayedFlightsData.filter(flight => flight.reason === reason)
         : delayedFlightsData;
@@ -324,7 +312,7 @@ const DelayedFlights: React.FC = () => {
           </div>
           
           <Button 
-            className="bg-purple hover:bg-purple-600 text-white purple-glow"
+            className="bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]"
             onClick={() => loadFlights(selectedReason)}
           >
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Filter className="mr-2 h-4 w-4" />}
