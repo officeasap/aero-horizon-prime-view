@@ -29,7 +29,7 @@ const AboutSection: React.FC = () => {
             <h3 className="text-xl font-semibold mb-4 font-space">Why Choose Us</h3>
             <div className="space-y-4">
               <div className="flex items-start">
-                <CheckCircle className="text-purple h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
+                <CheckCircle className="text-red h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
                   <h4 className="font-medium">Real-Time Updates</h4>
                   <p className="text-sm text-gray-light">Our system pulls data from multiple sources to provide you with the most current information.</p>
@@ -37,7 +37,7 @@ const AboutSection: React.FC = () => {
               </div>
               
               <div className="flex items-start">
-                <Globe className="text-purple h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
+                <Globe className="text-red h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
                   <h4 className="font-medium">Global Coverage</h4>
                   <p className="text-sm text-gray-light">Track flights and weather conditions at airports around the world.</p>
@@ -45,7 +45,7 @@ const AboutSection: React.FC = () => {
               </div>
               
               <div className="flex items-start">
-                <Clock className="text-purple h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
+                <Clock className="text-red h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
                   <h4 className="font-medium">24/7 Availability</h4>
                   <p className="text-sm text-gray-light">Access our services anytime, from anywhere, on any device.</p>
@@ -53,7 +53,7 @@ const AboutSection: React.FC = () => {
               </div>
               
               <div className="flex items-start">
-                <Shield className="text-purple h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
+                <Shield className="text-red h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
                   <h4 className="font-medium">Reliable & Secure</h4>
                   <p className="text-sm text-gray-light">Trust in our secure platform and dependable information.</p>
@@ -69,7 +69,7 @@ const AboutSection: React.FC = () => {
             Join thousands of travelers who rely on ASAP Tracker for their journey planning and real-time updates.
           </p>
           <a href="https://app.asaptraker.com" target="_blank" rel="noopener noreferrer">
-            <Button className="bg-purple hover:bg-purple-600 text-white purple-glow">
+            <Button className="bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000] transition-all">
               Sign Up for Free
             </Button>
           </a>

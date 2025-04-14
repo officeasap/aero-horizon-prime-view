@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,30 +11,30 @@
     --background: 0 0% 4%;
     --foreground: 0 0% 100%;
 
-    --card: 0 0% 7%;
+    --card: 0 0% 16.8%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 7%;
+    --popover: 0 0% 16.8%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 341 100% 65%;
+    --primary: 0 100% 27.1%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 7%;
+    --secondary: 0 0% 16.8%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 0 0% 7%;
+    --muted: 0 0% 16.8%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 341 100% 65%;
+    --accent: 0 100% 27.1%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 16.5%;
-    --input: 0 0% 7%;
-    --ring: 341 100% 65%;
+    --input: 0 0% 16.8%;
+    --ring: 0 100% 27.1%;
 
     --radius: 0.5rem;
   }
@@ -58,7 +59,7 @@
   }
 
   h4, h5, h6 {
-    @apply text-red;
+    @apply text-[#8B0000];
   }
 }
 
@@ -92,25 +93,25 @@
   }
 
   .code-background {
-    @apply bg-gray-dark text-red;
+    @apply bg-[#2B2B2B] text-[#8B0000];
   }
   
   .rating-circle-red {
-    @apply bg-red-600 border-2 border-black;
+    @apply bg-[#8B0000] border-2 border-black;
   }
   
   .rating-circle-orange {
-    @apply bg-red border-2 border-black;
+    @apply bg-[#A80000] border-2 border-black;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-panel/80 backdrop-blur-md border-2 border-red rounded-2xl shadow-lg text-left;
+    @apply bg-[#2B2B2B]/80 backdrop-blur-md border-2 border-[#8B0000] rounded-2xl shadow-lg text-left;
   }
 
   .red-glow {
-    @apply hover:shadow-[0_0_15px_rgba(255,79,129,0.6)] transition-shadow duration-300;
+    @apply hover:shadow-[0_0_8px_#A80000] transition-shadow duration-300;
   }
   
   .text-glow {
@@ -138,31 +139,31 @@
   }
 
   .accent-border {
-    @apply border-2 border-red;
+    @apply border-2 border-[#8B0000];
   }
   
   .accent-panel {
-    @apply bg-panel/90 backdrop-blur-sm border-2 border-red rounded-lg shadow-md text-left;
+    @apply bg-[#2B2B2B]/90 backdrop-blur-sm border-2 border-[#8B0000] rounded-lg shadow-md text-left;
   }
   
   .nav-item {
-    @apply px-3 py-1.5 text-xs font-medium text-white bg-red border-2 border-red rounded-[10px] hover:bg-red-600 hover:text-white transition-all duration-200 flex items-center gap-2 red-glow;
+    @apply px-3 py-1.5 text-xs font-medium text-white bg-[#8B0000] border-2 border-[#8B0000] rounded-[10px] hover:bg-[#A80000] hover:text-white transition-all duration-200 flex items-center gap-2 red-glow;
   }
   
   .nav-item.active {
-    @apply border-2 border-red bg-red-600 text-white;
+    @apply border-2 border-[#8B0000] bg-[#A80000] text-white;
   }
 
   .play-button {
-    @apply text-red hover:text-red/80 transition-colors;
+    @apply text-[#8B0000] hover:text-[#A80000]/80 transition-colors;
   }
   
   .color-palette-icon {
-    @apply text-red hover:text-red/80 transition-colors;
+    @apply text-[#8B0000] hover:text-[#A80000]/80 transition-colors;
   }
   
   .code-icon {
-    @apply bg-gray-dark text-red;
+    @apply bg-[#2B2B2B] text-[#8B0000];
   }
 }
 

@@ -1,5 +1,4 @@
 
-
 #root {
   width: 100%;
   margin: 0 auto;
@@ -14,10 +13,10 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #FF4F81aa);
+  filter: drop-shadow(0 0 2em #A80000aa);
 }
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #FF4F81aa);
+  filter: drop-shadow(0 0 2em #A80000aa);
 }
 
 @keyframes logo-spin {
@@ -37,18 +36,18 @@
 
 .card {
   padding: 2em;
-  background-color: #121212;
-  border: 2px solid #FF4F81;
+  background-color: #2B2B2B;
+  border: 2px solid #8B0000;
   text-align: left;
 }
 
 .read-the-docs {
-  color: #FF4F81;
+  color: #8B0000;
 }
 
 /* Rating circles */
 .rating-3-8 {
-  background-color: #DB2A5E;
+  background-color: #8B0000;
   border: 3px solid #000000;
   border-radius: 50%;
   color: white;
@@ -59,7 +58,7 @@
 }
 
 .rating-4-7 {
-  background-color: #FF4F81;
+  background-color: #A80000;
   border: 3px solid #000000;
   border-radius: 50%;
   color: white;
@@ -71,23 +70,27 @@
 
 /* Play button styling */
 .play-button-icon {
-  color: #FF4F81;
+  color: #8B0000;
 }
 
 /* Code styling */
 .code-container {
-  background-color: #121212;
+  background-color: #2B2B2B;
   border-radius: 8px;
   padding: 16px;
-  border: 2px solid #FF4F81;
+  border: 2px solid #8B0000;
   text-align: left;
 }
 
 .code-text {
-  color: #FF4F81;
+  color: #8B0000;
 }
 
 .code-text-secondary {
-  color: #DB2A5E;
+  color: #A80000;
 }
 
+/* Replace purple-glow with red-glow */
+.red-glow {
+  box-shadow: 0 0 8px #A80000;
+}
