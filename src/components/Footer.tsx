@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Facebook, 
@@ -27,17 +26,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Column 1 - About */}
           <div className="text-left">
-            <a href="/" className="flex items-center mb-6">
-              <img 
-                src="/lovable-uploads/28f1aa86-908f-4a07-837d-7a69fa78941c.png" 
-                alt="ASAP Tracker Logo" 
-                className="h-10 mr-3" 
-              />
+            <div className="flex items-center mb-6">
               <div className="text-xl font-bold font-space tracking-wider">
                 <span className="text-[#8B0000]">ASAP</span>
                 <span className="text-white ml-2">TRACKER</span>
               </div>
-            </a>
+            </div>
             <p className="text-white mb-6 text-sm">
               Comprehensive flight tracking and monitoring solutions for travelers, aviation professionals, and businesses.
             </p>
