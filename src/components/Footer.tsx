@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Facebook, 
@@ -13,7 +14,8 @@ import {
   Info, 
   AlertTriangle, 
   Clock, 
-  Cloud 
+  Cloud,
+  Award
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +29,7 @@ const Footer = () => {
           {/* Column 1 - About */}
           <div className="text-left">
             <div className="flex items-center mb-6">
+              <Award className="text-[#8B0000] mr-2" size={24} strokeWidth={2} />
               <div className="text-xl font-bold font-space tracking-wider">
                 <span className="text-[#8B0000]">ASAP</span>
                 <span className="text-white ml-2">TRACKER</span>
