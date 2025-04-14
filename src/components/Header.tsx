@@ -64,8 +64,8 @@ const Header = () => {
             className="text-[#8B0000] mr-2" 
             size={28} 
             strokeWidth={2} 
-            color="#8B0000"  // Dark red for the outer part
-            stroke="#FFFFFF"  // White for the needle/inner lines
+            color="#8B0000"
+            stroke="#FFFFFF"
           />
           ASAP<span className="text-[#8B0000]">Tracker</span>
         </Link>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Facebook, 
@@ -32,8 +33,8 @@ const Footer = () => {
                 className="text-[#8B0000] mr-2" 
                 size={24} 
                 strokeWidth={2} 
-                color="#8B0000"  // Dark red for the outer part
-                stroke="#FFFFFF"  // White for the needle/inner lines
+                color="#8B0000"
+                stroke="#FFFFFF"
               />
               <div className="text-xl font-bold font-space tracking-wider">
                 <span className="text-[#8B0000]">ASAP</span>
