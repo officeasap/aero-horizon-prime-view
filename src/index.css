@@ -11,30 +11,30 @@
     --background: 0 0% 10%;
     --foreground: 0 0% 100%;
 
-    --card: 0 0% 15%;
+    --card: 240 33% 24%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 15%;
+    --popover: 240 33% 24%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 270 100% 67%;
+    --primary: 300 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 17%;
+    --secondary: 240 33% 24%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 0 0% 20%;
+    --muted: 240 33% 24%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 270 100% 67%;
+    --accent: 300 100% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 100% 67%;
-    --input: 0 0% 20%;
-    --ring: 270 100% 67%;
+    --border: 300 100% 50%;
+    --input: 240 33% 24%;
+    --ring: 300 100% 50%;
 
     --radius: 1rem;
   }
@@ -52,6 +52,14 @@
 
   html {
     @apply scroll-smooth;
+  }
+
+  h1, h2, h3 {
+    @apply text-white;
+  }
+
+  h4, h5, h6 {
+    @apply text-pink;
   }
 }
 
@@ -83,15 +91,27 @@
   .content-overlay {
     @apply relative z-20;
   }
+
+  .code-background {
+    @apply bg-gray-dark text-pink;
+  }
+  
+  .rating-circle-purple {
+    @apply bg-purple border-2 border-black;
+  }
+  
+  .rating-circle-orange {
+    @apply bg-orangered border-2 border-black;
+  }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-panel/80 backdrop-blur-md border border-purple/20 rounded-2xl shadow-lg;
+    @apply bg-panel/80 backdrop-blur-md border border-pink/20 rounded-2xl shadow-lg;
   }
 
   .purple-glow {
-    @apply hover:shadow-[0_0_15px_rgba(162,89,255,0.6)] transition-shadow duration-300;
+    @apply hover:shadow-[0_0_15px_rgba(255,0,255,0.6)] transition-shadow duration-300;
   }
   
   .text-glow {
@@ -119,19 +139,31 @@
   }
 
   .accent-border {
-    @apply border border-purple/30;
+    @apply border border-pink/30;
   }
   
   .accent-panel {
-    @apply bg-panel/90 backdrop-blur-sm border border-purple/30 rounded-lg shadow-md;
+    @apply bg-panel/90 backdrop-blur-sm border border-pink/30 rounded-lg shadow-md;
   }
   
   .nav-item {
-    @apply px-3 py-1.5 text-xs font-medium text-white border border-transparent hover:border-purple rounded-full hover:text-purple transition-all duration-200 flex items-center gap-2 purple-glow;
+    @apply px-3 py-1.5 text-xs font-medium text-white border border-transparent hover:border-pink rounded-full hover:text-pink transition-all duration-200 flex items-center gap-2 purple-glow;
   }
   
   .nav-item.active {
-    @apply border-purple text-purple;
+    @apply border-pink text-pink;
+  }
+
+  .play-button {
+    @apply text-orangered hover:text-orangered/80 transition-colors;
+  }
+  
+  .color-palette-icon {
+    @apply text-orangered hover:text-pink transition-colors;
+  }
+  
+  .code-icon {
+    @apply bg-gray-dark text-orangered;
   }
 }
 

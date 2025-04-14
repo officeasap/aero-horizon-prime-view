@@ -63,10 +63,10 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom colors for our flight services site
-				dark: '#1A1A1A',
+				// Custom colors for our flight services site - UPDATED
+				dark: '#1E1E3F', // Updated from #1A1A1A to dark purple
 				purple: {
-					DEFAULT: '#A259FF',
+					DEFAULT: '#6A0DAD', // Updated from #A259FF to deeper purple
 					50: '#F3EAFF',
 					100: '#E6D5FF',
 					200: '#D1BAFF',
@@ -74,15 +74,25 @@ export default {
 					400: '#A259FF',
 					500: '#8A3DFF',
 					600: '#7222FF',
-					700: '#5A00FF',
+					700: '#6A0DAD', // Added the new deeper purple
 					800: '#4700CC',
 					900: '#350099',
 				},
-				gray: {
-					light: '#B3B3B3',
-					dark: '#2A2A2A'
+				pink: {
+					DEFAULT: '#FF00FF', // Added bright pink for subheadings
+					light: '#FF66FF',
+					dark: '#CC00CC',
 				},
-				panel: 'rgba(42, 42, 42, 0.7)',
+				orangered: {
+					DEFAULT: '#FF4500', // Added orange-red for specific elements
+					light: '#FF7244', 
+					dark: '#CC3700',
+				},
+				gray: {
+					light: '#FFFFFF', // Updated from #B3B3B3 to white
+					dark: '#2E2E4E'  // Updated from #2A2A2A to dark blue
+				},
+				panel: 'rgba(46, 46, 78, 0.7)', // Updated from rgba(42, 42, 42, 0.7) to dark blue
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -113,14 +123,14 @@ export default {
 					'100%': { transform: 'rotateX(0deg)' },
 				},
 				'text-glow': {
-					'0%': { textShadow: '0 0 4px rgba(162, 89, 255, 0.3)' },
-					'50%': { textShadow: '0 0 12px rgba(162, 89, 255, 0.6)' },
-					'100%': { textShadow: '0 0 4px rgba(162, 89, 255, 0.3)' },
+					'0%': { textShadow: '0 0 4px rgba(255, 0, 255, 0.3)' }, // Updated to match pink
+					'50%': { textShadow: '0 0 12px rgba(255, 0, 255, 0.6)' }, // Updated to match pink
+					'100%': { textShadow: '0 0 4px rgba(255, 0, 255, 0.3)' }, // Updated to match pink
 				},
 				'pulse-glow': {
-					'0%': { boxShadow: '0 0 0px rgba(162, 89, 255, 0.5)' },
-					'50%': { boxShadow: '0 0 15px rgba(162, 89, 255, 0.8)' },
-					'100%': { boxShadow: '0 0 0px rgba(162, 89, 255, 0.5)' },
+					'0%': { boxShadow: '0 0 0px rgba(255, 0, 255, 0.5)' }, // Updated to match pink
+					'50%': { boxShadow: '0 0 15px rgba(255, 0, 255, 0.8)' }, // Updated to match pink
+					'100%': { boxShadow: '0 0 0px rgba(255, 0, 255, 0.5)' }, // Updated to match pink
 				},
 			},
 			animation: {
