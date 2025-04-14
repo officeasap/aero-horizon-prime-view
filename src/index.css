@@ -147,11 +147,11 @@
   }
   
   .nav-item {
-    @apply px-3 py-1.5 text-xs font-medium text-white bg-[#8B0000] border-2 border-[#8B0000] rounded-[10px] hover:bg-[#A80000] hover:text-white transition-all duration-200 flex items-center gap-2 red-glow;
+    @apply px-3 py-1.5 text-xs font-medium text-white bg-[#8B0000] border-2 border-[#8B0000] rounded-[14px] hover:bg-[#A80000] hover:text-white hover:shadow-[0_0_8px_#A80000] transition-all duration-200 flex items-center gap-2;
   }
   
   .nav-item.active {
-    @apply border-2 border-[#8B0000] bg-[#A80000] text-white;
+    @apply border-2 border-[#8B0000] bg-[#A80000] text-white shadow-[0_0_8px_#A80000];
   }
 
   .play-button {

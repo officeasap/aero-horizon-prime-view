@@ -90,7 +90,32 @@
   color: #A80000;
 }
 
-/* Replace purple-glow with red-glow */
+/* Red glow effect */
 .red-glow {
+  box-shadow: 0 0 8px #A80000;
+}
+
+/* Button and menu item styling */
+.menu-item, .button {
+  background-color: #8B0000;
+  color: white;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.menu-item:hover, .button:hover {
+  background-color: #A80000;
+  box-shadow: 0 0 8px #A80000;
+}
+
+.nav-item {
+  background-color: #8B0000;
+  color: white;
+  border-radius: 14px;
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  background-color: #A80000;
   box-shadow: 0 0 8px #A80000;
 }

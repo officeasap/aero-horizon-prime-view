@@ -57,16 +57,16 @@ const Header = () => {
     >
       <div className={cn(
         "container flex items-center justify-between",
-        isScrolled ? "bg-dark/90 backdrop-blur-md border-b border-red/20" : "bg-dark",
+        isScrolled ? "bg-dark/90 backdrop-blur-md border-b border-[#8B0000]/20" : "bg-dark",
         isMobile ? "py-3 px-4" : "py-4 px-4"
       )}>
         <Link to="/" className="flex items-center font-bold font-space text-xl md:text-2xl text-white mr-8">
-          ASAP<span className="text-red">Tracker</span>
+          ASAP<span className="text-[#8B0000]">Tracker</span>
         </Link>
 
         {/* Mobile Menu Button */}
         {isMobile && (
-          <Button variant="ghost" size="icon" onClick={toggleMenu} className="lg:hidden text-white hover:text-red hover:bg-red/10">
+          <Button variant="ghost" size="icon" onClick={toggleMenu} className="lg:hidden text-white hover:text-[#8B0000] hover:bg-[#8B0000]/10">
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         )}
@@ -74,7 +74,7 @@ const Header = () => {
         {/* Navigation Links */}
         <nav className={cn(
           "lg:flex items-center gap-2 flex-grow justify-center",
-          isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-4 z-50 border-r border-red/20",
+          isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-4 z-50 border-r border-[#8B0000]/20",
           isMenuOpen ? "flex" : "hidden"
         )}>
           <div className={cn(
@@ -86,8 +86,8 @@ const Header = () => {
                 key={link.name}
                 to={link.path}
                 className={cn(
-                  "flex items-center justify-center gap-1.5 text-sm font-medium text-white bg-red transition-all duration-200 border border-red rounded-[10px] px-3 py-1.5 hover:bg-red-600 red-glow",
-                  location.pathname === link.path ? "border-red bg-red-600" : ""
+                  "flex items-center justify-center gap-1.5 text-sm font-medium text-white bg-[#8B0000] transition-all duration-200 border border-[#8B0000] rounded-[14px] px-3 py-1.5 hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]",
+                  location.pathname === link.path ? "border-[#8B0000] bg-[#A80000] shadow-[0_0_8px_#A80000]" : ""
                 )}
                 onClick={closeMenu}
               >
@@ -97,13 +97,6 @@ const Header = () => {
             ))}
           </div>
         </nav>
-
-        {/* Mobile Menu Items - Subscribe button has been removed as requested previously */}
-        {isMobile && isMenuOpen && (
-          <div className="fixed bottom-8 left-8 right-8 flex flex-col gap-4">
-            {/* The Subscribe button has been removed here as requested previously */}
-          </div>
-        )}
       </div>
     </header>
   );
