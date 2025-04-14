@@ -66,17 +66,17 @@ export default {
 				// Custom colors for BPM Supreme style theme
 				dark: '#0A0A0A', // Deep black background
 				red: {
-					DEFAULT: '#FF0000', // Bright red
+					DEFAULT: '#FF4F81', // New coral-pink color
 					50: '#FFEEEE',
 					100: '#FFCCCC',
 					200: '#FF9999',
 					300: '#FF6666',
 					400: '#FF3333',
-					500: '#FF0000', // Bright red
-					600: '#CC0000', // Darker red for hover
-					700: '#990000', // Deep red for gradient end
-					800: '#660000',
-					900: '#330000',
+					500: '#FF4F81', // New coral-pink color
+					600: '#FF2D6A', // Darker coral-pink for hover
+					700: '#DB2A5E', // Deep coral-pink for gradient end
+					800: '#B02450',
+					900: '#8C1D40',
 				},
 				gray: {
 					light: '#B3B3B3', // Secondary text

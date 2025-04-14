@@ -1,4 +1,5 @@
 
+
 #root {
   width: 100%;
   margin: 0 auto;
@@ -13,10 +14,10 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #FF0000aa);
+  filter: drop-shadow(0 0 2em #FF4F81aa);
 }
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #FF0000aa);
+  filter: drop-shadow(0 0 2em #FF4F81aa);
 }
 
 @keyframes logo-spin {
@@ -37,17 +38,17 @@
 .card {
   padding: 2em;
   background-color: #121212;
-  border: 2px solid #FF0000;
+  border: 2px solid #FF4F81;
   text-align: left;
 }
 
 .read-the-docs {
-  color: #FF0000;
+  color: #FF4F81;
 }
 
 /* Rating circles */
 .rating-3-8 {
-  background-color: #CC0000;
+  background-color: #DB2A5E;
   border: 3px solid #000000;
   border-radius: 50%;
   color: white;
@@ -58,7 +59,7 @@
 }
 
 .rating-4-7 {
-  background-color: #FF0000;
+  background-color: #FF4F81;
   border: 3px solid #000000;
   border-radius: 50%;
   color: white;
@@ -70,7 +71,7 @@
 
 /* Play button styling */
 .play-button-icon {
-  color: #FF0000;
+  color: #FF4F81;
 }
 
 /* Code styling */
@@ -78,14 +79,15 @@
   background-color: #121212;
   border-radius: 8px;
   padding: 16px;
-  border: 2px solid #FF0000;
+  border: 2px solid #FF4F81;
   text-align: left;
 }
 
 .code-text {
-  color: #FF0000;
+  color: #FF4F81;
 }
 
 .code-text-secondary {
-  color: #CC0000;
+  color: #DB2A5E;
 }
+

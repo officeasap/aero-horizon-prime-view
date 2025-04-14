@@ -86,7 +86,7 @@ const Header = () => {
                 key={link.name}
                 to={link.path}
                 className={cn(
-                  "flex items-center justify-center gap-1.5 text-sm font-medium text-white bg-red transition-all duration-200 border border-red rounded-full px-3 py-1.5 hover:bg-red-600 red-glow",
+                  "flex items-center justify-center gap-1.5 text-sm font-medium text-white bg-red transition-all duration-200 border border-red rounded-[10px] px-3 py-1.5 hover:bg-red-600 red-glow",
                   location.pathname === link.path ? "border-red bg-red-600" : ""
                 )}
                 onClick={closeMenu}
