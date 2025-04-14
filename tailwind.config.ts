@@ -63,36 +63,26 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom colors for our flight services site - UPDATED
-				dark: '#1E1E3F', // Updated from #1A1A1A to dark purple
-				purple: {
-					DEFAULT: '#6A0DAD', // Updated from #A259FF to deeper purple
-					50: '#F3EAFF',
-					100: '#E6D5FF',
-					200: '#D1BAFF',
-					300: '#BD9FFF',
-					400: '#A259FF',
-					500: '#8A3DFF',
-					600: '#7222FF',
-					700: '#6A0DAD', // Added the new deeper purple
-					800: '#4700CC',
-					900: '#350099',
-				},
-				pink: {
-					DEFAULT: '#FF00FF', // Added bright pink for subheadings
-					light: '#FF66FF',
-					dark: '#CC00CC',
-				},
-				orangered: {
-					DEFAULT: '#FF4500', // Added orange-red for specific elements
-					light: '#FF7244', 
-					dark: '#CC3700',
+				// Custom colors for BPM Supreme style theme
+				dark: '#0A0A0A', // Deep black background
+				red: {
+					DEFAULT: '#FF0000', // Bright red
+					50: '#FFEEEE',
+					100: '#FFCCCC',
+					200: '#FF9999',
+					300: '#FF6666',
+					400: '#FF3333',
+					500: '#FF0000', // Bright red
+					600: '#CC0000', // Darker red for hover
+					700: '#990000', // Deep red for gradient end
+					800: '#660000',
+					900: '#330000',
 				},
 				gray: {
-					light: '#FFFFFF', // Updated from #B3B3B3 to white
-					dark: '#2E2E4E'  // Updated from #2A2A2A to dark blue
+					light: '#B3B3B3', // Secondary text
+					dark: '#121212'  // Card backgrounds
 				},
-				panel: 'rgba(46, 46, 78, 0.7)', // Updated from rgba(42, 42, 42, 0.7) to dark blue
+				panel: 'rgba(18, 18, 18, 0.7)', // Updated for dark gray panels
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -123,14 +113,14 @@ export default {
 					'100%': { transform: 'rotateX(0deg)' },
 				},
 				'text-glow': {
-					'0%': { textShadow: '0 0 4px rgba(255, 0, 255, 0.3)' }, // Updated to match pink
-					'50%': { textShadow: '0 0 12px rgba(255, 0, 255, 0.6)' }, // Updated to match pink
-					'100%': { textShadow: '0 0 4px rgba(255, 0, 255, 0.3)' }, // Updated to match pink
+					'0%': { textShadow: '0 0 4px rgba(255, 0, 0, 0.3)' }, // Updated to red
+					'50%': { textShadow: '0 0 12px rgba(255, 0, 0, 0.6)' }, // Updated to red
+					'100%': { textShadow: '0 0 4px rgba(255, 0, 0, 0.3)' }, // Updated to red
 				},
 				'pulse-glow': {
-					'0%': { boxShadow: '0 0 0px rgba(255, 0, 255, 0.5)' }, // Updated to match pink
-					'50%': { boxShadow: '0 0 15px rgba(255, 0, 255, 0.8)' }, // Updated to match pink
-					'100%': { boxShadow: '0 0 0px rgba(255, 0, 255, 0.5)' }, // Updated to match pink
+					'0%': { boxShadow: '0 0 0px rgba(255, 0, 0, 0.5)' }, // Updated to red
+					'50%': { boxShadow: '0 0 15px rgba(255, 0, 0, 0.8)' }, // Updated to red
+					'100%': { boxShadow: '0 0 0px rgba(255, 0, 0, 0.5)' }, // Updated to red
 				},
 			},
 			animation: {
@@ -144,6 +134,7 @@ export default {
 			},
 			backgroundImage: {
 				'radial-gradient': 'radial-gradient(circle at center, var(--tw-gradient-stops))',
+				'red-gradient': 'linear-gradient(to bottom, #FF0000, #990000)',
 			},
 		}
 	},

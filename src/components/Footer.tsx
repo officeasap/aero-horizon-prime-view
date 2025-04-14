@@ -18,7 +18,7 @@ const Footer = () => {
                 className="h-10 mr-3" 
               />
               <div className="text-xl font-bold font-space tracking-wider">
-                <span className="text-[#A259FF]">ASAP</span>
+                <span className="text-red">ASAP</span>
                 <span className="text-white ml-2">TRACKER</span>
               </div>
             </a>
@@ -26,16 +26,16 @@ const Footer = () => {
               Comprehensive flight tracking and monitoring solutions for travelers, aviation professionals, and businesses.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-light hover:text-purple transition-colors">
+              <a href="#" className="text-gray-light hover:text-red transition-colors">
                 <Facebook size={18} />
               </a>
-              <a href="#" className="text-gray-light hover:text-purple transition-colors">
+              <a href="#" className="text-gray-light hover:text-red transition-colors">
                 <Twitter size={18} />
               </a>
-              <a href="#" className="text-gray-light hover:text-purple transition-colors">
+              <a href="#" className="text-gray-light hover:text-red transition-colors">
                 <Instagram size={18} />
               </a>
-              <a href="#" className="text-gray-light hover:text-purple transition-colors">
+              <a href="#" className="text-gray-light hover:text-red transition-colors">
                 <Linkedin size={18} />
               </a>
             </div>
@@ -46,37 +46,37 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
             <ul className="space-y-3">
               <li>
-                <a href="/" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/" className="text-gray-light hover:text-red transition-colors text-sm">
                   Home
                 </a>
               </li>
               <li>
-                <a href="/flight-schedule" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/flight-schedule" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-red transition-colors text-sm">
                   Flight Schedule
                 </a>
               </li>
               <li>
-                <a href="/live-tracker" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/live-tracker" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-red transition-colors text-sm">
                   Live Flight Tracker
                 </a>
               </li>
               <li>
-                <a href="/flight-status" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/flight-status" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-red transition-colors text-sm">
                   Flight Status
                 </a>
               </li>
               <li>
-                <a href="/airports-airlines" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/airports-airlines" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-red transition-colors text-sm">
                   Airports & Airlines
                 </a>
               </li>
               <li>
-                <a href="/weather" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/weather" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-red transition-colors text-sm">
                   Global Weather
                 </a>
               </li>
               <li>
-                <a href="/world-clock" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <a href="/world-clock" target="_blank" rel="noopener noreferrer" className="text-gray-light hover:text-red transition-colors text-sm">
                   World Clock
                 </a>
               </li>
@@ -88,21 +88,21 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-6">Contact Us</h3>
             <ul className="space-y-4">
               <li className="flex items-start">
-                <MapPin size={18} className="text-purple mr-3 mt-1 flex-shrink-0" />
+                <MapPin size={18} className="text-red mr-3 mt-1 flex-shrink-0" />
                 <span className="text-gray-light text-sm">
                   JL DMC 1 NO 29 BEKASI<br />
                   Indonesia
                 </span>
               </li>
               <li className="flex items-center">
-                <Phone size={18} className="text-purple mr-3 flex-shrink-0" />
-                <a href="tel:+6281315679012" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <Phone size={18} className="text-red mr-3 flex-shrink-0" />
+                <a href="tel:+6281315679012" className="text-gray-light hover:text-red transition-colors text-sm">
                   +62 813 1567 9012
                 </a>
               </li>
               <li className="flex items-center">
-                <Mail size={18} className="text-purple mr-3 flex-shrink-0" />
-                <a href="mailto:info@asaptracker.com" className="text-gray-light hover:text-purple transition-colors text-sm">
+                <Mail size={18} className="text-red mr-3 flex-shrink-0" />
+                <a href="mailto:info@asaptracker.com" className="text-gray-light hover:text-red transition-colors text-sm">
                   info@asaptracker.com
                 </a>
               </li>
@@ -119,10 +119,10 @@ const Footer = () => {
               <Input 
                 type="email" 
                 placeholder="Your email" 
-                className="bg-dark border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
+                className="bg-dark border-gray-dark text-white placeholder:text-gray-light focus:border-red"
               />
               <a href="https://app.asaptracker.com/subscribe" target="_blank" rel="noopener noreferrer">
-                <Button className="bg-purple hover:bg-purple-600 text-white purple-glow w-full">
+                <Button className="bg-red hover:bg-red-600 text-white red-glow w-full">
                   Subscribe
                 </Button>
               </a>
@@ -136,13 +136,13 @@ const Footer = () => {
               © 2025 ASAP Tracker. All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">
+              <a href="#" className="text-gray-light hover:text-red transition-colors text-sm">
                 Privacy Policy
               </a>
-              <a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">
+              <a href="#" className="text-gray-light hover:text-red transition-colors text-sm">
                 Terms of Service
               </a>
-              <a href="#" className="text-gray-light hover:text-purple transition-colors text-sm">
+              <a href="#" className="text-gray-light hover:text-red transition-colors text-sm">
                 Cookie Policy
               </a>
             </div>

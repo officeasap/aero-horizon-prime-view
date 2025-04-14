@@ -19,9 +19,10 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        contact: "bg-dark hover:bg-dark/80 text-white border border-pink rounded-full",
-        subscribe: "bg-pink hover:bg-pink/90 text-white rounded-full",
-        nav: "bg-transparent border border-pink/80 text-white hover:text-pink rounded-full purple-glow",
+        contact: "bg-dark hover:bg-dark/80 text-white border border-red rounded-full",
+        subscribe: "bg-red hover:bg-red/90 text-white rounded-full",
+        nav: "bg-transparent border border-red/80 text-white hover:text-red rounded-full red-glow",
+        redGradient: "bg-red-gradient text-white hover:opacity-90 rounded-full",
       },
       size: {
         default: "h-10 px-4 py-2",
