@@ -30,7 +30,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// African country codes for highlighting
 const africanCountryCodes = [
   "DZ", "AO", "BJ", "BW", "BF", "BI", "CM", "CV", "CF", "TD", "KM", "CG", "CD", 
   "DJ", "EG", "GQ", "ER", "ET", "GA", "GM", "GH", "GN", "GW", "CI", "KE", "LS", 
@@ -54,12 +53,10 @@ const AirportAirlineSearch: React.FC = () => {
   const [searchPerformed, setSearchPerformed] = useState(false);
   const itemsPerPage = 10;
 
-  // Load initial data
   useEffect(() => {
     loadInitialData();
   }, []);
-  
-  // Apply filters when search type or region changes
+
   useEffect(() => {
     applyFilters();
   }, [searchType, selectedRegion, airports, airlines]);
@@ -67,7 +64,6 @@ const AirportAirlineSearch: React.FC = () => {
   const loadInitialData = async () => {
     setIsInitialLoading(true);
     try {
-      // Load comprehensive data
       const airportData = await fetchComprehensiveAirports();
       const airlineData = await fetchComprehensiveAirlines();
       
@@ -84,7 +80,7 @@ const AirportAirlineSearch: React.FC = () => {
       setIsInitialLoading(false);
     }
   };
-  
+
   const refreshData = async () => {
     setIsRefreshing(true);
     try {
@@ -94,19 +90,17 @@ const AirportAirlineSearch: React.FC = () => {
       setIsRefreshing(false);
     }
   };
-  
+
   const applyFilters = () => {
     if (searchType === 'airport') {
       let filtered = [...airports];
       
-      // Apply region filter if selected
       if (selectedRegion === 'africa') {
         filtered = filtered.filter(airport => 
           africanCountryCodes.includes(airport.country_code)
         );
       }
       
-      // Apply search term if available
       if (searchTerm) {
         filtered = filtered.filter(airport => 
           (airport.name && airport.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -121,14 +115,12 @@ const AirportAirlineSearch: React.FC = () => {
     } else {
       let filtered = [...airlines];
       
-      // Apply region filter if selected
       if (selectedRegion === 'africa') {
         filtered = filtered.filter(airline => 
           africanCountryCodes.includes(airline.country_code || '')
         );
       }
       
-      // Apply search term if available
       if (searchTerm) {
         filtered = filtered.filter(airline => 
           (airline.name && airline.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -144,7 +136,6 @@ const AirportAirlineSearch: React.FC = () => {
   };
 
   const checkForIATACode = async () => {
-    // Check if the search term matches IATA code format (3 letters)
     const formattedSearch = searchTerm.trim().toUpperCase();
     if (/^[A-Z]{3}$/.test(formattedSearch) && searchType === 'airport') {
       setIsLoading(true);
@@ -157,9 +148,13 @@ const AirportAirlineSearch: React.FC = () => {
           setDisplayedAirports([airport]);
           toast.success(`Found airport with IATA code ${formattedSearch}`);
           return true;
+        } else {
+          console.error(`No airport found for IATA code: ${formattedSearch}`);
+          toast.error(`No airport found with IATA code "${formattedSearch}"`);
         }
       } catch (error) {
         console.error(`Error fetching IATA code ${formattedSearch}:`, error);
+        toast.error(`Error searching for IATA code "${formattedSearch}"`);
       } finally {
         setIsLoading(false);
       }
@@ -177,11 +172,9 @@ const AirportAirlineSearch: React.FC = () => {
     setSearchPerformed(true);
     
     try {
-      // First check if it's an IATA code search
       const isIATAFound = await checkForIATACode();
       
       if (!isIATAFound) {
-        // If not an IATA code or no results found, do regular filtering
         applyFilters();
       }
       
@@ -214,20 +207,18 @@ const AirportAirlineSearch: React.FC = () => {
     setSelectedItem(item);
     toast.success(`Selected ${searchType}: ${item.name}`);
   };
-  
+
   const handleRegionSelect = (region: string) => {
     setSelectedRegion(region);
   };
-  
+
   const showMoreResults = () => {
     if (searchType === 'airport') {
       const filteredAirports = airports.filter(airport => {
-        // Apply region filter
         if (selectedRegion === 'africa' && !africanCountryCodes.includes(airport.country_code)) {
           return false;
         }
         
-        // Apply search term filter
         if (searchTerm) {
           return (
             (airport.name && airport.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -244,12 +235,10 @@ const AirportAirlineSearch: React.FC = () => {
       setDisplayedAirports(filteredAirports.slice(0, displayedAirports.length + itemsPerPage));
     } else {
       const filteredAirlines = airlines.filter(airline => {
-        // Apply region filter
         if (selectedRegion === 'africa' && !africanCountryCodes.includes(airline.country_code || '')) {
           return false;
         }
         
-        // Apply search term filter
         if (searchTerm) {
           return (
             (airline.name && airline.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -383,8 +372,6 @@ const AirportAirlineSearch: React.FC = () => {
               <MapPin className="h-3.5 w-3.5 mr-1" />
               Africa
             </Button>
-            
-            {/* More region buttons could be added here */}
           </div>
           
           {isInitialLoading ? (
@@ -585,7 +572,6 @@ const AirportAirlineSearch: React.FC = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {'lat' in selectedItem ? (
-                // Airport details
                 <>
                   <div className="bg-white/5 p-4 rounded-lg">
                     <h4 className="text-sm text-gray-light mb-2">Identification</h4>
@@ -653,7 +639,6 @@ const AirportAirlineSearch: React.FC = () => {
                   </div>
                 </>
               ) : (
-                // Airline details
                 <>
                   <div className="bg-white/5 p-4 rounded-lg">
                     <h4 className="text-sm text-gray-light mb-2">Identification</h4>

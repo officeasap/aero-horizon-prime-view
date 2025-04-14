@@ -235,6 +235,7 @@ const fetchWithCache = async (endpoint: string, params: Record<string, string> =
   }
   
   try {
+    console.log(`Fetching from API: ${url}`);
     const response = await fetch(url);
     
     if (!response.ok) {
@@ -242,6 +243,7 @@ const fetchWithCache = async (endpoint: string, params: Record<string, string> =
     }
     
     const data = await response.json();
+    console.log(`API Response for ${endpoint}:`, data);
     
     if (data.error) {
       throw new Error(data.error.message || "Unknown API error");
@@ -293,6 +295,8 @@ export async function fetchAirports(params: Record<string, string> = {}) {
       params.iata_code = params.iata_code.trim().toUpperCase();
       console.log(`Fetching airport by IATA code: ${params.iata_code}`);
       const data = await fetchWithCache("airports", params);
+      
+      console.log(`Result for IATA code ${params.iata_code}:`, data);
       
       if (Array.isArray(data) && data.length > 0) {
         return data as Airport[];
@@ -781,11 +785,36 @@ export async function fetchAirportByIATA(iataCode: string): Promise<Airport | nu
   
   try {
     console.log(`Fetching airport by IATA code: ${formattedCode}`);
+    
+    // First try a direct API call to ensure freshest data
+    const response = await fetch(`${BASE_URL}/airports?api_key=${API_KEY}&iata_code=${formattedCode}`);
+    const data = await response.json();
+    
+    console.log(`Direct API response for IATA ${formattedCode}:`, data);
+    
+    if (data.response && Array.isArray(data.response) && data.response.length > 0) {
+      console.log(`Found airport for IATA ${formattedCode} from direct API call:`, data.response[0]);
+      return data.response[0] as Airport;
+    }
+    
+    // If direct call fails, try cached approach
     const airports = await fetchAirports({ iata_code: formattedCode });
     
     if (airports && airports.length > 0) {
-      console.log(`Found airport for IATA ${formattedCode}:`, airports[0]);
+      console.log(`Found airport for IATA ${formattedCode} from cache:`, airports[0]);
       return airports[0];
+    }
+    
+    // If that fails too, try to find in the comprehensive cache
+    if (airportCache.isComprehensive) {
+      const cachedAirport = airportCache.data.find(airport => 
+        airport.iata_code && airport.iata_code.toUpperCase() === formattedCode
+      );
+      
+      if (cachedAirport) {
+        console.log(`Found airport for IATA ${formattedCode} in comprehensive cache:`, cachedAirport);
+        return cachedAirport;
+      }
     }
     
     console.log(`No airport found for IATA code: ${formattedCode}`);

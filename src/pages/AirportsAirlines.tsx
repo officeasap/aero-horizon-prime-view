@@ -198,9 +198,13 @@ const AirportsAirlines = () => {
           setFilteredAirports([airport]);
           toast.success(`Found airport with IATA code ${formattedSearch}`);
           return true;
+        } else {
+          console.error(`No airport found for IATA code: ${formattedSearch}`);
+          toast.error(`No airport found with IATA code "${formattedSearch}"`);
         }
       } catch (error) {
         console.error(`Error fetching IATA code ${formattedSearch}:`, error);
+        toast.error(`Error searching for IATA code "${formattedSearch}"`);
       } finally {
         setLoading(false);
       }
@@ -672,4 +676,3 @@ const AirportsAirlines = () => {
 };
 
 export default AirportsAirlines;
-
