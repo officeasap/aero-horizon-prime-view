@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone, Clock, Radar } from 'lucide-react';
@@ -62,11 +61,11 @@ const Header = () => {
       )}>
         <Link to="/" className="flex items-center font-bold font-space text-xl md:text-2xl text-white mr-8">
           <Radar 
-            className="text-[#8B0000] mr-2" 
+            className="mr-2" 
             size={28} 
             strokeWidth={2} 
-            color="#8B0000"
-            stroke="#FFFFFF"
+            color="#8B0000"  // Dark red color
+            stroke="#8B0000"  // Dark red stroke
           />
           ASAP<span className="text-[#8B0000]">Tracker</span>
         </Link>
