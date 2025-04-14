@@ -33,7 +33,7 @@ const Footer = () => {
                 size={24} 
                 strokeWidth={2} 
                 color="#8B0000"  // Dark red for the outer part
-                strokeColor="#FFFFFF"  // White for the needle/inner lines
+                stroke="#FFFFFF"  // White for the needle/inner lines
               />
               <div className="text-xl font-bold font-space tracking-wider">
                 <span className="text-[#8B0000]">ASAP</span>
