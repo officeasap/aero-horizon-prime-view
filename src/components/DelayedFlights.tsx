@@ -160,19 +160,6 @@ const DelayedFlights: React.FC = () => {
           </p>
           
           <div className="flex gap-2 flex-wrap">
-            <Button
-              variant={selectedReason === null ? 'default' : 'outline'}
-              size="sm"
-              className={cn(
-                selectedReason === null 
-                  ? "bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" 
-                  : "bg-transparent border-gray-light text-gray-light hover:text-white"
-              )}
-              onClick={() => handleFilterClick(null)}
-            >
-              All
-            </Button>
-            
             {reasons.map(reason => (
               <Button
                 key={reason}
