@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -391,7 +392,7 @@ const AirportsAirlines = () => {
                 size="sm"
                 onClick={() => handleRegionSelect('')}
                 className={cn(
-                  selectedRegion === '' ? "bg-purple hover:bg-purple-600" : "bg-transparent border-gray-600 hover:bg-white/5"
+                  selectedRegion === '' ? "bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" : "bg-transparent border-gray-600 hover:bg-white/5"
                 )}
               >
                 All Regions
@@ -402,7 +403,7 @@ const AirportsAirlines = () => {
                 size="sm"
                 onClick={() => handleRegionSelect('africa')}
                 className={cn(
-                  selectedRegion === 'africa' ? "bg-purple hover:bg-purple-600" : "bg-transparent border-gray-600 hover:bg-white/5"
+                  selectedRegion === 'africa' ? "bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" : "bg-transparent border-gray-600 hover:bg-white/5"
                 )}
               >
                 <MapPin className="h-3.5 w-3.5 mr-1" />
@@ -416,7 +417,7 @@ const AirportsAirlines = () => {
                   size="sm"
                   onClick={() => handleRegionSelect(region.code)}
                   className={cn(
-                    selectedRegion === region.code ? "bg-purple hover:bg-purple-600" : "bg-transparent border-gray-600 hover:bg-white/5"
+                    selectedRegion === region.code ? "bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" : "bg-transparent border-gray-600 hover:bg-white/5"
                   )}
                 >
                   {region.name}
@@ -598,7 +599,7 @@ const AirportsAirlines = () => {
             {(activeTab === 'airports' && hasMoreAirports) || 
              (activeTab === 'airlines' && hasMoreAirlines) ? (
               <Button 
-                className="bg-purple hover:bg-purple-600 text-white purple-glow"
+                className="bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]"
                 onClick={loadMore}
                 disabled={loading}
               >

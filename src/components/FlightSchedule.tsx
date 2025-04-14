@@ -294,7 +294,7 @@ const FlightSchedule: React.FC = () => {
             size="sm"
             className={cn(
               searchMode === 'flight' 
-                ? "bg-purple hover:bg-purple-600 text-white" 
+                ? "bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" 
                 : "bg-transparent border-gray-light text-gray-light hover:text-white"
             )}
             onClick={() => setSearchMode('flight')}
@@ -306,7 +306,7 @@ const FlightSchedule: React.FC = () => {
             size="sm"
             className={cn(
               searchMode === 'route' 
-                ? "bg-purple hover:bg-purple-600 text-white" 
+                ? "bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" 
                 : "bg-transparent border-gray-light text-gray-light hover:text-white"
             )}
             onClick={() => setSearchMode('route')}
@@ -328,7 +328,7 @@ const FlightSchedule: React.FC = () => {
               onKeyDown={(e) => e.key === 'Enter' && handleFlightSearch()}
             />
             <Button 
-              className="bg-purple hover:bg-purple-600 text-white" 
+              className="bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" 
               onClick={handleFlightSearch}
               disabled={isLoading}
             >
@@ -493,7 +493,7 @@ const FlightSchedule: React.FC = () => {
 
       <div className="flex justify-end mt-4 px-4">
         <Button 
-          className="bg-purple hover:bg-purple-600 text-white purple-glow" 
+          className="bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" 
           onClick={fetchFlightData}
           disabled={isLoading}
         >

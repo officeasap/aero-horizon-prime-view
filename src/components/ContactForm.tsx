@@ -106,7 +106,7 @@ const ContactForm: React.FC = () => {
               
               <Button 
                 type="submit" 
-                className="w-full bg-purple hover:bg-purple-600 text-white purple-glow"
+                className="w-full bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000] rounded-[15px]"
                 disabled={loading}
               >
                 {loading ? (

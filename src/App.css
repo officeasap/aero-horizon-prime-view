@@ -99,7 +99,7 @@
 .menu-item, .button {
   background-color: #8B0000;
   color: white;
-  border-radius: 10px;
+  border-radius: 15px;
   transition: all 0.3s ease;
 }
 
@@ -111,7 +111,7 @@
 .nav-item {
   background-color: #8B0000;
   color: white;
-  border-radius: 14px;
+  border-radius: 15px;
   transition: all 0.3s ease;
 }
 
@@ -142,7 +142,7 @@
 .footer-subscribe-button {
   background-color: #8B0000;
   color: #FFFFFF;
-  border-radius: 14px;
+  border-radius: 15px;
   transition: all 0.3s ease;
 }
 
