@@ -165,7 +165,7 @@ const DelayedFlights: React.FC = () => {
               size="sm"
               className={cn(
                 selectedReason === null 
-                  ? "bg-purple hover:bg-purple-600 text-white" 
+                  ? "bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" 
                   : "bg-transparent border-gray-light text-gray-light hover:text-white"
               )}
               onClick={() => handleFilterClick(null)}
