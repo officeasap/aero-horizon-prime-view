@@ -10,16 +10,16 @@ import AboutSection from '@/components/AboutSection';
 
 const Index = () => {
   return (
-    <div className="min-h-screen text-white overflow-x-hidden relative">
+    <div className="min-h-screen text-white overflow-x-hidden relative w-full">
       <Header />
       
       {/* Hero Section with Video Background */}
-      <section id="hero" className="relative h-[80vh] flex items-center justify-center pt-16 pb-16">
+      <section id="hero" className="relative h-[80vh] flex items-center justify-center pt-16 pb-16 w-full">
         <VideoBackground />
         <BackgroundAircraft />
         
         {/* Content */}
-        <div className="container mx-auto px-4 relative z-10 content-overlay">
+        <div className="w-full px-8 relative z-10 content-overlay">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-space mb-4 animate-fade-in text-white">
               Real-Time <span className="text-red animate-text-glow">Flight Services</span>
@@ -52,8 +52,8 @@ const Index = () => {
       </section>
       
       {/* Features Section */}
-      <section className="py-12 relative z-10 bg-dark content-overlay">
-        <div className="container mx-auto px-4">
+      <section className="py-12 relative z-10 bg-dark content-overlay w-full">
+        <div className="w-full px-8 mx-auto">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-space mb-4">
@@ -66,7 +66,7 @@ const Index = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* Feature 1 */}
-              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300">
+              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300 border-2 border-[#2A2A2A]">
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <Calendar className="text-red h-7 w-7" />
                 </div>
@@ -83,7 +83,7 @@ const Index = () => {
               </div>
               
               {/* Feature 2 */}
-              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300">
+              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300 border-2 border-[#2A2A2A]">
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <Plane className="text-red h-7 w-7" />
                 </div>
@@ -100,7 +100,7 @@ const Index = () => {
               </div>
               
               {/* Feature 3 */}
-              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300">
+              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300 border-2 border-[#2A2A2A]">
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <AlertTriangle className="text-red h-7 w-7" />
                 </div>
@@ -117,7 +117,7 @@ const Index = () => {
               </div>
               
               {/* Feature 4 */}
-              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300">
+              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300 border-2 border-[#2A2A2A]">
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <MapPin className="text-red h-7 w-7" />
                 </div>
@@ -134,7 +134,7 @@ const Index = () => {
               </div>
               
               {/* Feature 5 */}
-              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300">
+              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300 border-2 border-[#2A2A2A]">
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <Cloud className="text-red h-7 w-7" />
                 </div>
@@ -151,7 +151,7 @@ const Index = () => {
               </div>
               
               {/* Feature 6 */}
-              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300">
+              <div className="glass-panel p-6 hover:bg-white/5 transition-all duration-300 border-2 border-[#2A2A2A]">
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <Clock className="text-red h-7 w-7" />
                 </div>

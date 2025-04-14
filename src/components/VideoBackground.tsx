@@ -12,7 +12,7 @@ const VideoBackground = () => {
   }, []);
 
   return (
-    <div className="video-container">
+    <div className="video-container w-full left-0 right-0">
       {/* Video Element */}
       <video
         ref={videoRef}
@@ -21,7 +21,7 @@ const VideoBackground = () => {
         muted
         playsInline
         id="homepage-video"
-        className="video-element"
+        className="video-element w-full"
       >
         <source
           src="https://res.cloudinary.com/daqofqxjr/video/upload/v1744425287/mzw7gebems1so9sjf9zi.mp4"
