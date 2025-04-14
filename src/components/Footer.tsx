@@ -95,7 +95,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/weather" target="_blank" rel="noopener noreferrer" className="text-white text-sm flex items-center gap-2 hover:text-white/80 transition-colors">
+                <a href="/global-weather" target="_blank" rel="noopener noreferrer" className="text-white text-sm flex items-center gap-2 hover:text-white/80 transition-colors">
                   <Cloud size={16} className="text-[#8B0000]" />
                   Global Weather
                 </a>

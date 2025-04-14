@@ -1,7 +1,7 @@
 
 import "./App.css";
 import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import WorldClock from "./pages/WorldClock";
 import GlobalWeather from "./pages/GlobalWeather";
@@ -32,6 +32,10 @@ const router = createBrowserRouter([
   {
     path: "/global-weather",
     element: <GlobalWeather />
+  },
+  {
+    path: "/weather",
+    element: <Navigate to="/global-weather" replace />
   },
   {
     path: "/flight-status",
