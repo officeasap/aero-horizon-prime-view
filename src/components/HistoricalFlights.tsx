@@ -116,11 +116,6 @@ const HistoricalFlights: React.FC = () => {
           <Button
             variant={filteredStatus === null ? "default" : "outline"}
             size="sm"
-            className={cn(
-              filteredStatus === null 
-                ? "bg-purple hover:bg-purple-600 text-white" 
-                : "bg-transparent border-gray-light text-gray-light hover:text-white"
-            )}
             onClick={() => filterFlightsByStatus(null)}
           >
             All
@@ -128,11 +123,6 @@ const HistoricalFlights: React.FC = () => {
           <Button
             variant={filteredStatus === "landed" ? "default" : "outline"}
             size="sm"
-            className={cn(
-              filteredStatus === "landed" 
-                ? "bg-green-600 hover:bg-green-700 text-white" 
-                : "bg-transparent border-gray-light text-gray-light hover:text-white"
-            )}
             onClick={() => filterFlightsByStatus("landed")}
           >
             Landed
@@ -140,11 +130,6 @@ const HistoricalFlights: React.FC = () => {
           <Button
             variant={filteredStatus === "delayed" ? "default" : "outline"}
             size="sm"
-            className={cn(
-              filteredStatus === "delayed" 
-                ? "bg-yellow-600 hover:bg-yellow-700 text-white" 
-                : "bg-transparent border-gray-light text-gray-light hover:text-white"
-            )}
             onClick={() => filterFlightsByStatus("delayed")}
           >
             Delayed
@@ -152,11 +137,6 @@ const HistoricalFlights: React.FC = () => {
           <Button
             variant={filteredStatus === "cancelled" ? "default" : "outline"}
             size="sm"
-            className={cn(
-              filteredStatus === "cancelled" 
-                ? "bg-red-600 hover:bg-red-700 text-white" 
-                : "bg-transparent border-gray-light text-gray-light hover:text-white"
-            )}
             onClick={() => filterFlightsByStatus("cancelled")}
           >
             Cancelled
@@ -238,8 +218,7 @@ const HistoricalFlights: React.FC = () => {
         
         <div className="flex gap-2">
           <Button 
-            variant="outline" 
-            className="bg-transparent border-gray-light text-gray-light hover:bg-white/10"
+            variant="default" 
             onClick={() => fetchHistoricalFlights("landed")}
             disabled={loading}
           >
@@ -247,8 +226,7 @@ const HistoricalFlights: React.FC = () => {
             Landed Flights
           </Button>
           <Button 
-            variant="outline" 
-            className="bg-transparent border-gray-light text-gray-light hover:bg-white/10"
+            variant="default" 
             onClick={() => fetchHistoricalFlights("delayed")}
             disabled={loading}
           >

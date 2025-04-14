@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -391,9 +390,6 @@ const AirportsAirlines = () => {
                 variant={selectedRegion === '' ? "default" : "outline"}
                 size="sm"
                 onClick={() => handleRegionSelect('')}
-                className={cn(
-                  selectedRegion === '' ? "bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" : "bg-transparent border-gray-600 hover:bg-white/5"
-                )}
               >
                 All Regions
               </Button>
@@ -402,9 +398,6 @@ const AirportsAirlines = () => {
                 variant={selectedRegion === 'africa' ? "default" : "outline"}
                 size="sm"
                 onClick={() => handleRegionSelect('africa')}
-                className={cn(
-                  selectedRegion === 'africa' ? "bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" : "bg-transparent border-gray-600 hover:bg-white/5"
-                )}
               >
                 <MapPin className="h-3.5 w-3.5 mr-1" />
                 Africa
@@ -416,9 +409,6 @@ const AirportsAirlines = () => {
                   variant={selectedRegion === region.code ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleRegionSelect(region.code)}
-                  className={cn(
-                    selectedRegion === region.code ? "bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" : "bg-transparent border-gray-600 hover:bg-white/5"
-                  )}
                 >
                   {region.name}
                 </Button>
@@ -599,7 +589,7 @@ const AirportsAirlines = () => {
             {(activeTab === 'airports' && hasMoreAirports) || 
              (activeTab === 'airlines' && hasMoreAirlines) ? (
               <Button 
-                className="bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]"
+                variant="default"
                 onClick={loadMore}
                 disabled={loading}
               >
