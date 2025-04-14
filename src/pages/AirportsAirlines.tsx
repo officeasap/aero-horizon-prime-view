@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -10,6 +11,7 @@ import {
   fetchAirportsAndAirlines, 
   fetchComprehensiveAirports,
   fetchComprehensiveAirlines,
+  fetchAirportByIATA,
   searchAirportsByRegion,
   Airport, 
   Airline 
@@ -57,6 +59,7 @@ const AirportsAirlines = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<string>('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
   const itemsPerPage = 15;
   
   useEffect(() => {
@@ -134,7 +137,7 @@ const AirportsAirlines = () => {
       
       setFilteredAirports(filtered.slice(0, page * itemsPerPage));
       
-      if (filtered.length === 0 && searchTerm) {
+      if (filtered.length === 0 && searchTerm && searchPerformed) {
         toast.info("No airports found matching your criteria");
       }
     } finally {
@@ -173,7 +176,7 @@ const AirportsAirlines = () => {
       
       setFilteredAirlines(filtered.slice(0, page * itemsPerPage));
       
-      if (filtered.length === 0 && searchTerm) {
+      if (filtered.length === 0 && searchTerm && searchPerformed) {
         toast.info("No airlines found matching your criteria");
       }
     } finally {
@@ -181,12 +184,43 @@ const AirportsAirlines = () => {
     }
   };
   
-  const handleSearch = () => {
+  const checkForIATACode = async () => {
+    // Check if the search term matches IATA code format (3 letters)
+    const formattedSearch = searchTerm.trim().toUpperCase();
+    if (/^[A-Z]{3}$/.test(formattedSearch) && activeTab === 'airports') {
+      setLoading(true);
+      try {
+        console.log(`Checking for IATA code: ${formattedSearch}`);
+        const airport = await fetchAirportByIATA(formattedSearch);
+        
+        if (airport) {
+          console.log(`Found airport for IATA ${formattedSearch}:`, airport);
+          setFilteredAirports([airport]);
+          toast.success(`Found airport with IATA code ${formattedSearch}`);
+          return true;
+        }
+      } catch (error) {
+        console.error(`Error fetching IATA code ${formattedSearch}:`, error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    return false;
+  };
+  
+  const handleSearch = async () => {
     setPage(1);
-    if (activeTab === 'airports') {
-      applyFilters();
-    } else {
-      filterAirlines();
+    setSearchPerformed(true);
+    
+    // First check if it's an IATA code search
+    const isIATAFound = await checkForIATACode();
+    if (!isIATAFound) {
+      // If not an IATA code or no results found, do regular filtering
+      if (activeTab === 'airports') {
+        applyFilters();
+      } else {
+        filterAirlines();
+      }
     }
   };
   
@@ -289,7 +323,7 @@ const AirportsAirlines = () => {
                   <div className="relative w-full md:w-auto flex-1">
                     <Input
                       type="text"
-                      placeholder={`Search ${activeTab === 'airports' ? 'airports' : 'airlines'} by name, code, city or country...`}
+                      placeholder={`Search ${activeTab === 'airports' ? 'airports' : 'airlines'} by name, IATA code, city or country...`}
                       value={searchTerm}
                       onChange={(e) => {
                         setSearchTerm(e.target.value);
@@ -319,7 +353,12 @@ const AirportsAirlines = () => {
                       className="border-none text-white placeholder:text-gray-light"
                     />
                     <CommandList className="text-white">
-                      <CommandEmpty className="py-2 px-4 text-gray-light">No results found</CommandEmpty>
+                      <CommandEmpty className="py-2 px-4 text-gray-light">
+                        {(/^[A-Za-z]{3}$/.test(searchTerm.trim())) ? 
+                          "Press Enter to search for this IATA code" : 
+                          "No results found"
+                        }
+                      </CommandEmpty>
                       <CommandGroup>
                         {getSearchSuggestions().map((item: any, index) => (
                           <CommandItem 
@@ -333,12 +372,12 @@ const AirportsAirlines = () => {
                                 {activeTab === 'airports' ? (
                                   <>
                                     <Building2 className="h-3 w-3" /> 
-                                    {item.iata_code} / {item.icao_code} - {item.city || 'N/A'}, {item.country_code}
+                                    {item.iata_code || 'N/A'} / {item.icao_code || 'N/A'} - {item.city || 'N/A'}, {item.country_code || 'N/A'}
                                   </>
                                 ) : (
                                   <>
                                     <Plane className="h-3 w-3" /> 
-                                    {item.iata_code} - {item.country_name || item.country_code || 'N/A'}
+                                    {item.iata_code || 'N/A'} - {item.country_name || item.country_code || 'N/A'}
                                   </>
                                 )}
                               </span>
@@ -417,14 +456,19 @@ const AirportsAirlines = () => {
             
             <div className="text-sm text-gray-light mb-4">
               {activeTab === 'airports' ? (
-                <p>Displaying {displayedAirportsCount} of {totalAirportsCount} airports
+                <p>Displaying {filteredAirports.length} of {totalAirportsCount} airports
                   {selectedRegion && ` in ${regions.find(r => r.code === selectedRegion)?.name || selectedRegion}`}
                   {searchTerm && ` matching "${searchTerm}"`}
                 </p>
               ) : (
-                <p>Displaying {displayedAirlinesCount} of {totalAirlinesCount} airlines
+                <p>Displaying {filteredAirlines.length} of {totalAirlinesCount} airlines
                   {selectedRegion && ` in ${regions.find(r => r.code === selectedRegion)?.name || selectedRegion}`}
                   {searchTerm && ` matching "${searchTerm}"`}
+                </p>
+              )}
+              {activeTab === 'airports' && searchTerm.trim().length === 3 && (
+                <p className="mt-1 text-purple-200">
+                  <span className="font-medium">Pro tip:</span> Enter a 3-letter IATA code (e.g., NBO, EBB, LOS, DXB, JFK) and press search for exact airport lookup
                 </p>
               )}
             </div>
@@ -500,7 +544,17 @@ const AirportsAirlines = () => {
                           <tr>
                             <td colSpan={6} className="px-4 py-8 text-center text-gray-light">
                               <AlertCircle className="mx-auto h-8 w-8 mb-2 text-gray-light/70" />
-                              No airports found matching your search criteria
+                              {searchPerformed ? (
+                                <>
+                                  {searchTerm.length === 3 ? (
+                                    <>No airport found with IATA code "{searchTerm.toUpperCase()}"</>
+                                  ) : (
+                                    <>No airports found matching your search criteria</>
+                                  )}
+                                </>
+                              ) : (
+                                <>Use the search box above to find airports</>
+                              )}
                             </td>
                           </tr>
                         )}
@@ -618,3 +672,4 @@ const AirportsAirlines = () => {
 };
 
 export default AirportsAirlines;
+

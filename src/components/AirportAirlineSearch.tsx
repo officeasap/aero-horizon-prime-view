@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Loader2, Building, Plane, AlertCircle, MapPin, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import {
   fetchAirlines, 
   fetchComprehensiveAirports,
   fetchComprehensiveAirlines,
+  fetchAirportByIATA,
   Airport, 
   Airline 
 } from '@/services/aviationService';
@@ -51,6 +51,7 @@ const AirportAirlineSearch: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<Airport | Airline | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string>('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
   const itemsPerPage = 10;
 
   // Load initial data
@@ -142,6 +143,30 @@ const AirportAirlineSearch: React.FC = () => {
     }
   };
 
+  const checkForIATACode = async () => {
+    // Check if the search term matches IATA code format (3 letters)
+    const formattedSearch = searchTerm.trim().toUpperCase();
+    if (/^[A-Z]{3}$/.test(formattedSearch) && searchType === 'airport') {
+      setIsLoading(true);
+      try {
+        console.log(`Checking for IATA code: ${formattedSearch}`);
+        const airport = await fetchAirportByIATA(formattedSearch);
+        
+        if (airport) {
+          console.log(`Found airport for IATA ${formattedSearch}:`, airport);
+          setDisplayedAirports([airport]);
+          toast.success(`Found airport with IATA code ${formattedSearch}`);
+          return true;
+        }
+      } catch (error) {
+        console.error(`Error fetching IATA code ${formattedSearch}:`, error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    return false;
+  };
+
   const handleSearch = async () => {
     if (!searchTerm.trim() && !selectedRegion) {
       toast.info("Please enter a search term or select a region");
@@ -149,12 +174,24 @@ const AirportAirlineSearch: React.FC = () => {
     }
 
     setIsLoading(true);
+    setSearchPerformed(true);
+    
     try {
-      applyFilters();
+      // First check if it's an IATA code search
+      const isIATAFound = await checkForIATACode();
+      
+      if (!isIATAFound) {
+        // If not an IATA code or no results found, do regular filtering
+        applyFilters();
+      }
       
       if (searchType === 'airport') {
         if (displayedAirports.length === 0) {
-          toast.info("No airports found matching your criteria");
+          if (searchTerm.trim().length === 3) {
+            toast.info(`No airport found with IATA code ${searchTerm.trim().toUpperCase()}`);
+          } else {
+            toast.info("No airports found matching your criteria");
+          }
         } else {
           toast.success(`Found ${displayedAirports.length} airports`);
         }
@@ -245,12 +282,17 @@ const AirportAirlineSearch: React.FC = () => {
             <div className="flex-1">
               <Input
                 type="text"
-                placeholder={`Search ${searchType === 'airport' ? 'airports' : 'airlines'} by name, code, city or country...`}
+                placeholder={`Search ${searchType === 'airport' ? 'airports' : 'airlines'} by name, IATA code, city or country...`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
+              {searchType === 'airport' && searchTerm.trim().length === 3 && (
+                <p className="mt-1 text-xs text-purple-200">
+                  Pro tip: 3-letter codes like NBO, EBB, LOS, DXB, JFK will perform exact IATA lookups
+                </p>
+              )}
             </div>
             
             <DropdownMenu>
@@ -515,7 +557,19 @@ const AirportAirlineSearch: React.FC = () => {
           ) : (
             <div className="text-center py-12 text-gray-light">
               <AlertCircle className="mx-auto h-10 w-10 mb-3 text-gray-light/70" />
-              <p>Search for {searchType === 'airport' ? 'airports' : 'airlines'} by name, code, city or country to see results.</p>
+              <p>
+                {searchPerformed ? (
+                  <>
+                    {searchTerm.length === 3 && searchType === 'airport' ? (
+                      <>No airport found with IATA code "{searchTerm.toUpperCase()}"</>
+                    ) : (
+                      <>No {searchType === 'airport' ? 'airports' : 'airlines'} found matching your criteria</>
+                    )}
+                  </>
+                ) : (
+                  <>Search for {searchType === 'airport' ? 'airports' : 'airlines'} by name, code, city or country to see results.</>
+                )}
+              </p>
               <p className="mt-2 text-sm">
                 {searchType === 'airport' 
                   ? 'Our database includes comprehensive global coverage including major African hubs.' 

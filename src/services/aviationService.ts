@@ -289,6 +289,19 @@ export async function fetchFlightSchedules(params: Record<string, string> = {}) 
 
 export async function fetchAirports(params: Record<string, string> = {}) {
   try {
+    if (params.iata_code) {
+      params.iata_code = params.iata_code.trim().toUpperCase();
+      console.log(`Fetching airport by IATA code: ${params.iata_code}`);
+      const data = await fetchWithCache("airports", params);
+      
+      if (Array.isArray(data) && data.length > 0) {
+        return data as Airport[];
+      } else {
+        console.log("No airports found with that IATA code");
+        return [];
+      }
+    }
+    
     if (params.comprehensive === "true") {
       if (airportCache.isComprehensive && 
           Date.now() - airportCache.timestamp < AIRPORT_CACHE_DURATION) {
@@ -338,6 +351,9 @@ function filterAirports(airports: Airport[], filters: Record<string, string>): A
       if (!airportValue) return false;
       
       if (typeof airportValue === 'string') {
+        if (key === 'iata_code') {
+          return airportValue.toLowerCase() === value.toLowerCase();
+        }
         return airportValue.toLowerCase().includes(value.toLowerCase());
       }
       
@@ -560,6 +576,17 @@ export async function fetchAirportsAndAirlines(searchTerm: string = "") {
       return airports;
     }
     
+    const formattedSearch = searchTerm.trim().toUpperCase();
+    if (/^[A-Z]{3}$/.test(formattedSearch)) {
+      console.log(`Searching for IATA code: ${formattedSearch}`);
+      const iataResults = await fetchAirports({ iata_code: formattedSearch });
+      
+      if (iataResults && iataResults.length > 0) {
+        console.log(`Found ${iataResults.length} airports with IATA code ${formattedSearch}`);
+        return iataResults;
+      }
+    }
+    
     const suggestions = await fetchSuggestions(searchTerm);
     if (suggestions.length > 0) {
       return suggestions;
@@ -740,5 +767,31 @@ export async function fetchComprehensiveAirlines(): Promise<Airline[]> {
     console.error("Error fetching comprehensive airlines:", error);
     toast.error("Failed to fetch global airline data. Please try again later.");
     return [];
+  }
+}
+
+export async function fetchAirportByIATA(iataCode: string): Promise<Airport | null> {
+  if (!iataCode) return null;
+  
+  const formattedCode = iataCode.trim().toUpperCase();
+  if (formattedCode.length !== 3) {
+    console.warn("Invalid IATA code format:", iataCode);
+    return null;
+  }
+  
+  try {
+    console.log(`Fetching airport by IATA code: ${formattedCode}`);
+    const airports = await fetchAirports({ iata_code: formattedCode });
+    
+    if (airports && airports.length > 0) {
+      console.log(`Found airport for IATA ${formattedCode}:`, airports[0]);
+      return airports[0];
+    }
+    
+    console.log(`No airport found for IATA code: ${formattedCode}`);
+    return null;
+  } catch (error) {
+    console.error(`Error fetching airport by IATA ${formattedCode}:`, error);
+    return null;
   }
 }
