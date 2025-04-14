@@ -8,10 +8,29 @@ import { Globe, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import CountryCityDropdown from '@/components/CountryCityDropdown';
+import { ErrorBoundary } from 'react-error-boundary';
+
+const WeatherErrorFallback = ({ error, resetErrorBoundary }: { error: Error, resetErrorBoundary: () => void }) => (
+  <div className="container mx-auto p-6 my-8 bg-red-900/20 border border-red-700/30 rounded-xl text-center">
+    <h3 className="text-xl font-semibold text-white mb-3">Weather Data Could Not Be Loaded</h3>
+    <p className="text-gray-300 mb-4">{error.message || "There was an error loading the weather data. Please try again."}</p>
+    <Button 
+      onClick={resetErrorBoundary}
+      className="bg-purple hover:bg-purple/80"
+    >
+      Try Again
+    </Button>
+  </div>
+);
 
 const GlobalWeather = () => {
   const [showMockData, setShowMockData] = useState(false);
   const [selectedCity, setSelectedCity] = useState<string>('');
+  const [errorKey, setErrorKey] = useState(0);
+  
+  const resetError = () => {
+    setErrorKey(prev => prev + 1);
+  };
   
   return (
     <div className="min-h-screen bg-dark text-white overflow-x-hidden">
@@ -80,9 +99,21 @@ const GlobalWeather = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 pb-12">
         {showMockData ? (
-          <WeatherForecast selectedCity={selectedCity} />
+          <ErrorBoundary 
+            FallbackComponent={WeatherErrorFallback} 
+            onReset={resetError}
+            key={`mock-${errorKey}`}
+          >
+            <WeatherForecast selectedCity={selectedCity} />
+          </ErrorBoundary>
         ) : (
-          <OpenWeatherWidget selectedCity={selectedCity} />
+          <ErrorBoundary 
+            FallbackComponent={WeatherErrorFallback} 
+            onReset={resetError}
+            key={`live-${errorKey}`}
+          >
+            <OpenWeatherWidget selectedCity={selectedCity} />
+          </ErrorBoundary>
         )}
       </div>
       

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Cloud, CloudRain, CloudSnow, Sun, Wind, Droplets, Eye, Clock, Search, MapPin, Loader2 } from 'lucide-react';
+import { Cloud, CloudRain, CloudSnow, Sun, Wind, Droplets, Eye, Clock, Search, MapPin, Loader2, AlertTriangle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -48,6 +48,7 @@ const weatherBackgroundMap: Record<string, string> = {
   'Ash': 'from-gray-600/20 to-gray-800/20',
   'Squall': 'from-blue-700/20 to-gray-800/20',
   'Tornado': 'from-gray-700/20 to-gray-900/20',
+  'Unknown': 'from-blue-400/20 to-gray-600/20',
 };
 
 interface OpenWeatherWidgetProps {
@@ -62,6 +63,7 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
   const [weatherData, setWeatherData] = useState<OpenWeatherData | null>(null);
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [geoPermissionStatus, setGeoPermissionStatus] = useState<'granted' | 'denied' | 'prompt' | 'unknown'>('unknown');
+  const [isRetrying, setIsRetrying] = useState(false);
 
   // Handle geolocation
   useEffect(() => {
@@ -90,6 +92,13 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
     };
     
     checkGeoPermission();
+    
+    // Cleanup timer if component unmounts during initial load
+    return () => {
+      if (initialLoading) {
+        setInitialLoading(false);
+      }
+    };
   }, []);
 
   // Listen for prop city changes
@@ -111,6 +120,9 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
             if (data) {
               setWeatherData(data);
               setSelectedCity(data.location.name);
+              setError(null);
+            } else {
+              throw new Error('Could not fetch weather for your location');
             }
           } catch (error) {
             console.error('Error fetching weather by coordinates:', error);
@@ -126,7 +138,8 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
           setError('Geolocation permission denied');
           fetchCityWeather('London'); // Fallback
           setLoading(false);
-        }
+        },
+        { timeout: 10000 } // 10 second timeout for geolocation
       );
     } else {
       setError('Geolocation is not supported by your browser');
@@ -135,8 +148,14 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
   };
 
   const fetchCityWeather = async (city: string) => {
+    if (!city || city.trim() === '') {
+      setError('Please enter a valid city name');
+      return;
+    }
+    
     setLoading(true);
     setError(null);
+    
     try {
       const data = await fetchWeatherByCity(city);
       if (data) {
@@ -144,14 +163,21 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
         setSelectedCity(data.location.name);
       } else {
         setError(`Could not find weather data for ${city}`);
-        toast.error(`Could not find weather data for ${city}`);
       }
     } catch (error) {
       console.error('Error fetching weather:', error);
-      setError('Failed to fetch weather data');
-      toast.error('Failed to fetch weather data');
+      setError(`Failed to fetch weather data for ${city}`);
+      if (city !== 'London' && !isRetrying) {
+        setIsRetrying(true);
+        // Fallback to London if not already trying
+        toast.error(`Could not load weather for ${city}, trying London instead`);
+        fetchCityWeather('London');
+      } else {
+        toast.error('Failed to fetch weather data');
+      }
     } finally {
       setLoading(false);
+      setIsRetrying(false);
     }
   };
 
@@ -171,14 +197,24 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
 
   // Format timestamp to time
   const formatTime = (timestamp: number, timezone: number) => {
-    const date = new Date((timestamp + timezone) * 1000);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    try {
+      const date = new Date((timestamp + timezone) * 1000);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return 'N/A';
+    }
   };
 
   // Format day name
   const formatDay = (timestamp: number) => {
-    const date = new Date(timestamp * 1000);
-    return date.toLocaleDateString('en-US', { weekday: 'short' });
+    try {
+      const date = new Date(timestamp * 1000);
+      return date.toLocaleDateString('en-US', { weekday: 'short' });
+    } catch (error) {
+      console.error('Error formatting day:', error);
+      return 'N/A';
+    }
   };
 
   // Get background class based on weather condition
@@ -260,30 +296,45 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
       {error ? (
         <div className="glass-panel p-6 rounded-2xl bg-red-900/20 border border-red-800/30">
           <div className="text-center">
+            <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
             <h3 className="text-xl font-medium text-red-300 mb-2">Error Loading Weather</h3>
             <p className="text-red-200">{error}</p>
-            <Button 
-              className="mt-4 bg-purple hover:bg-purple-600 text-white purple-glow"
-              onClick={() => fetchCityWeather('London')}
-            >
-              Try London Instead
-            </Button>
+            <div className="flex gap-2 justify-center mt-4">
+              <Button 
+                className="bg-purple hover:bg-purple-600 text-white purple-glow"
+                onClick={() => fetchCityWeather('London')}
+              >
+                Try London Instead
+              </Button>
+              <Button 
+                variant="outline"
+                className="border-gray-400 text-gray-300"
+                onClick={() => setError(null)}
+              >
+                Dismiss
+              </Button>
+            </div>
           </div>
+        </div>
+      ) : loading ? (
+        <div className="glass-panel p-8 rounded-2xl text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple mx-auto"></div>
+          <p className="mt-4 text-gray-light">Loading weather data...</p>
         </div>
       ) : weatherData ? (
         <div 
           className={cn(
             "glass-panel overflow-hidden rounded-2xl p-6 bg-gradient-to-br transition-all duration-500",
-            getWeatherBackground(weatherData.current.condition)
+            getWeatherBackground(weatherData.current.condition || 'Unknown')
           )}
         >
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-2xl font-medium">{weatherData.location.name}, {weatherData.location.country}</h3>
+              <h3 className="text-2xl font-medium">{weatherData.location.name || 'Unknown'}, {weatherData.location.country || ''}</h3>
               <p className="text-gray-light flex items-center gap-1">
                 <Clock className="h-4 w-4" />
                 <span>
-                  {weatherData.current.timezone ? 
+                  {weatherData.current.timezone && typeof weatherData.current.timezone === 'number' ? 
                     formatTime(Math.floor(Date.now() / 1000), weatherData.current.timezone / 3600) : 
                     new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                   }
@@ -291,22 +342,22 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
               </p>
             </div>
             <div className="text-right">
-              <div className="text-4xl font-light">{weatherData.current.temp}°C</div>
+              <div className="text-4xl font-light">{weatherData.current.temp || 0}°C</div>
               <div className="text-purple">
-                {weatherData.current.feels_like && (
+                {weatherData.current.feels_like !== undefined && (
                   <span>Feels like {weatherData.current.feels_like}°C</span>
                 )}
               </div>
-              <p className="text-white">{weatherData.current.condition}</p>
+              <p className="text-white">{weatherData.current.condition || 'Unknown'}</p>
             </div>
           </div>
           
           <div className="flex mt-8 justify-center">
             <div className="text-center">
               <div className="mx-auto w-20 h-20 flex items-center justify-center">
-                {weatherIconMap[weatherData.current.icon] || <Cloud className="text-white h-16 w-16 opacity-80" />}
+                {weatherData.current.icon && weatherIconMap[weatherData.current.icon] || <Cloud className="text-white h-16 w-16 opacity-80" />}
               </div>
-              <p className="text-gray-light mt-2">{weatherData.current.description}</p>
+              <p className="text-gray-light mt-2">{weatherData.current.description || weatherData.current.condition}</p>
             </div>
           </div>
           
@@ -316,9 +367,9 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
                 <Droplets className="h-4 w-4 text-purple" />
                 <span>Humidity</span>
               </div>
-              <div className="text-lg font-medium">{weatherData.current.humidity}%</div>
+              <div className="text-lg font-medium">{weatherData.current.humidity || 0}%</div>
               <Progress 
-                value={weatherData.current.humidity} 
+                value={weatherData.current.humidity || 0} 
                 className="h-1 mt-2 bg-white/10" 
               />
             </div>
@@ -327,9 +378,9 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
                 <Wind className="h-4 w-4 text-purple" />
                 <span>Wind Speed</span>
               </div>
-              <div className="text-lg font-medium">{weatherData.current.wind} m/s</div>
+              <div className="text-lg font-medium">{weatherData.current.wind || 0} m/s</div>
               <Progress 
-                value={(weatherData.current.wind / 20) * 100} 
+                value={((weatherData.current.wind || 0) / 20) * 100} 
                 className="h-1 mt-2 bg-white/10" 
               />
             </div>
@@ -339,10 +390,10 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
                 <span>Visibility</span>
               </div>
               <div className="text-lg font-medium">
-                {weatherData.current.visibility || "N/A"} km
+                {weatherData.current.visibility !== undefined ? `${weatherData.current.visibility} km` : "N/A"}
               </div>
               <Progress 
-                value={weatherData.current.visibility ? (weatherData.current.visibility / 10) * 100 : 0} 
+                value={weatherData.current.visibility !== undefined ? (weatherData.current.visibility / 10) * 100 : 0} 
                 className="h-1 mt-2 bg-white/10" 
               />
             </div>
@@ -352,7 +403,7 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
                 <span>Pressure</span>
               </div>
               <div className="text-lg font-medium">
-                {weatherData.current.pressure || "N/A"} hPa
+                {weatherData.current.pressure !== undefined ? `${weatherData.current.pressure} hPa` : "N/A"}
               </div>
               <Progress 
                 value={weatherData.current.pressure ? ((weatherData.current.pressure - 980) / 40) * 100 : 0} 
@@ -361,34 +412,46 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
             </div>
           </div>
           
-          <div className="mt-8">
-            <h4 className="font-medium mb-3">5-Day Forecast</h4>
-            <div className="grid grid-cols-5 gap-2">
-              {weatherData.forecast.map((day, index) => (
-                <div key={index} className="bg-white/10 rounded-lg p-3 text-center">
-                  <div className="text-sm font-medium">{formatDay(day.date)}</div>
-                  <div className="my-2">
-                    {weatherIconMap[day.icon] || <Cloud className="mx-auto text-white h-6 w-6 opacity-80" />}
+          {weatherData.forecast && weatherData.forecast.length > 0 ? (
+            <div className="mt-8">
+              <h4 className="font-medium mb-3">5-Day Forecast</h4>
+              <div className="grid grid-cols-5 gap-2">
+                {weatherData.forecast.map((day, index) => (
+                  <div key={index} className="bg-white/10 rounded-lg p-3 text-center">
+                    <div className="text-sm font-medium">{formatDay(day.date)}</div>
+                    <div className="my-2">
+                      {day.icon && weatherIconMap[day.icon] || <Cloud className="mx-auto text-white h-6 w-6 opacity-80" />}
+                    </div>
+                    <div className="text-sm">
+                      <span className="font-medium">{day.temp.max}°</span>
+                      <span className="text-gray-light text-xs"> / {day.temp.min}°</span>
+                    </div>
                   </div>
-                  <div className="text-sm">
-                    <span className="font-medium">{day.temp.max}°</span>
-                    <span className="text-gray-light text-xs"> / {day.temp.min}°</span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="mt-8 text-center text-gray-light p-4 bg-white/5 rounded-lg">
+              <p>Forecast data not available</p>
+            </div>
+          )}
 
-          {weatherData.location.lat && weatherData.location.lon && (
+          {weatherData.location.lat !== undefined && weatherData.location.lon !== undefined && (
             <div className="mt-6 pt-4 border-t border-white/10 text-center text-xs text-gray-light">
               <p>Location: {weatherData.location.lat.toFixed(2)}°N, {weatherData.location.lon.toFixed(2)}°E</p>
             </div>
           )}
         </div>
       ) : (
-        <div className="glass-panel p-8 rounded-2xl text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple mx-auto"></div>
-          <p className="mt-4 text-gray-light">Loading weather data...</p>
+        <div className="glass-panel p-8 rounded-2xl text-center bg-purple/5">
+          <Cloud className="h-16 w-16 text-gray-400 mx-auto mb-3 opacity-50" />
+          <p className="text-gray-light">No weather data to display. Please search for a city.</p>
+          <Button 
+            className="mt-4 bg-purple hover:bg-purple-600 text-white purple-glow"
+            onClick={() => fetchCityWeather('London')}
+          >
+            Show London Weather
+          </Button>
         </div>
       )}
     </div>
