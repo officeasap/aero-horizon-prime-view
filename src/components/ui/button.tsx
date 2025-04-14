@@ -20,7 +20,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         contact: "bg-[#8B0000] hover:bg-[#A80000] text-white border border-[#8B0000] rounded-[10px] hover:shadow-[0_0_8px_#A80000]",
-        subscribe: "bg-[#8B0000] hover:bg-[#A80000] text-white rounded-[10px] hover:shadow-[0_0_8px_#A80000]",
+        subscribe: "bg-[#8B0000] hover:bg-[#A80000] text-white rounded-[14px] hover:shadow-[0_0_8px_#A80000]",
         nav: "bg-[#8B0000] border border-[#8B0000] text-white hover:bg-[#A80000] rounded-[10px] hover:shadow-[0_0_8px_#A80000]",
         redGradient: "bg-[#8B0000] text-white hover:bg-[#A80000] rounded-[10px] hover:shadow-[0_0_8px_#A80000]",
       },

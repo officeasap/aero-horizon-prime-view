@@ -119,3 +119,44 @@
   background-color: #A80000;
   box-shadow: 0 0 8px #A80000;
 }
+
+/* Footer styling */
+.footer-link {
+  color: #FFFFFF;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-heading {
+  color: #8B0000;
+  font-weight: 600;
+}
+
+.footer-icon {
+  color: #8B0000;
+}
+
+.footer-subscribe-button {
+  background-color: #8B0000;
+  color: #FFFFFF;
+  border-radius: 14px;
+  transition: all 0.3s ease;
+}
+
+.footer-subscribe-button:hover {
+  background-color: #A80000;
+  box-shadow: 0 0 8px #A80000;
+}
+
+.footer-input {
+  background-color: #2E2E2E;
+  color: #FFFFFF;
+  border: 1px solid #444444;
+}
+
+.footer-input::placeholder {
+  color: #B3B3B3;
+}
