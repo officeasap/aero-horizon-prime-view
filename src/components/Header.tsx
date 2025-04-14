@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone, Clock, Award } from 'lucide-react';
+import { X, Menu, Plane, MapPin, Cloud, AlertTriangle, Building2, Phone, Clock, Radar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -61,7 +61,7 @@ const Header = () => {
         isMobile ? "py-3 px-4" : "py-4 px-4"
       )}>
         <Link to="/" className="flex items-center font-bold font-space text-xl md:text-2xl text-white mr-8">
-          <Award className="text-[#8B0000] mr-2" size={28} strokeWidth={2} />
+          <Radar className="text-[#8B0000] mr-2" size={28} strokeWidth={2} />
           ASAP<span className="text-[#8B0000]">Tracker</span>
         </Link>
 
