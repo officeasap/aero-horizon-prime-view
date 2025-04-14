@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Facebook, 
@@ -29,7 +28,13 @@ const Footer = () => {
           {/* Column 1 - About */}
           <div className="text-left">
             <div className="flex items-center mb-6">
-              <Radar className="text-[#8B0000] mr-2" size={24} strokeWidth={2} />
+              <Radar 
+                className="text-[#8B0000] mr-2" 
+                size={24} 
+                strokeWidth={2} 
+                color="#8B0000"  // Dark red for the outer part
+                strokeColor="#FFFFFF"  // White for the needle/inner lines
+              />
               <div className="text-xl font-bold font-space tracking-wider">
                 <span className="text-[#8B0000]">ASAP</span>
                 <span className="text-white ml-2">TRACKER</span>
