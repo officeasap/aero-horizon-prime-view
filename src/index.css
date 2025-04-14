@@ -107,7 +107,7 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-panel/80 backdrop-blur-md border-2 border-[#2A2A2A] rounded-2xl shadow-lg;
+    @apply bg-panel/80 backdrop-blur-md border-2 border-[#2A2A2A] rounded-2xl shadow-lg text-left;
   }
 
   .red-glow {
@@ -143,7 +143,7 @@
   }
   
   .accent-panel {
-    @apply bg-panel/90 backdrop-blur-sm border-2 border-[#2A2A2A] rounded-lg shadow-md;
+    @apply bg-panel/90 backdrop-blur-sm border-2 border-[#2A2A2A] rounded-lg shadow-md text-left;
   }
   
   .nav-item {

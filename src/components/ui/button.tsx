@@ -10,7 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-red text-white hover:bg-red-600",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -22,7 +22,7 @@ const buttonVariants = cva(
         contact: "bg-dark hover:bg-dark/80 text-white border border-red rounded-full",
         subscribe: "bg-red hover:bg-red/90 text-white rounded-full",
         nav: "bg-transparent border border-red/80 text-white hover:text-red rounded-full red-glow",
-        redGradient: "bg-red-gradient text-white hover:opacity-90 rounded-full",
+        redGradient: "bg-red text-white hover:bg-red-600 rounded-full",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -29,7 +29,7 @@ const Index = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
               <a href="https://app.asaptracker.com" target="_blank" rel="noopener noreferrer">
-                <Button variant="redGradient" className="red-glow w-full sm:w-auto">
+                <Button variant="default" className="bg-red hover:bg-red-600 text-white red-glow w-full sm:w-auto">
                   <Plane className="h-4 w-4 mr-2" />
                   Sign up for free
                 </Button>
@@ -70,8 +70,8 @@ const Index = () => {
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <Calendar className="text-red h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Flight Schedule</h3>
-                <p className="text-gray-light">
+                <h3 className="text-xl font-semibold mb-2 text-left">Flight Schedule</h3>
+                <p className="text-gray-light text-left">
                   Check real-time flight schedules, departures, and arrivals for airports worldwide.
                 </p>
                 <a href="/flight-schedule" target="_blank" rel="noopener noreferrer" className="text-red flex items-center gap-1 mt-4 hover:underline">
@@ -87,8 +87,8 @@ const Index = () => {
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <Plane className="text-red h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Live Flight Tracking</h3>
-                <p className="text-gray-light">
+                <h3 className="text-xl font-semibold mb-2 text-left">Live Flight Tracking</h3>
+                <p className="text-gray-light text-left">
                   Track any flight in real-time with detailed route mapping, altitude, speed, and status information.
                 </p>
                 <a href="/live-tracker" target="_blank" rel="noopener noreferrer" className="text-red flex items-center gap-1 mt-4 hover:underline">
@@ -104,8 +104,8 @@ const Index = () => {
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <AlertTriangle className="text-red h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Flight Status</h3>
-                <p className="text-gray-light">
+                <h3 className="text-xl font-semibold mb-2 text-left">Flight Status</h3>
+                <p className="text-gray-light text-left">
                   Monitor delays, gate changes, and real-time status updates for flights worldwide.
                 </p>
                 <a href="/flight-status" target="_blank" rel="noopener noreferrer" className="text-red flex items-center gap-1 mt-4 hover:underline">
@@ -121,8 +121,8 @@ const Index = () => {
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <MapPin className="text-red h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Airport & Airline Database</h3>
-                <p className="text-gray-light">
+                <h3 className="text-xl font-semibold mb-2 text-left">Airport & Airline Database</h3>
+                <p className="text-gray-light text-left">
                   Comprehensive information on airports and airlines worldwide, including terminals, facilities, and contact details.
                 </p>
                 <a href="/airports-airlines" target="_blank" rel="noopener noreferrer" className="text-red flex items-center gap-1 mt-4 hover:underline">
@@ -138,8 +138,8 @@ const Index = () => {
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <Cloud className="text-red h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Global Weather Forecast</h3>
-                <p className="text-gray-light">
+                <h3 className="text-xl font-semibold mb-2 text-left">Global Weather Forecast</h3>
+                <p className="text-gray-light text-left">
                   Access real-time weather data for airports around the world to plan your travel better.
                 </p>
                 <a href="/weather" target="_blank" rel="noopener noreferrer" className="text-red flex items-center gap-1 mt-4 hover:underline">
@@ -155,8 +155,8 @@ const Index = () => {
                 <div className="w-14 h-14 bg-red/20 rounded-lg flex items-center justify-center mb-4">
                   <Clock className="text-red h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">World Clock</h3>
-                <p className="text-gray-light">
+                <h3 className="text-xl font-semibold mb-2 text-left">World Clock</h3>
+                <p className="text-gray-light text-left">
                   Track time differences across multiple cities and timezones to coordinate international flights.
                 </p>
                 <a href="/world-clock" target="_blank" rel="noopener noreferrer" className="text-red flex items-center gap-1 mt-4 hover:underline">
@@ -175,7 +175,7 @@ const Index = () => {
                 Our team is ready to assist you with any questions or concerns about our flight services.
               </p>
               <a href="/contact" target="_blank" rel="noopener noreferrer">
-                <Button variant="redGradient" className="red-glow">
+                <Button variant="default" className="bg-red hover:bg-red-600 text-white red-glow">
                   <Phone className="h-4 w-4 mr-2" />
                   Contact Us
                 </Button>
