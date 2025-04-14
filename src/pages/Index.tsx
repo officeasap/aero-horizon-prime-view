@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -67,7 +66,7 @@ const Index = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* Feature 1 */}
-              <Card className="hover:bg-[#1A1A1A]/80 transition-all duration-300 rounded-[12px] border-2 border-[#8B0000] shadow-sm">
+              <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
                     <Calendar className="text-[#8B0000] h-7 w-7 group-hover:shadow-[0_0_6px_#A80000]" />
@@ -88,7 +87,7 @@ const Index = () => {
               </Card>
               
               {/* Feature 2 */}
-              <Card className="hover:bg-[#1A1A1A]/80 transition-all duration-300 rounded-[12px] border-2 border-[#8B0000] shadow-sm">
+              <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
                     <Plane className="text-[#8B0000] h-7 w-7 group-hover:shadow-[0_0_6px_#A80000]" />
@@ -109,7 +108,7 @@ const Index = () => {
               </Card>
               
               {/* Feature 3 */}
-              <Card className="hover:bg-[#1A1A1A]/80 transition-all duration-300 rounded-[12px] border-2 border-[#8B0000] shadow-sm">
+              <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
                     <AlertTriangle className="text-[#8B0000] h-7 w-7 group-hover:shadow-[0_0_6px_#A80000]" />
@@ -130,7 +129,7 @@ const Index = () => {
               </Card>
               
               {/* Feature 4 */}
-              <Card className="hover:bg-[#1A1A1A]/80 transition-all duration-300 rounded-[12px] border-2 border-[#8B0000] shadow-sm">
+              <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
                     <MapPin className="text-[#8B0000] h-7 w-7 group-hover:shadow-[0_0_6px_#A80000]" />
@@ -151,7 +150,7 @@ const Index = () => {
               </Card>
               
               {/* Feature 5 */}
-              <Card className="hover:bg-[#1A1A1A]/80 transition-all duration-300 rounded-[12px] border-2 border-[#8B0000] shadow-sm">
+              <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
                     <Cloud className="text-[#8B0000] h-7 w-7 group-hover:shadow-[0_0_6px_#A80000]" />
@@ -172,7 +171,7 @@ const Index = () => {
               </Card>
               
               {/* Feature 6 */}
-              <Card className="hover:bg-[#1A1A1A]/80 transition-all duration-300 rounded-[12px] border-2 border-[#8B0000] shadow-sm">
+              <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
                     <Clock className="text-[#8B0000] h-7 w-7 group-hover:shadow-[0_0_6px_#A80000]" />
