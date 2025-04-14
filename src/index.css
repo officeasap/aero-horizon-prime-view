@@ -10,19 +10,19 @@
     --background: 0 0% 4%;
     --foreground: 0 0% 100%;
 
-    --card: 0 0% 16.8%;
+    --card: 0 0% 10%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 16.8%;
+    --popover: 0 0% 10%;
     --popover-foreground: 0 0% 100%;
 
     --primary: 0 100% 27.1%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 16.8%;
+    --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 0 0% 16.8%;
+    --muted: 0 0% 10%;
     --muted-foreground: 0 0% 70%;
 
     --accent: 0 100% 27.1%;
@@ -32,7 +32,7 @@
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 16.5%;
-    --input: 0 0% 16.8%;
+    --input: 0 0% 10%;
     --ring: 0 100% 27.1%;
 
     --radius: 0.5rem;
@@ -92,7 +92,7 @@
   }
 
   .code-background {
-    @apply bg-[#2B2B2B] text-[#8B0000];
+    @apply bg-[#1A1A1A] text-[#8B0000];
   }
   
   .rating-circle-red {
@@ -106,7 +106,7 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-[#2B2B2B]/80 backdrop-blur-md border-2 border-[#8B0000] rounded-2xl shadow-lg text-left;
+    @apply bg-[#1A1A1A]/80 backdrop-blur-md border-2 border-[#8B0000] rounded-2xl shadow-lg text-left;
   }
 
   .red-glow {
@@ -142,7 +142,7 @@
   }
   
   .accent-panel {
-    @apply bg-[#2B2B2B]/90 backdrop-blur-sm border-2 border-[#8B0000] rounded-lg shadow-md text-left;
+    @apply bg-[#1A1A1A]/90 backdrop-blur-sm border-2 border-[#8B0000] rounded-lg shadow-md text-left;
   }
   
   .nav-item {
@@ -162,7 +162,7 @@
   }
   
   .code-icon {
-    @apply bg-[#2B2B2B] text-[#8B0000];
+    @apply bg-[#1A1A1A] text-[#8B0000];
   }
 }
 
@@ -203,7 +203,7 @@
 }
 
 .footer-input {
-  @apply bg-[#2E2E2E] border-[#444444] text-white placeholder:text-[#B3B3B3];
+  @apply bg-[#1A1A1A] border-[#444444] text-white placeholder:text-[#B3B3B3];
 }
 
 .footer-subscribe-btn {
