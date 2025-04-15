@@ -258,10 +258,23 @@ const fetchWithCache = async (endpoint: string, params: Record<string, string> =
 
 export async function fetchLiveFlights(params: Record<string, string> = {}) {
   try {
-    const data = await fetchWithCache("flights", params);
+    const queryString = new URLSearchParams(params).toString();
+    const url = `${BASE_URL}/tracker${queryString ? `?${queryString}` : ''}`;
+    
+    console.log('Fetching live flights from:', url);
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('Tracker API Response:', data);
+    
     if (Array.isArray(data) && data.length > 0) {
       return await enhanceFlightData(data as Flight[]);
     }
+    
     return data as Flight[];
   } catch (error) {
     console.error("Error fetching live flights:", error);
