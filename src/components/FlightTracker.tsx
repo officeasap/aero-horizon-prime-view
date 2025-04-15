@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { fetchLiveFlights, Flight, SuggestResult } from '@/services/aviationService';
 import { Loader2, Plane, ArrowRight, Search } from 'lucide-react';
@@ -32,6 +31,7 @@ const FlightTracker = () => {
           }
         }
         
+        console.log('Fetching flights with params:', params);
         const data = await fetchLiveFlights(params);
         
         if (data.length === 0) {
@@ -39,6 +39,7 @@ const FlightTracker = () => {
         } else {
           setFlights(data);
           setFilteredFlights(data);
+          console.log(`Successfully loaded ${data.length} flights`);
         }
       } catch (err) {
         console.error('Error fetching flights:', err);

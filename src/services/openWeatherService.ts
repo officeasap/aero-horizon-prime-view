@@ -99,7 +99,6 @@ interface OpenWeatherForecastResponse {
 const API_KEY = '29b3dbc621f5043b1410072eac8431da';
 const BASE_URL = 'https://littleboy-dun.vercel.app/api';
 
-// Helper function to format date
 const formatDay = (timestamp: number): string => {
   try {
     const date = new Date(timestamp * 1000);
@@ -110,16 +109,13 @@ const formatDay = (timestamp: number): string => {
   }
 };
 
-// Helper function to validate API response
 const isValidResponse = (data: any): boolean => {
   if (!data) return false;
   
-  // For current weather
   if ('main' in data && 'weather' in data && Array.isArray(data.weather) && data.weather.length > 0) {
     return true;
   }
   
-  // For forecast
   if ('list' in data && Array.isArray(data.list) && data.list.length > 0) {
     return true;
   }
@@ -127,7 +123,6 @@ const isValidResponse = (data: any): boolean => {
   return false;
 };
 
-// Helper function to process and group forecast data by day
 const processForecastData = (data: OpenWeatherForecastResponse): Array<any> => {
   if (!data.list || !Array.isArray(data.list) || data.list.length === 0) {
     console.error("Invalid forecast data received:", data);
@@ -171,7 +166,6 @@ const processForecastData = (data: OpenWeatherForecastResponse): Array<any> => {
       }
     });
     
-    // Process daily data to get representative values
     return Object.keys(dailyData).map((day) => {
       const dayData = dailyData[day];
       
@@ -183,12 +177,11 @@ const processForecastData = (data: OpenWeatherForecastResponse): Array<any> => {
             max: 0
           },
           condition: "Unknown",
-          icon: "01d", // default icon
+          icon: "01d",
           date: dayData.date
         };
       }
       
-      // Get the most frequent condition and icon
       const conditionCounts: Record<string, number> = {};
       const iconCounts: Record<string, number> = {};
       
@@ -208,11 +201,9 @@ const processForecastData = (data: OpenWeatherForecastResponse): Array<any> => {
         iconCounts[a] > iconCounts[b] ? a : b, dayData.icons[0]
       );
       
-      // Calculate min and max temperatures
       const minTemp = Math.min(...dayData.temps);
       const maxTemp = Math.max(...dayData.temps);
       
-      // Calculate averages for humidity and wind
       const avgHumidity = dayData.humidity.length > 0 
         ? dayData.humidity.reduce((sum: number, val: number) => sum + val, 0) / dayData.humidity.length
         : 0;
@@ -234,7 +225,7 @@ const processForecastData = (data: OpenWeatherForecastResponse): Array<any> => {
         wind: Number(avgWind.toFixed(1)),
         date: dayData.date
       };
-    }).slice(0, 5); // Limit to 5 days
+    }).slice(0, 5);
   } catch (error) {
     console.error("Error processing forecast data:", error);
     return [];
@@ -248,6 +239,7 @@ export async function fetchWeatherByCity(city: string): Promise<OpenWeatherData 
   }
   
   try {
+    console.log(`Fetching weather data for city: ${city} from ${BASE_URL}/weather`);
     const response = await fetch(
       `${BASE_URL}/weather?city=${encodeURIComponent(city)}`
     );
@@ -273,6 +265,7 @@ export async function fetchWeatherByCoords(lat: number, lon: number): Promise<Op
   }
   
   try {
+    console.log(`Fetching weather data for coordinates: ${lat},${lon} from ${BASE_URL}/weather`);
     const response = await fetch(
       `${BASE_URL}/weather?lat=${lat}&lon=${lon}`
     );
