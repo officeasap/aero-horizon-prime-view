@@ -1,7 +1,6 @@
 import { toast } from "sonner";
 
-const API_KEY = "880dd0d6-7487-4140-8585-787e7a357d46";
-const BASE_URL = "https://airlabs.co/api/v9";
+const BASE_URL = "https://littleboy-dun.vercel.app/api";
 
 export interface Flight {
   hex?: string;
@@ -221,12 +220,8 @@ const AIRPORT_CACHE_DURATION = 60 * 60 * 1000; // 1 hour for airports
 const AIRLINE_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours for airlines
 
 const fetchWithCache = async (endpoint: string, params: Record<string, string> = {}): Promise<any> => {
-  const queryParams = new URLSearchParams({
-    api_key: API_KEY,
-    ...params
-  });
-  
-  const url = `${BASE_URL}/${endpoint}?${queryParams}`;
+  const queryString = new URLSearchParams(params).toString();
+  const url = `${BASE_URL}/${endpoint}${queryString ? `?${queryString}` : ''}`;
   const cacheKey = url;
   
   const cachedData = cache[cacheKey];
@@ -250,11 +245,11 @@ const fetchWithCache = async (endpoint: string, params: Record<string, string> =
     }
     
     cache[cacheKey] = {
-      data: data.response,
+      data: data,
       timestamp: Date.now()
     };
     
-    return data.response;
+    return data;
   } catch (error) {
     console.error(`Error fetching ${endpoint}:`, error);
     throw error;
@@ -291,52 +286,38 @@ export async function fetchFlightSchedules(params: Record<string, string> = {}) 
 
 export async function fetchAirports(params: Record<string, string> = {}) {
   try {
-    if (params.iata_code) {
-      params.iata_code = params.iata_code.trim().toUpperCase();
-      console.log(`Fetching airport by IATA code: ${params.iata_code}`);
-      const data = await fetchWithCache("airports", params);
-      
-      console.log(`Result for IATA code ${params.iata_code}:`, data);
-      
-      if (Array.isArray(data) && data.length > 0) {
-        return data as Airport[];
-      } else {
-        console.log("No airports found with that IATA code");
-        return [];
-      }
-    }
-    
-    if (params.comprehensive === "true") {
-      if (airportCache.isComprehensive && 
-          Date.now() - airportCache.timestamp < AIRPORT_CACHE_DURATION) {
-        console.log("Using comprehensive airport cache", airportCache.data.length);
-        return filterAirports(airportCache.data, params);
-      }
-      
-      const limit = parseInt(params.limit || "1000");
-      const data = await fetchWithCache("airports", {
-        ...params,
-        limit: limit.toString()
-      });
-      
-      if (Array.isArray(data) && data.length > 0) {
-        airportCache.data = data;
-        airportCache.timestamp = Date.now();
-        airportCache.isComprehensive = true;
-        console.log(`Cached ${data.length} airports comprehensively`);
-        
-        return filterAirports(data, params);
-      }
-      
-      return data as Airport[];
-    }
-    
     const data = await fetchWithCache("airports", params);
     return data as Airport[];
   } catch (error) {
     console.error("Error fetching airports:", error);
     toast.error("Failed to fetch airport data. Please try again later.");
     return [];
+  }
+}
+
+export async function fetchAirportByIATA(iataCode: string): Promise<Airport | null> {
+  if (!iataCode) return null;
+  
+  const formattedCode = iataCode.trim().toUpperCase();
+  if (formattedCode.length !== 3) {
+    console.warn("Invalid IATA code format:", iataCode);
+    return null;
+  }
+  
+  try {
+    console.log(`Fetching airport by IATA code: ${formattedCode}`);
+    const data = await fetchWithCache("airports", { iata_code: formattedCode });
+    
+    if (Array.isArray(data) && data.length > 0) {
+      console.log(`Found airport for IATA ${formattedCode}:`, data[0]);
+      return data[0] as Airport;
+    }
+    
+    console.log(`No airport found for IATA code: ${formattedCode}`);
+    return null;
+  } catch (error) {
+    console.error(`Error fetching airport by IATA ${formattedCode}:`, error);
+    return null;
   }
 }
 
@@ -774,65 +755,24 @@ export async function fetchComprehensiveAirlines(): Promise<Airline[]> {
   }
 }
 
-export async function fetchAirportByIATA(iataCode: string): Promise<Airport | null> {
-  if (!iataCode) return null;
-  
-  const formattedCode = iataCode.trim().toUpperCase();
-  if (formattedCode.length !== 3) {
-    console.warn("Invalid IATA code format:", iataCode);
-    return null;
-  }
-  
+export async function fetchArrivals(params: Record<string, string> = {}) {
   try {
-    console.log(`Fetching airport by IATA code: ${formattedCode}`);
-    
-    const url = `${BASE_URL}/airports?api_key=${API_KEY}&iata_code=${formattedCode}`;
-    console.log(`Making direct API call to: ${url}`);
-    
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    console.log(`Direct API response for IATA ${formattedCode}:`, data);
-    
-    if (data && data.response) {
-      if (Array.isArray(data.response) && data.response.length > 0) {
-        console.log(`Found airport for IATA ${formattedCode} from direct API call:`, data.response[0]);
-        return data.response[0] as Airport;
-      } else {
-        console.log(`API returned empty result for IATA ${formattedCode}:`, data);
-      }
-    } else {
-      console.error(`Invalid API response structure for IATA ${formattedCode}:`, data);
-    }
-    
-    console.log(`Direct API call failed, trying cached approach for IATA ${formattedCode}`);
-    const airports = await fetchAirports({ iata_code: formattedCode });
-    
-    if (airports && airports.length > 0) {
-      console.log(`Found airport for IATA ${formattedCode} from cache:`, airports[0]);
-      return airports[0];
-    }
-    
-    if (airportCache.isComprehensive) {
-      const cachedAirport = airportCache.data.find(airport => 
-        airport.iata_code && airport.iata_code.toUpperCase() === formattedCode
-      );
-      
-      if (cachedAirport) {
-        console.log(`Found airport for IATA ${formattedCode} in comprehensive cache:`, cachedAirport);
-        return cachedAirport;
-      }
-    }
-    
-    console.log(`No airport found for IATA code: ${formattedCode}`);
-    return null;
+    const data = await fetchWithCache("arrivals", params);
+    return data as Flight[];
   } catch (error) {
-    console.error(`Error fetching airport by IATA ${formattedCode}:`, error);
-    return null;
+    console.error("Error fetching arrivals:", error);
+    toast.error("Failed to fetch arrival data. Please try again later.");
+    return [];
+  }
+}
+
+export async function fetchDepartures(params: Record<string, string> = {}) {
+  try {
+    const data = await fetchWithCache("departures", params);
+    return data as Flight[];
+  } catch (error) {
+    console.error("Error fetching departures:", error);
+    toast.error("Failed to fetch departure data. Please try again later.");
+    return [];
   }
 }

@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 
 export interface OpenWeatherData {
@@ -98,7 +97,7 @@ interface OpenWeatherForecastResponse {
 }
 
 const API_KEY = '29b3dbc621f5043b1410072eac8431da';
-const BASE_URL = 'https://api.openweathermap.org/data/2.5';
+const BASE_URL = 'https://littleboy-dun.vercel.app/api';
 
 // Helper function to format date
 const formatDay = (timestamp: number): string => {
@@ -249,69 +248,18 @@ export async function fetchWeatherByCity(city: string): Promise<OpenWeatherData 
   }
   
   try {
-    // Fetch current weather
-    const currentWeatherResponse = await fetch(
-      `${BASE_URL}/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`
+    const response = await fetch(
+      `${BASE_URL}/weather?city=${encodeURIComponent(city)}`
     );
     
-    if (!currentWeatherResponse.ok) {
-      const errorData = await currentWeatherResponse.json();
+    if (!response.ok) {
+      const errorData = await response.json();
       toast.error(`Error: ${errorData.message || 'Could not fetch weather data'}`);
-      throw new Error(errorData.message || 'Failed to fetch current weather data');
+      throw new Error(errorData.message || 'Failed to fetch weather data');
     }
     
-    const currentWeatherData: OpenWeatherResponse = await currentWeatherResponse.json();
-    
-    if (!isValidResponse(currentWeatherData)) {
-      toast.error('Invalid weather data received from API');
-      throw new Error('Invalid weather data structure');
-    }
-    
-    // Fetch forecast
-    const forecastResponse = await fetch(
-      `${BASE_URL}/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`
-    );
-    
-    if (!forecastResponse.ok) {
-      const errorData = await forecastResponse.json();
-      toast.error(`Error: ${errorData.message || 'Could not fetch forecast data'}`);
-      throw new Error(errorData.message || 'Failed to fetch forecast data');
-    }
-    
-    const forecastData: OpenWeatherForecastResponse = await forecastResponse.json();
-    
-    if (!forecastData.list || !Array.isArray(forecastData.list)) {
-      toast.error('Invalid forecast data received from API');
-      throw new Error('Invalid forecast data structure');
-    }
-    
-    // Process and combine the data
-    const processedData: OpenWeatherData = {
-      current: {
-        temp: currentWeatherData.main ? Math.round(currentWeatherData.main.temp) : 0,
-        feels_like: currentWeatherData.main ? Math.round(currentWeatherData.main.feels_like) : undefined,
-        condition: currentWeatherData.weather && currentWeatherData.weather[0] ? currentWeatherData.weather[0].main : "Unknown",
-        description: currentWeatherData.weather && currentWeatherData.weather[0] ? currentWeatherData.weather[0].description : undefined,
-        humidity: currentWeatherData.main ? currentWeatherData.main.humidity : 0,
-        wind: currentWeatherData.wind ? Number(currentWeatherData.wind.speed.toFixed(1)) : 0,
-        visibility: currentWeatherData.visibility ? Math.round(currentWeatherData.visibility / 1000) : undefined,
-        pressure: currentWeatherData.main ? currentWeatherData.main.pressure : undefined,
-        icon: currentWeatherData.weather && currentWeatherData.weather[0] ? currentWeatherData.weather[0].icon : "01d",
-        sunrise: currentWeatherData.sys ? currentWeatherData.sys.sunrise : undefined,
-        sunset: currentWeatherData.sys ? currentWeatherData.sys.sunset : undefined,
-        timezone: currentWeatherData.timezone
-      },
-      location: {
-        name: currentWeatherData.name || "Unknown",
-        country: currentWeatherData.sys ? currentWeatherData.sys.country : "Unknown",
-        lat: currentWeatherData.coord ? currentWeatherData.coord.lat : undefined,
-        lon: currentWeatherData.coord ? currentWeatherData.coord.lon : undefined
-      },
-      forecast: processForecastData(forecastData)
-    };
-    
-    return processedData;
-    
+    const data = await response.json();
+    return data as OpenWeatherData;
   } catch (error) {
     console.error("Error fetching weather data:", error);
     return null;
@@ -325,69 +273,18 @@ export async function fetchWeatherByCoords(lat: number, lon: number): Promise<Op
   }
   
   try {
-    // Fetch current weather by coordinates
-    const currentWeatherResponse = await fetch(
-      `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+    const response = await fetch(
+      `${BASE_URL}/weather?lat=${lat}&lon=${lon}`
     );
     
-    if (!currentWeatherResponse.ok) {
-      const errorData = await currentWeatherResponse.json();
+    if (!response.ok) {
+      const errorData = await response.json();
       toast.error(`Error: ${errorData.message || 'Could not fetch weather data'}`);
-      throw new Error(errorData.message || 'Failed to fetch current weather data');
+      throw new Error(errorData.message || 'Failed to fetch weather data');
     }
     
-    const currentWeatherData: OpenWeatherResponse = await currentWeatherResponse.json();
-    
-    if (!isValidResponse(currentWeatherData)) {
-      toast.error('Invalid weather data received from API');
-      throw new Error('Invalid weather data structure');
-    }
-    
-    // Fetch forecast by coordinates
-    const forecastResponse = await fetch(
-      `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
-    );
-    
-    if (!forecastResponse.ok) {
-      const errorData = await forecastResponse.json();
-      toast.error(`Error: ${errorData.message || 'Could not fetch forecast data'}`);
-      throw new Error(errorData.message || 'Failed to fetch forecast data');
-    }
-    
-    const forecastData: OpenWeatherForecastResponse = await forecastResponse.json();
-    
-    if (!forecastData.list || !Array.isArray(forecastData.list)) {
-      toast.error('Invalid forecast data received from API');
-      throw new Error('Invalid forecast data structure');
-    }
-    
-    // Process and combine the data
-    const processedData: OpenWeatherData = {
-      current: {
-        temp: currentWeatherData.main ? Math.round(currentWeatherData.main.temp) : 0,
-        feels_like: currentWeatherData.main ? Math.round(currentWeatherData.main.feels_like) : undefined,
-        condition: currentWeatherData.weather && currentWeatherData.weather[0] ? currentWeatherData.weather[0].main : "Unknown",
-        description: currentWeatherData.weather && currentWeatherData.weather[0] ? currentWeatherData.weather[0].description : undefined,
-        humidity: currentWeatherData.main ? currentWeatherData.main.humidity : 0,
-        wind: currentWeatherData.wind ? Number(currentWeatherData.wind.speed.toFixed(1)) : 0,
-        visibility: currentWeatherData.visibility ? Math.round(currentWeatherData.visibility / 1000) : undefined,
-        pressure: currentWeatherData.main ? currentWeatherData.main.pressure : undefined,
-        icon: currentWeatherData.weather && currentWeatherData.weather[0] ? currentWeatherData.weather[0].icon : "01d",
-        sunrise: currentWeatherData.sys ? currentWeatherData.sys.sunrise : undefined,
-        sunset: currentWeatherData.sys ? currentWeatherData.sys.sunset : undefined,
-        timezone: currentWeatherData.timezone
-      },
-      location: {
-        name: currentWeatherData.name || "Unknown",
-        country: currentWeatherData.sys ? currentWeatherData.sys.country : "Unknown",
-        lat: currentWeatherData.coord ? currentWeatherData.coord.lat : undefined,
-        lon: currentWeatherData.coord ? currentWeatherData.coord.lon : undefined
-      },
-      forecast: processForecastData(forecastData)
-    };
-    
-    return processedData;
-    
+    const data = await response.json();
+    return data as OpenWeatherData;
   } catch (error) {
     console.error("Error fetching weather data by coordinates:", error);
     return null;
