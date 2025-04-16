@@ -102,6 +102,11 @@ export interface Airport {
   lon: number;
   alt: number;
   timezone: string;
+  
+  iata_code?: string;
+  icao_code?: string;
+  country_code?: string;
+  distance?: number;
 }
 
 export interface Airline {
@@ -319,7 +324,16 @@ export async function fetchAirportByIATA(iata: string): Promise<Airport | null> 
     const res = await fetch(`https://littleboy-dun.vercel.app/api/airports?iata=${formattedCode}`);
     if (!res.ok) throw new Error("Failed to fetch airport data");
     const data = await res.json();
-    return data;
+    
+    if (data) {
+      return {
+        ...data,
+        iata_code: data.iata,
+        icao_code: data.icao,
+        country_code: data.country_code || data.country.substring(0, 2),
+      };
+    }
+    return null;
   } catch (error) {
     console.error(`Error fetching airport by IATA ${formattedCode}:`, error);
     throw error;
@@ -338,7 +352,26 @@ export async function searchAirportByIATA(iataCode: string): Promise<Airport[]> 
     
     const data = await response.json();
     console.log('Airport search response:', data);
-    return data;
+    
+    if (Array.isArray(data)) {
+      return data.map(airport => ({
+        ...airport,
+        iata_code: airport.iata_code || airport.iata,
+        icao_code: airport.icao_code || airport.icao,
+        country_code: airport.country_code || (airport.country ? airport.country.substring(0, 2) : '')
+      }));
+    }
+    
+    if (data && typeof data === 'object') {
+      return [{
+        ...data,
+        iata_code: data.iata_code || data.iata,
+        icao_code: data.icao_code || data.icao,
+        country_code: data.country_code || (data.country ? data.country.substring(0, 2) : '')
+      }];
+    }
+    
+    return [];
   } catch (error) {
     console.error('Error searching airport by IATA:', error);
     throw error;
@@ -352,6 +385,16 @@ export async function fetchNearbyAirports(lat: number, lng: number, distance: nu
       lng: lng.toString(),
       distance: distance.toString()
     });
+    
+    if (Array.isArray(data)) {
+      return data.map(airport => ({
+        ...airport,
+        iata_code: airport.iata_code || airport.iata,
+        icao_code: airport.icao_code || airport.icao,
+        country_code: airport.country_code || (airport.country ? airport.country.substring(0, 2) : '')
+      })) as Airport[];
+    }
+    
     return data as Airport[];
   } catch (error) {
     console.error("Error fetching nearby airports:", error);
@@ -576,13 +619,16 @@ export async function fetchAirportsAndAirlines(searchTerm: string = "") {
     }
     
     if (airportCache.isComprehensive) {
-      const filteredAirports = airportCache.data.filter(airport => 
-        (airport.name && airport.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (airport.iata_code && airport.iata_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (airport.icao_code && airport.icao_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (airport.city && airport.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (airport.country_code && airport.country_code.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+      const filteredAirports = airportCache.data.filter(airport => {
+        const countryCode = airport.country_code?.toLowerCase() || '';
+        const city = airport.city?.toLowerCase() || '';
+        const name = airport.name.toLowerCase();
+        const regionLower = region.toLowerCase();
+        
+        return countryCode.includes(regionLower) || 
+               city.includes(regionLower) || 
+               name.includes(regionLower);
+      });
       
       if (filteredAirports.length > 0) {
         return filteredAirports.slice(0, 100);
