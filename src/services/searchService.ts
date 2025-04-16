@@ -13,11 +13,10 @@ export async function fetchSuggestions(query: string) {
     const processedData = (data as SuggestResult[]).map(item => {
       if (item.type === "airport") {
         // Add lat/lon if it's an airport result
-        const airport = item as Airport;
         return {
           ...item,
-          lat: airport.lat,
-          lon: airport.lon
+          lat: item.lat || 0,
+          lon: item.lon || 0
         };
       }
       return item;
@@ -62,7 +61,29 @@ export async function fetchAirportsAndAirlines(searchTerm: string = "") {
     
     const suggestions = await fetchSuggestions(searchTerm);
     if (suggestions.length > 0) {
-      return suggestions;
+      // Filter to only include airport type results and convert them to Airport type
+      const airportSuggestions = suggestions
+        .filter(item => item.type === "airport")
+        .map(item => {
+          // Create a proper Airport object from the SuggestResult
+          return {
+            id: item.iata_code || String(Math.random()),
+            name: item.name,
+            city: item.city || "",
+            country: item.country_code || "",
+            iata: item.iata_code || "",
+            icao: item.icao_code || "",
+            lat: item.lat || 0,
+            lon: item.lon || 0,
+            alt: 0, // Default value since SuggestResult doesn't have this
+            timezone: "",  // Default value since SuggestResult doesn't have this
+            iata_code: item.iata_code,
+            icao_code: item.icao_code,
+            country_code: item.country_code
+          } as Airport;
+        });
+      
+      return airportSuggestions;
     }
     
     return fetchWithCache("airports", { 
