@@ -5,7 +5,12 @@ import FlightTracker from '@/components/FlightTracker';
 import FlightMap from '@/components/FlightMap';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, List } from 'lucide-react';
+import { MapPin, List, Info } from 'lucide-react';
+import { 
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 const LiveFlightTracker = () => {
   return (
@@ -23,6 +28,15 @@ const LiveFlightTracker = () => {
             <p className="text-xl text-gray-light animate-fade-in" style={{ animationDelay: '0.2s' }}>
               Track real-time aircraft positions, routes, and flight statuses across the globe.
             </p>
+            
+            <div className="mt-4 bg-gray-dark/30 p-3 rounded-lg border border-gray-light/10 text-sm">
+              <div className="flex items-center gap-2">
+                <Info className="h-4 w-4 text-purple" />
+                <p className="text-gray-light">
+                  Currently tracking aircraft around Soekarno-Hatta International Airport (CGK) in Jakarta, Indonesia.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -44,6 +58,30 @@ const LiveFlightTracker = () => {
           <TabsContent value="map" className="mt-0 w-full">
             <div className="bg-gradient-to-b from-purple/5 to-transparent p-1 rounded-xl">
               <FlightMap />
+            </div>
+            
+            <div className="mt-4 text-sm text-gray-light text-center flex items-center justify-center gap-2">
+              <span>✈️ Click on an aircraft to view its details</span>
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <button className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-gray-light/10 hover:bg-gray-light/20">
+                    <Info className="h-3 w-3" />
+                  </button>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80 bg-gray-dark border-gray-light/20 text-gray-light p-4">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-white">About this data</h4>
+                    <p className="text-xs">
+                      This flight tracker displays real-time aircraft data using ADS-B (Automatic Dependent Surveillance–Broadcast) 
+                      technology. Data is refreshed every 30 seconds and includes commercial, private, and military aircraft 
+                      broadcasting their position.
+                    </p>
+                    <p className="text-xs">
+                      Not all aircraft broadcast complete information. Position accuracy and coverage may vary.
+                    </p>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
             </div>
           </TabsContent>
           

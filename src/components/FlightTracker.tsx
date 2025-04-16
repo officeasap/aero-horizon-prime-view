@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import { fetchLiveFlights, Flight, SuggestResult } from '@/services/aviationService';
-import { Loader2, Plane, ArrowRight, Search } from 'lucide-react';
+import { fetchAircraftInRange, fetchAircraftDetails, Flight, SuggestResult } from '@/services/aviationService';
+import { Loader2, Plane, ArrowRight, Search, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,12 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import AutocompleteSearch from '@/components/AutocompleteSearch';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+
+// Default coordinates for Soekarno-Hatta Airport (CGK)
+const DEFAULT_LAT = -6.127;
+const DEFAULT_LON = 106.653;
+const DEFAULT_DIST = 200; // 200 km radius
 
 const FlightTracker = () => {
   const [flights, setFlights] = useState<Flight[]>([]);
@@ -16,48 +23,27 @@ const FlightTracker = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAirport, setSelectedAirport] = useState<SuggestResult | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
+  const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [flightDetailsOpen, setFlightDetailsOpen] = useState(false);
 
   // Fetch flights on component mount
   useEffect(() => {
-    const loadFlights = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        // If an airport is selected, fetch flights for that airport
-        const params: Record<string, string> = {};
-        if (selectedAirport && selectedAirport.iata_code) {
-          if (selectedAirport.type === 'airport') {
-            params.dep_iata = selectedAirport.iata_code;
-          }
-        }
-        
-        console.log('Fetching flights with params:', params);
-        const data = await fetchLiveFlights(params);
-        
-        if (data.length === 0) {
-          setError('No active flights found right now. Please try again later.');
-        } else {
-          setFlights(data);
-          setFilteredFlights(data);
-          console.log(`Successfully loaded ${data.length} flights`);
-        }
-      } catch (err) {
-        console.error('Error fetching flights:', err);
-        setError('Failed to load flight data. Please try again later.');
-        toast.error('Failed to load flight data');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadFlights();
     
-    // Set up interval to refresh data every 60 seconds
+    // Set up interval to refresh data every 30 seconds
     const interval = setInterval(() => {
-      loadFlights();
-    }, 60000);
+      loadFlights(false);
+    }, 30000);
     
-    return () => clearInterval(interval);
+    setRefreshInterval(interval);
+    
+    return () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    };
   }, [selectedAirport]);
 
   // Filter flights based on search term
@@ -69,9 +55,15 @@ const FlightTracker = () => {
 
     const lowerSearchTerm = searchTerm.toLowerCase();
     const filtered = flights.filter(flight => {
-      // Check flight number
+      // Check flight number/callsign
       const flightNumber = flight.flight_iata || flight.flight_icao || '';
       if (flightNumber.toLowerCase().includes(lowerSearchTerm)) {
+        return true;
+      }
+      
+      // Check aircraft registration
+      const registration = flight.reg_number || '';
+      if (registration.toLowerCase().includes(lowerSearchTerm)) {
         return true;
       }
       
@@ -81,16 +73,47 @@ const FlightTracker = () => {
         return true;
       }
       
-      // Check departure/arrival airports
-      const depAirport = flight.dep_iata || '';
-      const arrAirport = flight.arr_iata || '';
-      
-      return depAirport.toLowerCase().includes(lowerSearchTerm) || 
-             arrAirport.toLowerCase().includes(lowerSearchTerm);
+      return false;
     });
     
     setFilteredFlights(filtered);
   }, [searchTerm, flights]);
+
+  const loadFlights = async (showLoader = true) => {
+    if (showLoader) {
+      setIsLoading(true);
+    }
+    setError(null);
+    
+    try {
+      // Use the coordinates from the selected airport if available, otherwise use default
+      const lat = selectedAirport?.lat || DEFAULT_LAT;
+      const lon = selectedAirport?.lon || DEFAULT_LON;
+      const dist = DEFAULT_DIST;
+      
+      console.log('Fetching flights around coordinates:', { lat, lon, dist });
+      const data = await fetchAircraftInRange(lat, lon, dist);
+      
+      if (data.length === 0) {
+        setError('No active flights found in this area. Please try again later.');
+        setFlights([]);
+        setFilteredFlights([]);
+      } else {
+        setFlights(data);
+        setFilteredFlights(data);
+        console.log(`Successfully loaded ${data.length} flights`);
+        if (!showLoader) {
+          toast.success(`Updated: ${data.length} flights in range`);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching flights:', err);
+      setError('Failed to load flight data. Please try again later.');
+      toast.error('Failed to load flight data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAirportSelect = (item: SuggestResult) => {
     setSelectedAirport(item);
@@ -101,22 +124,29 @@ const FlightTracker = () => {
     setSearchTerm(e.target.value);
   };
 
-  const getFlightStatus = (flight: Flight) => {
-    if (!flight.status) return 'Unknown';
+  const handleRefresh = () => {
+    loadFlights();
+    toast.info('Refreshing flight data...');
+  };
+
+  const handleFlightSelect = async (flight: Flight) => {
+    if (!flight.hex) {
+      toast.error("Cannot fetch details: Missing aircraft identifier");
+      return;
+    }
     
-    switch (flight.status.toLowerCase()) {
-      case 'en-route':
-        return 'In Flight';
-      case 'landed':
-        return 'Landed';
-      case 'scheduled':
-        return 'Scheduled';
-      case 'delayed':
-        return 'Delayed';
-      case 'cancelled':
-        return 'Cancelled';
-      default:
-        return flight.status;
+    setSelectedFlight(flight);
+    setFlightDetailsOpen(true);
+    setDetailsLoading(true);
+    
+    try {
+      const details = await fetchAircraftDetails(flight.hex);
+      setSelectedFlight({...flight, ...details});
+    } catch (err) {
+      console.error('Error fetching flight details:', err);
+      toast.error('Failed to load detailed flight information');
+    } finally {
+      setDetailsLoading(false);
     }
   };
 
@@ -126,14 +156,14 @@ const FlightTracker = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Plane className="text-purple" />
-            <span>Live Flight Tracker</span>
+            <span>Real-Time Flight Tracker</span>
           </CardTitle>
           
           <div className="flex flex-col md:flex-row gap-4 mt-4">
             <div className="flex-1">
               <AutocompleteSearch 
                 onSelect={handleAirportSelect} 
-                placeholder="Search for departure airport..."
+                placeholder="Search for an airport to track..."
                 type="airport"
                 className="w-full"
               />
@@ -142,13 +172,22 @@ const FlightTracker = () => {
             <div className="relative w-full md:w-64">
               <Input
                 type="text"
-                placeholder="Search by flight #, airline, or airport..."
+                placeholder="Search by callsign, registration..."
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="bg-gray-dark/50 border-gray-dark text-white pl-9"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
             </div>
+            
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              className="bg-gray-dark/50 border-gray-dark text-white"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
           </div>
         </CardHeader>
         
@@ -169,7 +208,7 @@ const FlightTracker = () => {
             <div className="py-10 text-center">
               <p className="text-gray-light">{error}</p>
               <Button 
-                onClick={() => window.location.reload()} 
+                onClick={handleRefresh} 
                 variant="outline" 
                 className="mt-4"
               >
@@ -181,7 +220,7 @@ const FlightTracker = () => {
               {selectedAirport && (
                 <div className="mb-4 p-3 bg-purple/10 rounded-md flex items-center justify-between">
                   <div>
-                    <span className="text-sm text-gray-light">Showing flights departing from:</span>
+                    <span className="text-sm text-gray-light">Showing flights around:</span>
                     <p className="font-medium">{selectedAirport.name} ({selectedAirport.iata_code})</p>
                   </div>
                   <Button 
@@ -204,27 +243,31 @@ const FlightTracker = () => {
                   <Table>
                     <TableHeader>
                       <TableRow className="hover:bg-white/5">
-                        <TableHead className="text-purple w-40">Flight</TableHead>
-                        <TableHead className="text-purple">Route</TableHead>
+                        <TableHead className="text-purple w-40">Aircraft</TableHead>
+                        <TableHead className="text-purple">Callsign</TableHead>
                         <TableHead className="text-purple text-right">Altitude</TableHead>
                         <TableHead className="text-purple text-right">Speed</TableHead>
-                        <TableHead className="text-purple text-right">Status</TableHead>
+                        <TableHead className="text-purple text-right">Heading</TableHead>
+                        <TableHead className="text-purple text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredFlights.slice(0, 50).map((flight, index) => (
-                        <TableRow key={`${flight.flight_icao || flight.flight_iata || 'unknown'}-${index}`} className="hover:bg-white/5">
+                      {filteredFlights.map((flight, index) => (
+                        <TableRow 
+                          key={`${flight.hex || flight.flight_icao || 'unknown'}-${index}`} 
+                          className="hover:bg-white/5 cursor-pointer"
+                          onClick={() => handleFlightSelect(flight)}
+                        >
                           <TableCell className="font-medium">
                             <div className="flex flex-col">
-                              <span>{flight.airline_name || (flight.airline_iata ? `${flight.airline_iata} Airlines` : 'Airline information unavailable')}</span>
-                              <span className="text-sm text-gray-light">{flight.flight_iata || flight.flight_icao || 'Unknown'}</span>
+                              <span>{flight.reg_number || 'Unknown'}</span>
+                              <span className="text-sm text-gray-light">{flight.aircraft_icao || 'Unknown type'}</span>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono">{flight.dep_iata || 'N/A'}</span>
-                              <ArrowRight className="h-3 w-3 text-gray-light" />
-                              <span className="font-mono">{flight.arr_iata || 'N/A'}</span>
+                            <div className="flex flex-col">
+                              <span className="font-mono">{flight.flight_icao || 'N/A'}</span>
+                              <span className="text-sm text-gray-light">{flight.airline_name || 'Unknown operator'}</span>
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
@@ -234,32 +277,126 @@ const FlightTracker = () => {
                             {flight.speed ? `${Math.round(flight.speed)} kts` : 'N/A'}
                           </TableCell>
                           <TableCell className="text-right">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              flight.status === 'en-route' ? 'bg-green-500/20 text-green-400' : 
-                              flight.status === 'landed' ? 'bg-blue-500/20 text-blue-400' :
-                              flight.status === 'delayed' ? 'bg-amber-500/20 text-amber-400' :
-                              flight.status === 'cancelled' ? 'bg-red-500/20 text-red-400' :
-                              'bg-gray-500/20 text-gray-400'
-                            }`}>
-                              {getFlightStatus(flight)}
-                            </span>
+                            {flight.dir ? `${Math.round(flight.dir)}°` : 'N/A'}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleFlightSelect(flight);
+                              }}
+                              className="text-purple hover:text-white"
+                            >
+                              Details
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                   
-                  {filteredFlights.length > 50 && (
-                    <div className="text-center py-4 text-sm text-gray-light">
-                      Showing top 50 results of {filteredFlights.length} total flights
-                    </div>
-                  )}
+                  <div className="text-center py-4 text-sm text-gray-light">
+                    Showing {filteredFlights.length} of {flights.length} total aircraft
+                  </div>
                 </div>
               )}
             </>
           )}
         </CardContent>
       </Card>
+
+      {/* Flight Details Dialog */}
+      <Dialog open={flightDetailsOpen} onOpenChange={setFlightDetailsOpen}>
+        <DialogContent className="bg-gray-dark border-gray-light/20 text-white max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <Plane className="text-purple" />
+              Aircraft Details
+            </DialogTitle>
+            <DialogDescription className="text-gray-light">
+              {selectedFlight?.flight_icao || selectedFlight?.reg_number || 'Aircraft information'}
+            </DialogDescription>
+          </DialogHeader>
+
+          {detailsLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="h-6 w-6 animate-spin text-purple mr-2" />
+              <span>Loading detailed information...</span>
+            </div>
+          ) : (
+            selectedFlight && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="space-y-4">
+                  <div className="bg-gray-light/5 p-4 rounded-md">
+                    <h3 className="text-lg font-medium mb-2">Aircraft Information</h3>
+                    <div className="grid grid-cols-2 gap-y-2">
+                      <span className="text-gray-light">Registration:</span>
+                      <span>{selectedFlight.reg_number || 'Unknown'}</span>
+                      
+                      <span className="text-gray-light">ICAO 24-bit:</span>
+                      <span className="font-mono">{selectedFlight.hex || 'Unknown'}</span>
+                      
+                      <span className="text-gray-light">Aircraft Type:</span>
+                      <span>{selectedFlight.aircraft_icao || 'Unknown'}</span>
+                      
+                      <span className="text-gray-light">Squawk:</span>
+                      <span>{selectedFlight.squawk || 'None'}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-light/5 p-4 rounded-md">
+                    <h3 className="text-lg font-medium mb-2">Flight Information</h3>
+                    <div className="grid grid-cols-2 gap-y-2">
+                      <span className="text-gray-light">Callsign:</span>
+                      <span className="font-mono">{selectedFlight.flight_icao || 'Unknown'}</span>
+                      
+                      <span className="text-gray-light">Operator:</span>
+                      <span>{selectedFlight.airline_name || 'Unknown'}</span>
+                      
+                      <span className="text-gray-light">Status:</span>
+                      <span className="px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                        In Flight
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="bg-gray-light/5 p-4 rounded-md">
+                    <h3 className="text-lg font-medium mb-2">Flight Data</h3>
+                    <div className="grid grid-cols-2 gap-y-2">
+                      <span className="text-gray-light">Altitude:</span>
+                      <span>{selectedFlight.alt ? `${Math.round(selectedFlight.alt).toLocaleString()} ft` : 'Unknown'}</span>
+                      
+                      <span className="text-gray-light">Ground Speed:</span>
+                      <span>{selectedFlight.speed ? `${Math.round(selectedFlight.speed)} kts` : 'Unknown'}</span>
+                      
+                      <span className="text-gray-light">Vertical Speed:</span>
+                      <span>{selectedFlight.v_speed ? `${Math.round(selectedFlight.v_speed)} ft/min` : 'Unknown'}</span>
+                      
+                      <span className="text-gray-light">Heading:</span>
+                      <span>{selectedFlight.dir ? `${Math.round(selectedFlight.dir)}°` : 'Unknown'}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-light/5 p-4 rounded-md">
+                    <h3 className="text-lg font-medium mb-2">Position</h3>
+                    <div className="grid grid-cols-2 gap-y-2">
+                      <span className="text-gray-light">Latitude:</span>
+                      <span>{selectedFlight.lat ? selectedFlight.lat.toFixed(6) : 'Unknown'}</span>
+                      
+                      <span className="text-gray-light">Longitude:</span>
+                      <span>{selectedFlight.lng ? selectedFlight.lng.toFixed(6) : 'Unknown'}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
