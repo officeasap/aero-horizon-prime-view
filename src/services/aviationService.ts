@@ -623,11 +623,11 @@ export async function fetchAirportsAndAirlines(searchTerm: string = "") {
         const countryCode = airport.country_code?.toLowerCase() || '';
         const city = airport.city?.toLowerCase() || '';
         const name = airport.name.toLowerCase();
-        const regionLower = region.toLowerCase();
+        const searchTermLower = searchTerm.toLowerCase();
         
-        return countryCode.includes(regionLower) || 
-               city.includes(regionLower) || 
-               name.includes(regionLower);
+        return countryCode.includes(searchTermLower) || 
+               city.includes(searchTermLower) || 
+               name.includes(searchTermLower);
       });
       
       if (filteredAirports.length > 0) {
