@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Cloud, CloudRain, CloudSnow, Sun, Wind, Droplets, Eye, Clock, Search, MapPin, Loader2, AlertTriangle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -9,7 +8,6 @@ import { cn } from '@/lib/utils';
 import { fetchWeatherByCity, fetchWeatherByCoords, OpenWeatherData } from '@/services/openWeatherService';
 import { toast } from 'sonner';
 
-// Icon mapping based on OpenWeather icon codes
 const weatherIconMap: Record<string, React.ReactNode> = {
   '01d': <Sun className="text-yellow-400" />,
   '01n': <Sun className="text-gray-300" />,
@@ -31,7 +29,6 @@ const weatherIconMap: Record<string, React.ReactNode> = {
   '50n': <Wind className="text-gray-400" />,
 };
 
-// Weather condition background classes based on conditions
 const weatherBackgroundMap: Record<string, string> = {
   'Clear': 'from-yellow-500/20 to-orange-500/20',
   'Clouds': 'from-blue-400/20 to-gray-400/20',
@@ -65,7 +62,6 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
   const [geoPermissionStatus, setGeoPermissionStatus] = useState<'granted' | 'denied' | 'prompt' | 'unknown'>('unknown');
   const [isRetrying, setIsRetrying] = useState(false);
 
-  // Handle geolocation
   useEffect(() => {
     const checkGeoPermission = async () => {
       try {
@@ -76,11 +72,9 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
           if (permission.state === 'granted') {
             getLocationWeather();
           } else {
-            // Default to London if no permission
             fetchCityWeather('London');
           }
         } else {
-          // Try to get location anyway for browsers without permission API
           getLocationWeather();
         }
       } catch (e) {
@@ -93,7 +87,6 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
     
     checkGeoPermission();
     
-    // Cleanup timer if component unmounts during initial load
     return () => {
       if (initialLoading) {
         setInitialLoading(false);
@@ -101,7 +94,6 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
     };
   }, []);
 
-  // Listen for prop city changes
   useEffect(() => {
     if (propSelectedCity && propSelectedCity !== selectedCity) {
       setSelectedCity(propSelectedCity);
@@ -128,7 +120,7 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
             console.error('Error fetching weather by coordinates:', error);
             setError('Failed to fetch weather for your location');
             toast.error('Could not get weather for your location');
-            fetchCityWeather('London'); // Fallback
+            fetchCityWeather('London');
           } finally {
             setLoading(false);
           }
@@ -136,14 +128,14 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
         (err) => {
           console.error('Geolocation error:', err);
           setError('Geolocation permission denied');
-          fetchCityWeather('London'); // Fallback
+          fetchCityWeather('London');
           setLoading(false);
         },
-        { timeout: 10000 } // 10 second timeout for geolocation
+        { timeout: 10000 }
       );
     } else {
       setError('Geolocation is not supported by your browser');
-      fetchCityWeather('London'); // Fallback
+      fetchCityWeather('London');
     }
   };
 
@@ -169,7 +161,6 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
       setError(`Failed to fetch weather data for ${city}`);
       if (city !== 'London' && !isRetrying) {
         setIsRetrying(true);
-        // Fallback to London if not already trying
         toast.error(`Could not load weather for ${city}, trying London instead`);
         fetchCityWeather('London');
       } else {
@@ -195,7 +186,6 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
     }
   };
 
-  // Format timestamp to time
   const formatTime = (timestamp: number, timezone: number = 0) => {
     try {
       const date = new Date((timestamp + timezone) * 1000);
@@ -206,7 +196,6 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
     }
   };
 
-  // Format day name
   const formatDay = (timestamp: number) => {
     try {
       const date = new Date(timestamp * 1000);
@@ -217,7 +206,6 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
     }
   };
 
-  // Get background class based on weather condition
   const getWeatherBackground = (condition: string) => {
     return weatherBackgroundMap[condition] || 'from-blue-400/20 to-gray-600/20';
   };
@@ -274,7 +262,7 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
             />
           </div>
           <Button 
-            className="bg-purple hover:bg-purple-600 text-white purple-glow"
+            className="bg-[#8B0000] hover:bg-[#A80000] text-white red-glow"
             onClick={handleSearch}
             disabled={loading}
           >
