@@ -7,6 +7,9 @@ export * from './flightService';
 export * from './searchService';
 export * from './shared/apiUtils';
 
+// Import Flight type for proper typing
+import { Flight } from './shared/types';
+
 // ADSB Flight tracking API integration
 export interface AircraftData {
   hex: string;

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -32,7 +31,7 @@ const FlightMap: React.FC<FlightMapProps> = ({ selectedAirline, selectedFlight }
   const [searchTerm, setSearchTerm] = useState('');
   const [flights, setFlights] = useState<Flight[]>([]);
   const [filteredFlights, setFilteredFlights] = useState<Flight[]>([]);
-  const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
   const [selectedAircraft, setSelectedAircraft] = useState<Flight | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
@@ -247,6 +246,7 @@ const FlightMap: React.FC<FlightMapProps> = ({ selectedAirline, selectedFlight }
         loadFlights();
       }, 30000);
       
+      // Store the interval ID, not the interval itself
       setRefreshInterval(interval);
     });
     

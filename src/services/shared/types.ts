@@ -1,4 +1,3 @@
-
 export interface Flight {
   hex?: string;
   reg_number?: string;
@@ -192,4 +191,6 @@ export interface SuggestResult {
   icao_code?: string;
   country_code?: string;
   type: "airport" | "city" | "airline";
+  lat?: number;
+  lon?: number;
 }

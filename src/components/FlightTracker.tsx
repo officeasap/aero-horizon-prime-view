@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { fetchAircraftInRange, fetchAircraftDetails, Flight, SuggestResult } from '@/services/aviationService';
-import { Loader2, Plane, ArrowRight, Search, RefreshCw } from 'lucide-react';
+import { fetchAircraftInRange, fetchAircraftDetails, Flight } from '@/services/aviationService';
+import { Loader2, Plane, Search, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,11 +10,18 @@ import { Skeleton } from '@/components/ui/skeleton';
 import AutocompleteSearch from '@/components/AutocompleteSearch';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { SuggestResult } from '@/services/aviationService';
 
 // Default coordinates for Soekarno-Hatta Airport (CGK)
 const DEFAULT_LAT = -6.127;
 const DEFAULT_LON = 106.653;
 const DEFAULT_DIST = 200; // 200 km radius
+
+// Extended SuggestResult interface with lat/lon properties
+interface AirportSuggestResult extends SuggestResult {
+  lat?: number;
+  lon?: number;
+}
 
 const FlightTracker = () => {
   const [flights, setFlights] = useState<Flight[]>([]);
@@ -22,8 +29,8 @@ const FlightTracker = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedAirport, setSelectedAirport] = useState<SuggestResult | null>(null);
-  const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
+  const [selectedAirport, setSelectedAirport] = useState<AirportSuggestResult | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
   const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [flightDetailsOpen, setFlightDetailsOpen] = useState(false);
@@ -37,6 +44,7 @@ const FlightTracker = () => {
       loadFlights(false);
     }, 30000);
     
+    // Store the interval ID, not the interval itself
     setRefreshInterval(interval);
     
     return () => {
@@ -116,7 +124,9 @@ const FlightTracker = () => {
   };
 
   const handleAirportSelect = (item: SuggestResult) => {
-    setSelectedAirport(item);
+    // Cast to our extended interface that includes lat/lon
+    const airportItem = item as AirportSuggestResult;
+    setSelectedAirport(airportItem);
     toast.success(`Selected ${item.name}`);
   };
 

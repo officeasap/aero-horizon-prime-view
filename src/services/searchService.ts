@@ -8,7 +8,22 @@ export async function fetchSuggestions(query: string) {
     if (!query || query.length < 2) return [];
     
     const data = await fetchWithCache("suggest", { q: query });
-    return data as SuggestResult[];
+    
+    // Ensure all results have the expected fields
+    const processedData = (data as SuggestResult[]).map(item => {
+      if (item.type === "airport") {
+        // Add lat/lon if it's an airport result
+        const airport = item as Airport;
+        return {
+          ...item,
+          lat: airport.lat,
+          lon: airport.lon
+        };
+      }
+      return item;
+    });
+    
+    return processedData;
   } catch (error) {
     console.error("Error fetching suggestions:", error);
     toast.error("Failed to fetch search suggestions. Please try again later.");
