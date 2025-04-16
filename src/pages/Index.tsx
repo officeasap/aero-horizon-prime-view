@@ -3,10 +3,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BackgroundAircraft from '@/components/BackgroundAircraft';
 import VideoBackground from '@/components/VideoBackground';
-import { Plane, MapPin, BarChart3, Search, Clock, Calendar, Cloud, AlertTriangle, Phone } from 'lucide-react';
+import { Plane, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AboutSection from '@/components/AboutSection';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 
 const Index = () => {
   return (
@@ -32,12 +31,6 @@ const Index = () => {
                 <Button variant="redGradient" size="lg" className="w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000]">
                   <Plane className="h-4 w-4" />
                   Sign up for free
-                </Button>
-              </a>
-              <a href="/airports-airlines" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <Search className="h-4 w-4" />
-                  Search Airports
                 </Button>
               </a>
               <a href="/world-clock" target="_blank" rel="noopener noreferrer">
@@ -209,10 +202,7 @@ const Index = () => {
         </div>
       </section>
       
-      {/* About Section */}
       <AboutSection />
-      
-      {/* Footer */}
       <Footer />
     </div>
   );
