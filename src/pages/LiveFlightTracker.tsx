@@ -5,14 +5,27 @@ import FlightTracker from '@/components/FlightTracker';
 import FlightMap from '@/components/FlightMap';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, List, Info, Plane } from 'lucide-react';
+import { MapPin, List, Info, Plane, LocateFixed } from 'lucide-react';
 import { 
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Button } from '@/components/ui/button';
+import { fetchNearbyAircraft } from '@/services/aviationService';
+import { toast } from 'sonner';
 
 const LiveFlightTracker = () => {
+  const handleNearbySearch = async () => {
+    try {
+      toast.info("Finding aircraft near your location...");
+      await fetchNearbyAircraft();
+      // The map and list components will update with the new data
+    } catch (error) {
+      toast.error("Could not access your location or find nearby aircraft");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-dark text-white overflow-x-hidden">
       <Header />
@@ -23,10 +36,10 @@ const LiveFlightTracker = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold font-space mb-4 animate-fade-in">
-              Most <span className="text-purple animate-text-glow">Tracked Flights</span>
+              Global <span className="text-purple animate-text-glow">Flight Tracker</span>
             </h1>
             <p className="text-xl text-gray-light animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Track the world's most followed flights in real-time with live positions and detailed information.
+              Track flights in real-time with data from the OpenSky Network
             </p>
           </div>
         </div>
@@ -51,7 +64,7 @@ const LiveFlightTracker = () => {
               <FlightMap />
             </div>
             
-            <div className="mt-4 text-sm text-gray-light text-center flex items-center justify-center gap-2">
+            <div className="mt-4 text-sm text-gray-light text-center flex flex-col md:flex-row items-center justify-center gap-2">
               <span>✈️ Click on an aircraft to view its details</span>
               <HoverCard>
                 <HoverCardTrigger asChild>
@@ -63,13 +76,23 @@ const LiveFlightTracker = () => {
                   <div className="space-y-2">
                     <h4 className="text-sm font-semibold text-white">About this data</h4>
                     <p className="text-xs">
-                      This flight tracker displays real-time data for the most tracked flights worldwide. 
+                      This flight tracker displays real-time data from the OpenSky Network API. 
                       Data is refreshed every 60 seconds and includes commercial, private, and special flights 
-                      that are currently being followed by users around the globe.
+                      currently in the air worldwide.
                     </p>
                   </div>
                 </HoverCardContent>
               </HoverCard>
+              
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="ml-4 text-xs bg-gray-dark/50 border-gray-dark text-white"
+                onClick={handleNearbySearch}
+              >
+                <LocateFixed className="h-3 w-3 mr-1" />
+                Find nearby aircraft
+              </Button>
             </div>
           </TabsContent>
           

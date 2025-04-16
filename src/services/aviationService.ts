@@ -10,259 +10,198 @@ export * from './shared/apiUtils';
 // Import Flight type for proper typing
 import { Flight } from './shared/types';
 
-export interface FR24FlightData {
-  id: string;
-  detail: {
-    callsign: string;
-    airline: {
-      name: string;
-      code: string;
-    };
-    aircraft: {
-      model: string;
-      registration: string;
-    };
-    departure: {
-      name: string;
-      code: string;
-    };
-    arrival: {
-      name: string;
-      code: string;
-    };
-    status: string;
-    position: {
-      latitude: number;
-      longitude: number;
-      altitude: number;
-      heading: number;
-      groundspeed: number;
-    };
-  };
+// Define the OpenSky API response structure
+export interface OpenSkyState {
+  icao24: string;           // ICAO24 aircraft address
+  callsign: string;         // Callsign
+  origin_country: string;   // Country of origin
+  time_position: number;    // Unix timestamp for last position update
+  last_contact: number;     // Unix timestamp for last update
+  longitude: number;        // WGS-84 longitude in decimal degrees
+  latitude: number;         // WGS-84 latitude in decimal degrees
+  baro_altitude: number;    // Barometric altitude in meters
+  on_ground: boolean;       // Indicates if aircraft is on ground
+  velocity: number;         // Velocity in m/s
+  true_track: number;       // True track in decimal degrees (0-359)
+  vertical_rate: number;    // Vertical rate in m/s
+  sensors: number[];        // IDs of sensors which received messages from this aircraft
+  geo_altitude: number;     // Geometric altitude in meters
+  squawk: string;           // Transponder code
+  spi: boolean;             // Special purpose indicator
+  position_source: number;  // Source of position data (0=ADS-B, 1=ASTERIX, 2=MLAT, 3=FLARM)
 }
 
-export interface FR24Response {
-  data: FR24FlightData[];
-  success?: boolean;
-  error?: string;
+export interface OpenSkyResponse {
+  time: number;
+  states: (string | number | boolean | string[] | number[])[][];
 }
 
+/**
+ * Fetch most tracked flights from OpenSky Network API
+ */
 export async function fetchMostTrackedFlights(): Promise<Flight[]> {
   try {
-    const url = 'https://flightradar243.p.rapidapi.com/v1/flights/most-tracked';
+    const url = 'https://opensky-network.org/api/states/all';
     
-    const options = {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': 'f4e8980dcbmsh08413d11c126496p1819c9jsnd8bb6a7f4b9d',
-        'X-RapidAPI-Host': 'flightradar243.p.rapidapi.com'
-      }
-    };
-
-    console.log('Fetching most tracked flights data');
-    const response = await fetch(url, options);
+    console.log('Fetching flights from OpenSky Network API');
+    const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
     }
     
-    const data = await response.json() as FR24Response;
+    const data = await response.json() as OpenSkyResponse;
     
-    // Check if the API returned success: false or an empty data array
-    if (data.success === false || !data.data || data.data.length === 0) {
-      console.warn('API returned empty or error response:', data);
+    // Check if the API returned data
+    if (!data.states || data.states.length === 0) {
+      console.warn('API returned empty data');
       return [];
     }
     
-    // Format the data to match our Flight interface
-    const formattedData: Flight[] = data.data.map(flight => {
-      if (!flight.detail) {
-        console.warn('Flight missing detail property:', flight);
-        return null;
-      }
-      
-      return {
-        flight_icao: flight.detail.callsign,
-        flight_iata: flight.detail.callsign,
-        lat: flight.detail.position?.latitude,
-        lng: flight.detail.position?.longitude,
-        alt: flight.detail.position?.altitude,
-        dir: flight.detail.position?.heading,
-        speed: flight.detail.position?.groundspeed,
-        reg_number: flight.detail.aircraft?.registration,
-        aircraft_icao: flight.detail.aircraft?.model,
-        status: flight.detail.status || 'en-route',
-        airline_name: flight.detail.airline?.name,
-        dep_iata: flight.detail.departure?.code,
-        dep_name: flight.detail.departure?.name,
-        arr_iata: flight.detail.arrival?.code,
-        arr_name: flight.detail.arrival?.name,
-      };
-    }).filter(Boolean) as Flight[];
+    // Convert OpenSky states to Flight objects
+    const formattedData: Flight[] = data.states
+      .filter(state => state[1] && state[2] && state[5] && state[6]) // Filter out entries with missing essential data
+      .map(state => {
+        // Extract values from state array
+        const icao24 = state[0] as string;
+        const callsign = state[1] as string;
+        const originCountry = state[2] as string;
+        const longitude = state[5] as number;
+        const latitude = state[6] as number;
+        const altitude = state[7] as number;
+        const velocity = state[9] as number;
+        const heading = state[10] as number;
+        const verticalRate = state[11] as number;
+        const onGround = state[8] as boolean;
+        const squawk = state[14] as string;
+        
+        return {
+          hex: icao24,
+          flight_icao: callsign.trim(),
+          flight_iata: callsign.trim(),
+          lat: latitude,
+          lng: longitude,
+          alt: altitude, // Convert meters to feet
+          dir: heading,
+          speed: velocity ? velocity * 1.94384 : undefined, // Convert m/s to knots
+          v_speed: verticalRate,
+          squawk: squawk,
+          status: onGround ? 'on-ground' : 'en-route',
+          airline_name: `${originCountry} operator`,
+          reg_number: icao24,
+          aircraft_icao: 'Unknown',
+          dep_name: 'Unknown',
+          dep_iata: 'N/A',
+          arr_name: 'Unknown',
+          arr_iata: 'N/A',
+          dep_country: originCountry,
+        };
+      });
     
-    return formattedData;
+    // Sort by altitude descending to show high-flying aircraft first
+    return formattedData.sort((a, b) => 
+      (b.alt || 0) - (a.alt || 0)
+    ).slice(0, 100); // Limit to 100 aircraft to improve performance
   } catch (error) {
-    console.error("Error fetching most tracked flights:", error);
+    console.error("Error fetching flights from OpenSky:", error);
     throw error;
   }
 }
 
-export interface AircraftData {
-  hex: string;
-  type: string;
-  flight: string;
-  r: string;
-  t: string;
-  alt_baro: number;
-  alt_geom: number;
-  gs: number;
-  ias: number;
-  tas: number;
-  mach: number;
-  wd: number;
-  ws: number;
-  oat: number;
-  tat: number;
-  track: number;
-  track_rate: number;
-  roll: number;
-  mag_heading: number;
-  true_heading: number;
-  baro_rate: number;
-  geom_rate: number;
-  squawk: string;
-  emergency: string;
-  category: string;
-  nav_qnh: number;
-  nav_altitude_mcp: number;
-  nav_altitude_fms: number;
-  nav_heading: number;
-  nav_modes: string[];
-  lat: number;
-  lon: number;
-  nic: number;
-  rc: number;
-  seen_pos: number;
-  version: number;
-  nic_baro: number;
-  nac_p: number;
-  nac_v: number;
-  sil: number;
-  sil_type: string;
-  gva: number;
-  sda: number;
-  mlat: string[];
-  tisb: string[];
-  messages: number;
-  seen: number;
-  rssi: number;
-  dst: number;
-  dir: number;
-}
-
-export interface AircraftDetailData {
-  now: number;
-  aircraft: AircraftData[];
-}
-
-export interface AircraftRawData {
-  aircraft: AircraftData[];
-}
-
-export async function fetchAircraftInRange(lat: number, lon: number, dist: number) {
+/**
+ * Fetch aircraft in a specific region using boundary box
+ */
+export async function fetchAircraftInRange(
+  lamin: number, // lower bound for latitude
+  lomin: number, // lower bound for longitude
+  lamax: number, // upper bound for latitude
+  lomax: number  // upper bound for longitude
+): Promise<Flight[]> {
   try {
-    // Use the correct API endpoint for range-based search
-    const url = `https://aircraft-adsb-data.p.rapidapi.com/aircrafts_within_range/?lon=${lon}&lat=${lat}&range_km=${dist}`;
+    const url = `https://opensky-network.org/api/states/all?lamin=${lamin}&lomin=${lomin}&lamax=${lamax}&lomax=${lomax}`;
     
-    const options = {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': 'f4e8980dcbmsh08413d11c126496p1819c9jsnd8bb6a7f4b9d',
-        'X-RapidAPI-Host': 'aircraft-adsb-data.p.rapidapi.com'
-      }
-    };
-
-    console.log('Fetching aircraft data from:', url);
-    const response = await fetch(url, options);
+    console.log('Fetching aircraft in range from OpenSky Network API');
+    const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
     }
     
-    const data = await response.json() as AircraftRawData;
+    const data = await response.json() as OpenSkyResponse;
     
-    // Format the data to match our Flight interface as closely as possible
-    const formattedData: Flight[] = data.aircraft.map(aircraft => ({
-      hex: aircraft.hex,
-      flight_icao: aircraft.flight ? aircraft.flight.trim() : undefined,
-      flight_iata: aircraft.flight ? aircraft.flight.trim() : undefined,
-      lat: aircraft.lat,
-      lng: aircraft.lon,
-      alt: aircraft.alt_baro,
-      dir: aircraft.track || aircraft.true_heading || aircraft.mag_heading,
-      speed: aircraft.gs, // ground speed
-      squawk: aircraft.squawk,
-      reg_number: aircraft.r,
-      aircraft_icao: aircraft.type,
-      status: 'en-route',
-      airline_name: aircraft.t || 'Unknown',
-    }));
+    if (!data.states || data.states.length === 0) {
+      console.warn('No aircraft found in specified region');
+      return [];
+    }
+    
+    // Convert OpenSky states to Flight objects
+    const formattedData: Flight[] = data.states
+      .filter(state => state[1] && state[2] && state[5] && state[6])
+      .map(state => {
+        const icao24 = state[0] as string;
+        const callsign = state[1] as string;
+        const originCountry = state[2] as string;
+        const longitude = state[5] as number;
+        const latitude = state[6] as number;
+        const altitude = state[7] as number;
+        const velocity = state[9] as number;
+        const heading = state[10] as number;
+        const verticalRate = state[11] as number;
+        const onGround = state[8] as boolean;
+        const squawk = state[14] as string;
+        
+        return {
+          hex: icao24,
+          flight_icao: callsign.trim(),
+          flight_iata: callsign.trim(),
+          lat: latitude,
+          lng: longitude,
+          alt: altitude,
+          dir: heading,
+          speed: velocity ? velocity * 1.94384 : undefined, // Convert m/s to knots
+          v_speed: verticalRate,
+          squawk: squawk,
+          status: onGround ? 'on-ground' : 'en-route',
+          airline_name: `${originCountry} operator`,
+          reg_number: icao24,
+          aircraft_icao: 'Unknown',
+          dep_country: originCountry,
+        };
+      });
     
     return formattedData;
   } catch (error) {
-    console.error("Error fetching aircraft data:", error);
+    console.error("Error fetching aircraft in range:", error);
     throw error;
   }
 }
 
-export async function fetchAircraftDetails(hex: string) {
+/**
+ * Get user's location and aircraft within a radius
+ */
+export async function fetchNearbyAircraft(): Promise<Flight[]> {
   try {
-    const url = `https://aircraft-adsb-data.p.rapidapi.com/adsb_data/hex/${hex}`;
+    // Get user position
+    const position = await getUserPosition();
     
-    const options = {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': 'f4e8980dcbmsh08413d11c126496p1819c9jsnd8bb6a7f4b9d',
-        'X-RapidAPI-Host': 'aircraft-adsb-data.p.rapidapi.com'
-      }
-    };
-
-    console.log('Fetching aircraft details for:', hex);
-    const response = await fetch(url, options);
+    // Define bounding box around user (approximately 200km)
+    const lat = position.lat;
+    const lng = position.lng;
+    const latOffset = 1.8; // ~200km in latitude
+    const lngOffset = 1.8 / Math.cos(lat * (Math.PI / 180)); // Adjust for longitude
     
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
-    }
-    
-    const data = await response.json() as AircraftDetailData;
-    
-    if (data.aircraft && data.aircraft.length > 0) {
-      const aircraft = data.aircraft[0];
-      
-      // Format the detailed data to match our Flight interface
-      const formattedData: Flight = {
-        hex: aircraft.hex,
-        flight_icao: aircraft.flight ? aircraft.flight.trim() : undefined,
-        flight_iata: aircraft.flight ? aircraft.flight.trim() : undefined,
-        lat: aircraft.lat,
-        lng: aircraft.lon,
-        alt: aircraft.alt_baro,
-        dir: aircraft.track || aircraft.true_heading || aircraft.mag_heading,
-        speed: aircraft.gs, // ground speed
-        v_speed: aircraft.baro_rate || aircraft.geom_rate,
-        squawk: aircraft.squawk,
-        reg_number: aircraft.r,
-        aircraft_icao: aircraft.type,
-        status: 'en-route',
-        airline_name: aircraft.t || 'Unknown',
-      };
-      
-      return formattedData;
-    }
-    
-    throw new Error("No aircraft details found");
+    // Fetch aircraft within the bounding box
+    return fetchAircraftInRange(
+      lat - latOffset, // lamin
+      lng - lngOffset, // lomin
+      lat + latOffset, // lamax
+      lng + lngOffset  // lomax
+    );
   } catch (error) {
-    console.error("Error fetching aircraft details:", error);
+    console.error("Error fetching nearby aircraft:", error);
     throw error;
   }
 }
+
+// Import getUserPosition from apiUtils
+import { getUserPosition } from './shared/apiUtils';

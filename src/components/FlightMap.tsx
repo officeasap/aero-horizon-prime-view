@@ -2,13 +2,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { fetchMostTrackedFlights, Flight } from '@/services/aviationService';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { fetchMostTrackedFlights, fetchNearbyAircraft, Flight } from '@/services/aviationService';
+import { Loader2, RefreshCw, Globe, Plane } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Mapbox access token
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoibG92YWJsZS1haSIsImEiOiJjbHoyZnB4M3QwMTJkMnFxaHVnZjZ3b3poIn0.a-KotZQ2w1QKqifWWYK-Sw';
@@ -25,6 +26,7 @@ const FlightMap: React.FC = () => {
   const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
   const [selectedAircraft, setSelectedAircraft] = useState<Flight | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [mapMode, setMapMode] = useState<'global' | 'local'>('global');
 
   // Function to calculate aircraft rotation based on direction
   const getRotation = (direction: number | undefined) => {
@@ -35,16 +37,13 @@ const FlightMap: React.FC = () => {
   const createPopupHTML = (flight: Flight) => {
     return `
       <div class="p-2 max-w-xs">
-        <div class="font-bold text-lg">${flight.flight_icao || 'Unknown'}</div>
-        <div class="text-sm mb-2">${flight.airline_name || 'Unknown operator'}</div>
-        <div class="text-xs mb-2">
-          ${flight.dep_iata || '???'} → ${flight.arr_iata || '???'}
-        </div>
+        <div class="font-bold text-lg">${flight.flight_icao?.trim() || 'Unknown'}</div>
+        <div class="text-sm mb-2">Origin: ${flight.dep_country || 'Unknown'}</div>
         <div class="grid grid-cols-2 gap-1 text-xs">
-          <div class="font-semibold">Type:</div>
-          <div>${flight.aircraft_icao || 'Unknown'}</div>
+          <div class="font-semibold">ICAO24:</div>
+          <div>${flight.hex || 'Unknown'}</div>
           <div class="font-semibold">Altitude:</div>
-          <div>${flight.alt ? `${Math.round(flight.alt).toLocaleString()} ft` : 'N/A'}</div>
+          <div>${flight.alt ? `${Math.round(flight.alt).toLocaleString()} m` : 'N/A'}</div>
           <div class="font-semibold">Speed:</div>
           <div>${flight.speed ? `${Math.round(flight.speed)} kts` : 'N/A'}</div>
           <div class="font-semibold">Heading:</div>
@@ -110,12 +109,15 @@ const FlightMap: React.FC = () => {
   };
 
   // Load flights data
-  const loadFlights = async (showToast = false) => {
+  const loadFlights = async (showToast = false, useNearby = false) => {
     try {
       setLoading(true);
       setError(null);
       
-      const data = await fetchMostTrackedFlights();
+      // Either fetch global data or nearby aircraft
+      const data = useNearby 
+        ? await fetchNearbyAircraft() 
+        : await fetchMostTrackedFlights();
       
       if (data.length === 0) {
         setError('No active flights found.');
@@ -125,7 +127,7 @@ const FlightMap: React.FC = () => {
         createMarkers(data);
         
         if (showToast) {
-          toast.success(`Updated: ${data.length} most tracked flights`);
+          toast.success(`Updated: ${data.length} aircraft displayed`);
         }
 
         // Fit map bounds to show all aircraft
@@ -138,10 +140,13 @@ const FlightMap: React.FC = () => {
           });
           map.current.fitBounds(bounds, { padding: 50 });
         }
+        
+        // Update map mode
+        setMapMode(useNearby ? 'local' : 'global');
       }
     } catch (err) {
       console.error('Error fetching flights for map:', err);
-      setError('Failed to load flight data for the map. Please try again later.');
+      setError('No aircraft found or service unavailable.');
       toast.error('Failed to load flight map data');
     } finally {
       setLoading(false);
@@ -165,10 +170,8 @@ const FlightMap: React.FC = () => {
     const filtered = flights.filter(flight => {
       const searchFields = [
         flight.flight_icao,
-        flight.reg_number,
-        flight.airline_name,
-        flight.dep_iata,
-        flight.arr_iata
+        flight.dep_country,
+        flight.hex
       ].map(field => (field || '').toLowerCase());
       
       return searchFields.some(field => field.includes(lowerSearchTerm));
@@ -215,7 +218,7 @@ const FlightMap: React.FC = () => {
       
       // Set up interval for data refresh
       const interval = setInterval(() => {
-        loadFlights();
+        loadFlights(false, mapMode === 'local');
       }, 60000); // Refresh every 60 seconds
       
       setRefreshInterval(interval);
@@ -273,8 +276,24 @@ const FlightMap: React.FC = () => {
   };
 
   const handleRefresh = () => {
-    loadFlights(true);
+    loadFlights(true, mapMode === 'local');
     toast.info('Refreshing flight data...');
+  };
+
+  const handleToggleMapMode = async () => {
+    try {
+      if (mapMode === 'global') {
+        // Switch to local view
+        toast.info("Finding aircraft near your location...");
+        await loadFlights(true, true);
+      } else {
+        // Switch to global view
+        toast.info("Loading global flight data...");
+        await loadFlights(true, false);
+      }
+    } catch (error) {
+      toast.error("Failed to change view. Please try again.");
+    }
   };
 
   return (
@@ -291,7 +310,9 @@ const FlightMap: React.FC = () => {
       {error && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-dark/80 z-10 p-4">
           <Card className="max-w-md p-4 text-center bg-gray-dark/90 border-gray-light/20">
-            <p className="mb-4 text-gray-light">{error}</p>
+            <Alert variant="destructive" className="bg-red-900/20 border-red-700/40 text-white mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
             <Button onClick={() => loadFlights(true)} variant="outline">Try Again</Button>
           </Card>
         </div>
@@ -315,11 +336,22 @@ const FlightMap: React.FC = () => {
             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
-        {searchTerm && (
-          <div className="text-xs text-white/70 bg-gray-dark/80 p-1 rounded">
-            Showing {filteredFlights.length} of {flights.length} flights
-          </div>
-        )}
+        <div className="flex justify-between">
+          {searchTerm && (
+            <div className="text-xs text-white/70 bg-gray-dark/80 p-1 rounded">
+              Showing {filteredFlights.length} of {flights.length} flights
+            </div>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto bg-gray-dark/80 border-gray-dark text-white"
+            onClick={handleToggleMapMode}
+          >
+            <Globe className="h-4 w-4 mr-2" />
+            {mapMode === 'global' ? 'View Nearby' : 'Global View'}
+          </Button>
+        </div>
       </div>
       
       <div ref={mapContainer} className="w-full h-full" />
@@ -342,55 +374,69 @@ const FlightMap: React.FC = () => {
                 <div className="bg-gray-light/5 p-4 rounded-md">
                   <h3 className="text-lg font-medium mb-2">Flight Information</h3>
                   <div className="grid grid-cols-2 gap-y-2">
-                    <span className="text-gray-light">Flight Number:</span>
-                    <span className="font-mono">{selectedAircraft.flight_icao || 'N/A'}</span>
+                    <span className="text-gray-light">Callsign:</span>
+                    <span className="font-mono">{selectedAircraft.flight_icao?.trim() || 'N/A'}</span>
                     
-                    <span className="text-gray-light">Operator:</span>
-                    <span>{selectedAircraft.airline_name || 'Unknown'}</span>
+                    <span className="text-gray-light">ICAO24:</span>
+                    <span>{selectedAircraft.hex || 'Unknown'}</span>
+                    
+                    <span className="text-gray-light">Origin Country:</span>
+                    <span>{selectedAircraft.dep_country || 'Unknown'}</span>
+                    
+                    <span className="text-gray-light">Status:</span>
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      selectedAircraft.status === 'on-ground' 
+                        ? 'bg-yellow-500/20 text-yellow-400'
+                        : 'bg-green-500/20 text-green-400'
+                      } inline-block`}>
+                      {selectedAircraft.status || 'En Route'}
+                    </span>
                   </div>
                 </div>
 
                 <div className="bg-gray-light/5 p-4 rounded-md">
-                  <h3 className="text-lg font-medium mb-2">Route</h3>
-                  <div className="grid grid-cols-2 gap-y-2">
-                    <span className="text-gray-light">From:</span>
-                    <div className="flex flex-col">
-                      <span>{selectedAircraft.dep_iata || 'N/A'}</span>
-                      <span className="text-sm text-gray-light">{selectedAircraft.dep_name}</span>
-                    </div>
-                    
-                    <span className="text-gray-light">To:</span>
-                    <div className="flex flex-col">
-                      <span>{selectedAircraft.arr_iata || 'N/A'}</span>
-                      <span className="text-sm text-gray-light">{selectedAircraft.arr_name}</span>
-                    </div>
+                  <h3 className="text-lg font-medium mb-2">External Resources</h3>
+                  <div className="space-y-2">
+                    <Button
+                      variant="outline"
+                      className="w-full bg-gray-dark/50 border-gray-dark text-white"
+                      onClick={() => window.open(`https://opensky-network.org/aircraft-profile?icao24=${selectedAircraft.hex}`, '_blank')}
+                    >
+                      View on OpenSky Network
+                    </Button>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div className="bg-gray-light/5 p-4 rounded-md">
-                  <h3 className="text-lg font-medium mb-2">Aircraft Information</h3>
+                  <h3 className="text-lg font-medium mb-2">Position</h3>
                   <div className="grid grid-cols-2 gap-y-2">
-                    <span className="text-gray-light">Registration:</span>
-                    <span>{selectedAircraft.reg_number || 'Unknown'}</span>
+                    <span className="text-gray-light">Latitude:</span>
+                    <span>{selectedAircraft.lat?.toFixed(4) || 'Unknown'}</span>
                     
-                    <span className="text-gray-light">Aircraft Type:</span>
-                    <span>{selectedAircraft.aircraft_icao || 'Unknown'}</span>
+                    <span className="text-gray-light">Longitude:</span>
+                    <span>{selectedAircraft.lng?.toFixed(4) || 'Unknown'}</span>
                   </div>
                 </div>
 
                 <div className="bg-gray-light/5 p-4 rounded-md">
-                  <h3 className="text-lg font-medium mb-2">Current Position</h3>
+                  <h3 className="text-lg font-medium mb-2">Flight Data</h3>
                   <div className="grid grid-cols-2 gap-y-2">
                     <span className="text-gray-light">Altitude:</span>
-                    <span>{selectedAircraft.alt ? `${Math.round(selectedAircraft.alt).toLocaleString()} ft` : 'N/A'}</span>
+                    <span>{selectedAircraft.alt ? `${Math.round(selectedAircraft.alt).toLocaleString()} m` : 'N/A'}</span>
                     
                     <span className="text-gray-light">Ground Speed:</span>
                     <span>{selectedAircraft.speed ? `${Math.round(selectedAircraft.speed)} kts` : 'N/A'}</span>
                     
                     <span className="text-gray-light">Heading:</span>
                     <span>{selectedAircraft.dir ? `${Math.round(selectedAircraft.dir)}°` : 'N/A'}</span>
+                    
+                    <span className="text-gray-light">Vertical Rate:</span>
+                    <span>{selectedAircraft.v_speed ? `${Math.round(selectedAircraft.v_speed)} m/s` : 'N/A'}</span>
+                    
+                    <span className="text-gray-light">Squawk:</span>
+                    <span>{selectedAircraft.squawk || 'N/A'}</span>
                   </div>
                 </div>
               </div>

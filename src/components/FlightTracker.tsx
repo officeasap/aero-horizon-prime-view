@@ -9,6 +9,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const FlightTracker = () => {
   const [flights, setFlights] = useState<Flight[]>([]);
@@ -34,12 +35,12 @@ const FlightTracker = () => {
         setFlights(data);
         setFilteredFlights(data);
         if (showToast) {
-          toast.success(`Updated: ${data.length} most tracked flights`);
+          toast.success(`Updated: ${data.length} flights displayed`);
         }
       }
     } catch (err) {
       console.error('Error fetching flights:', err);
-      setError('Failed to load flight data. Please try again later.');
+      setError('No aircraft found or service unavailable.');
       toast.error('Failed to load flight data');
     } finally {
       setIsLoading(false);
@@ -77,8 +78,7 @@ const FlightTracker = () => {
         flight.flight_icao,
         flight.reg_number,
         flight.airline_name,
-        flight.dep_name,
-        flight.arr_name
+        flight.dep_country
       ].map(field => (field || '').toLowerCase());
       
       return searchFields.some(field => field.includes(lowerSearchTerm));
@@ -106,7 +106,7 @@ const FlightTracker = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl">
           <Plane className="text-purple" />
-          <span>Most Tracked Flights</span>
+          <span>Active Flights</span>
         </CardTitle>
         
         <div className="flex flex-col md:flex-row gap-4 mt-4">
@@ -147,11 +147,14 @@ const FlightTracker = () => {
           </div>
         ) : error ? (
           <div className="py-10 text-center">
-            <p className="text-gray-light">{error}</p>
+            <Alert variant="destructive" className="bg-red-900/20 border-red-700/40 text-white max-w-md mx-auto">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
             <Button 
               onClick={handleRefresh} 
               variant="outline" 
-              className="mt-4"
+              className="mt-6"
             >
               Retry
             </Button>
@@ -167,41 +170,44 @@ const FlightTracker = () => {
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-white/5">
-                      <TableHead className="text-purple">Flight</TableHead>
-                      <TableHead className="text-purple">Aircraft</TableHead>
-                      <TableHead className="text-purple">Route</TableHead>
+                      <TableHead className="text-purple">Callsign</TableHead>
+                      <TableHead className="text-purple">Origin</TableHead>
+                      <TableHead className="text-purple">Altitude</TableHead>
                       <TableHead className="text-purple text-right">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredFlights.map((flight, index) => (
                       <TableRow 
-                        key={`${flight.flight_icao || flight.reg_number || 'unknown'}-${index}`} 
+                        key={`${flight.hex || flight.flight_icao || 'unknown'}-${index}`} 
                         className="hover:bg-white/5 cursor-pointer"
                         onClick={() => handleFlightSelect(flight)}
                       >
                         <TableCell className="font-medium">
                           <div className="flex flex-col">
-                            <span className="font-mono">{flight.flight_icao || 'N/A'}</span>
-                            <span className="text-sm text-gray-light">{flight.airline_name || 'Unknown operator'}</span>
+                            <span className="font-mono">{flight.flight_icao?.trim() || 'N/A'}</span>
+                            <span className="text-sm text-gray-light">ID: {flight.hex || 'Unknown'}</span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span>{flight.reg_number || 'Unknown'}</span>
-                            <span className="text-sm text-gray-light">{flight.aircraft_icao || 'Unknown type'}</span>
+                            <span>{flight.dep_country || 'Unknown'}</span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span>{flight.dep_iata} → {flight.arr_iata}</span>
-                            <span className="text-sm text-gray-light truncate max-w-[200px]">
-                              {flight.dep_name} to {flight.arr_name}
+                            <span>{flight.alt ? `${Math.round(flight.alt).toLocaleString()} m` : 'N/A'}</span>
+                            <span className="text-sm text-gray-light">
+                              {flight.speed ? `${Math.round(flight.speed)} kts` : 'N/A'}
                             </span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+                            flight.status === 'on-ground' 
+                              ? 'bg-yellow-500/20 text-yellow-400'
+                              : 'bg-green-500/20 text-green-400'
+                          }`}>
                             {flight.status || 'En Route'}
                           </span>
                         </TableCell>
@@ -238,60 +244,76 @@ const FlightTracker = () => {
                 <div className="bg-gray-light/5 p-4 rounded-md">
                   <h3 className="text-lg font-medium mb-2">Flight Information</h3>
                   <div className="grid grid-cols-2 gap-y-2">
-                    <span className="text-gray-light">Flight Number:</span>
-                    <span className="font-mono">{selectedFlight.flight_icao || 'N/A'}</span>
+                    <span className="text-gray-light">Callsign:</span>
+                    <span className="font-mono">{selectedFlight.flight_icao?.trim() || 'N/A'}</span>
                     
-                    <span className="text-gray-light">Operator:</span>
-                    <span>{selectedFlight.airline_name || 'Unknown'}</span>
+                    <span className="text-gray-light">Origin Country:</span>
+                    <span>{selectedFlight.dep_country || 'Unknown'}</span>
                     
                     <span className="text-gray-light">Status:</span>
-                    <span className="px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400 inline-block">
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      selectedFlight.status === 'on-ground' 
+                        ? 'bg-yellow-500/20 text-yellow-400'
+                        : 'bg-green-500/20 text-green-400'
+                      } inline-block`}>
                       {selectedFlight.status || 'En Route'}
                     </span>
+                    
+                    <span className="text-gray-light">ICAO24:</span>
+                    <span>{selectedFlight.hex || 'Unknown'}</span>
                   </div>
                 </div>
 
                 <div className="bg-gray-light/5 p-4 rounded-md">
-                  <h3 className="text-lg font-medium mb-2">Aircraft Details</h3>
+                  <h3 className="text-lg font-medium mb-2">Position</h3>
                   <div className="grid grid-cols-2 gap-y-2">
-                    <span className="text-gray-light">Registration:</span>
-                    <span>{selectedFlight.reg_number || 'Unknown'}</span>
+                    <span className="text-gray-light">Latitude:</span>
+                    <span>{selectedFlight.lat?.toFixed(4) || 'Unknown'}</span>
                     
-                    <span className="text-gray-light">Aircraft Type:</span>
-                    <span>{selectedFlight.aircraft_icao || 'Unknown'}</span>
+                    <span className="text-gray-light">Longitude:</span>
+                    <span>{selectedFlight.lng?.toFixed(4) || 'Unknown'}</span>
+                    
+                    <span className="text-gray-light">Squawk:</span>
+                    <span>{selectedFlight.squawk || 'N/A'}</span>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div className="bg-gray-light/5 p-4 rounded-md">
-                  <h3 className="text-lg font-medium mb-2">Route Information</h3>
-                  <div className="grid grid-cols-2 gap-y-2">
-                    <span className="text-gray-light">Departure:</span>
-                    <div className="flex flex-col">
-                      <span>{selectedFlight.dep_iata || 'N/A'}</span>
-                      <span className="text-sm text-gray-light">{selectedFlight.dep_name}</span>
-                    </div>
-                    
-                    <span className="text-gray-light">Arrival:</span>
-                    <div className="flex flex-col">
-                      <span>{selectedFlight.arr_iata || 'N/A'}</span>
-                      <span className="text-sm text-gray-light">{selectedFlight.arr_name}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gray-light/5 p-4 rounded-md">
                   <h3 className="text-lg font-medium mb-2">Current Position</h3>
                   <div className="grid grid-cols-2 gap-y-2">
                     <span className="text-gray-light">Altitude:</span>
-                    <span>{selectedFlight.alt ? `${Math.round(selectedFlight.alt).toLocaleString()} ft` : 'N/A'}</span>
+                    <span>{selectedFlight.alt ? `${Math.round(selectedFlight.alt).toLocaleString()} m` : 'N/A'}</span>
                     
                     <span className="text-gray-light">Ground Speed:</span>
                     <span>{selectedFlight.speed ? `${Math.round(selectedFlight.speed)} kts` : 'N/A'}</span>
                     
                     <span className="text-gray-light">Heading:</span>
                     <span>{selectedFlight.dir ? `${Math.round(selectedFlight.dir)}°` : 'N/A'}</span>
+                    
+                    <span className="text-gray-light">Vertical Rate:</span>
+                    <span>{selectedFlight.v_speed ? `${Math.round(selectedFlight.v_speed)} m/s` : 'N/A'}</span>
+                  </div>
+                </div>
+
+                <div className="bg-gray-light/5 p-4 rounded-md">
+                  <h3 className="text-lg font-medium mb-2">Open in External Tools</h3>
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      variant="outline"
+                      className="bg-gray-dark/50 border-gray-dark text-white w-full"
+                      onClick={() => window.open(`https://opensky-network.org/aircraft-profile?icao24=${selectedFlight.hex}`, '_blank')}
+                    >
+                      View on OpenSky Network
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="bg-gray-dark/50 border-gray-dark text-white w-full"
+                      onClick={() => window.open(`https://flightaware.com/live/flight/${selectedFlight.flight_icao?.trim()}`, '_blank')}
+                    >
+                      Search on FlightAware
+                    </Button>
                   </div>
                 </div>
               </div>
