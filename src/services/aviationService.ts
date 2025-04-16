@@ -75,14 +75,14 @@ export interface AircraftRawData {
 
 export async function fetchAircraftInRange(lat: number, lon: number, dist: number) {
   try {
-    // Use the correct API endpoint
-    const url = `https://aircraft-adsb-data.p.rapidapi.com/aircraft/json/lat/${lat}/lon/${lon}/dist/${dist}`;
+    // Fixed API endpoint to use the correct URL
+    const url = `https://adsbx-flight-sim-api.p.rapidapi.com/api/aircraft/json/lat/${lat}/lon/${lon}/dist/${dist}/`;
     
     const options = {
       method: 'GET',
       headers: {
         'X-RapidAPI-Key': 'f4e8980dcbmsh08413d11c126496p1819c9jsnd8bb6a7f4b9d',
-        'X-RapidAPI-Host': 'aircraft-adsb-data.p.rapidapi.com'
+        'X-RapidAPI-Host': 'adsbx-flight-sim-api.p.rapidapi.com'
       }
     };
 
