@@ -47,6 +47,10 @@ const router = createBrowserRouter([
     element: <LiveFlightTracker />
   },
   {
+    path: "/live-tracker",
+    element: <Navigate to="/live-flight-tracker" replace />
+  },
+  {
     path: "/flight/:flightId",
     element: <FlightStatusDetailPage />
   },
