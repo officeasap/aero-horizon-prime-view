@@ -1,3 +1,4 @@
+
 // Re-export everything from individual service files
 export * from './shared/types';
 export * from './airportService';
@@ -42,6 +43,8 @@ export interface FR24FlightData {
 
 export interface FR24Response {
   data: FR24FlightData[];
+  success?: boolean;
+  error?: string;
 }
 
 export async function fetchMostTrackedFlights(): Promise<Flight[]> {
@@ -65,24 +68,37 @@ export async function fetchMostTrackedFlights(): Promise<Flight[]> {
     
     const data = await response.json() as FR24Response;
     
+    // Check if the API returned success: false or an empty data array
+    if (data.success === false || !data.data || data.data.length === 0) {
+      console.warn('API returned empty or error response:', data);
+      return [];
+    }
+    
     // Format the data to match our Flight interface
-    const formattedData: Flight[] = data.data.map(flight => ({
-      flight_icao: flight.detail.callsign,
-      flight_iata: flight.detail.callsign,
-      lat: flight.detail.position.latitude,
-      lng: flight.detail.position.longitude,
-      alt: flight.detail.position.altitude,
-      dir: flight.detail.position.heading,
-      speed: flight.detail.position.groundspeed,
-      reg_number: flight.detail.aircraft.registration,
-      aircraft_icao: flight.detail.aircraft.model,
-      status: flight.detail.status || 'en-route',
-      airline_name: flight.detail.airline.name,
-      dep_iata: flight.detail.departure.code,
-      dep_name: flight.detail.departure.name,
-      arr_iata: flight.detail.arrival.code,
-      arr_name: flight.detail.arrival.name,
-    }));
+    const formattedData: Flight[] = data.data.map(flight => {
+      if (!flight.detail) {
+        console.warn('Flight missing detail property:', flight);
+        return null;
+      }
+      
+      return {
+        flight_icao: flight.detail.callsign,
+        flight_iata: flight.detail.callsign,
+        lat: flight.detail.position?.latitude,
+        lng: flight.detail.position?.longitude,
+        alt: flight.detail.position?.altitude,
+        dir: flight.detail.position?.heading,
+        speed: flight.detail.position?.groundspeed,
+        reg_number: flight.detail.aircraft?.registration,
+        aircraft_icao: flight.detail.aircraft?.model,
+        status: flight.detail.status || 'en-route',
+        airline_name: flight.detail.airline?.name,
+        dep_iata: flight.detail.departure?.code,
+        dep_name: flight.detail.departure?.name,
+        arr_iata: flight.detail.arrival?.code,
+        arr_name: flight.detail.arrival?.name,
+      };
+    }).filter(Boolean) as Flight[];
     
     return formattedData;
   } catch (error) {
