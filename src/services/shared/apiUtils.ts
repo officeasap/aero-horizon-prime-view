@@ -1,5 +1,7 @@
+
 export const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 export const AIRPORT_CACHE_DURATION = 60 * 60 * 1000; // 1 hour
+export const AIRLINE_CACHE_DURATION = 60 * 60 * 1000; // 1 hour for airlines
 
 export async function fetchWithCache(
   endpoint: string, 

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Loader2, Plane } from 'lucide-react';
+import { Loader2, Plane, MapPin } from 'lucide-react';
 import type { Airport } from '@/services/shared/types';
 
 interface AirportListProps {
