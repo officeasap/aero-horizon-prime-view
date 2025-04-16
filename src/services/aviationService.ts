@@ -1,4 +1,3 @@
-
 // Re-export everything from individual service files
 export * from './shared/types';
 export * from './airportService';
@@ -70,19 +69,19 @@ export interface AircraftDetailData {
 }
 
 export interface AircraftRawData {
-  ac: AircraftData[];
+  aircraft: AircraftData[];
 }
 
 export async function fetchAircraftInRange(lat: number, lon: number, dist: number) {
   try {
-    // Fixed API endpoint to use the correct URL
-    const url = `https://adsbx-flight-sim-api.p.rapidapi.com/api/aircraft/json/lat/${lat}/lon/${lon}/dist/${dist}/`;
+    // Use the correct API endpoint for range-based search
+    const url = `https://aircraft-adsb-data.p.rapidapi.com/aircrafts_within_range/?lon=${lon}&lat=${lat}&range_km=${dist}`;
     
     const options = {
       method: 'GET',
       headers: {
         'X-RapidAPI-Key': 'f4e8980dcbmsh08413d11c126496p1819c9jsnd8bb6a7f4b9d',
-        'X-RapidAPI-Host': 'adsbx-flight-sim-api.p.rapidapi.com'
+        'X-RapidAPI-Host': 'aircraft-adsb-data.p.rapidapi.com'
       }
     };
 
@@ -96,7 +95,7 @@ export async function fetchAircraftInRange(lat: number, lon: number, dist: numbe
     const data = await response.json() as AircraftRawData;
     
     // Format the data to match our Flight interface as closely as possible
-    const formattedData: Flight[] = data.ac.map(aircraft => ({
+    const formattedData: Flight[] = data.aircraft.map(aircraft => ({
       hex: aircraft.hex,
       flight_icao: aircraft.flight ? aircraft.flight.trim() : undefined,
       flight_iata: aircraft.flight ? aircraft.flight.trim() : undefined,
