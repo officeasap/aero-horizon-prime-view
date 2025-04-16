@@ -5,3 +5,4 @@ export * from './airportService';
 export * from './airlineService';
 export * from './flightService';
 export * from './searchService';
+export * from './shared/apiUtils';

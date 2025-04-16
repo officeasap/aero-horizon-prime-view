@@ -31,6 +31,20 @@ export async function fetchLiveFlights(params: Record<string, string> = {}) {
   }
 }
 
+export async function fetchFlightSchedules(params: Record<string, string> = {}) {
+  try {
+    const data = await fetchWithCache("schedules", params);
+    if (Array.isArray(data) && data.length > 0) {
+      return await enhanceFlightData(data as Flight[]);
+    }
+    return data as Flight[];
+  } catch (error) {
+    console.error("Error fetching flight schedules:", error);
+    toast.error("Failed to fetch flight schedules. Please try again later.");
+    return [];
+  }
+}
+
 export async function enhanceFlightData(flights: Flight[]): Promise<Flight[]> {
   if (!flights || flights.length === 0) return flights;
   
