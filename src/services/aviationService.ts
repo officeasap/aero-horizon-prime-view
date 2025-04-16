@@ -9,7 +9,88 @@ export * from './shared/apiUtils';
 // Import Flight type for proper typing
 import { Flight } from './shared/types';
 
-// ADSB Flight tracking API integration
+export interface FR24FlightData {
+  id: string;
+  detail: {
+    callsign: string;
+    airline: {
+      name: string;
+      code: string;
+    };
+    aircraft: {
+      model: string;
+      registration: string;
+    };
+    departure: {
+      name: string;
+      code: string;
+    };
+    arrival: {
+      name: string;
+      code: string;
+    };
+    status: string;
+    position: {
+      latitude: number;
+      longitude: number;
+      altitude: number;
+      heading: number;
+      groundspeed: number;
+    };
+  };
+}
+
+export interface FR24Response {
+  data: FR24FlightData[];
+}
+
+export async function fetchMostTrackedFlights(): Promise<Flight[]> {
+  try {
+    const url = 'https://flightradar243.p.rapidapi.com/v1/flights/most-tracked';
+    
+    const options = {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': 'f4e8980dcbmsh08413d11c126496p1819c9jsnd8bb6a7f4b9d',
+        'X-RapidAPI-Host': 'flightradar243.p.rapidapi.com'
+      }
+    };
+
+    console.log('Fetching most tracked flights data');
+    const response = await fetch(url, options);
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json() as FR24Response;
+    
+    // Format the data to match our Flight interface
+    const formattedData: Flight[] = data.data.map(flight => ({
+      flight_icao: flight.detail.callsign,
+      flight_iata: flight.detail.callsign,
+      lat: flight.detail.position.latitude,
+      lng: flight.detail.position.longitude,
+      alt: flight.detail.position.altitude,
+      dir: flight.detail.position.heading,
+      speed: flight.detail.position.groundspeed,
+      reg_number: flight.detail.aircraft.registration,
+      aircraft_icao: flight.detail.aircraft.model,
+      status: flight.detail.status || 'en-route',
+      airline_name: flight.detail.airline.name,
+      dep_iata: flight.detail.departure.code,
+      dep_name: flight.detail.departure.name,
+      arr_iata: flight.detail.arrival.code,
+      arr_name: flight.detail.arrival.name,
+    }));
+    
+    return formattedData;
+  } catch (error) {
+    console.error("Error fetching most tracked flights:", error);
+    throw error;
+  }
+}
+
 export interface AircraftData {
   hex: string;
   type: string;

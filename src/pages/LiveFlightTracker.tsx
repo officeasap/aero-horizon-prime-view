@@ -23,20 +23,11 @@ const LiveFlightTracker = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold font-space mb-4 animate-fade-in">
-              Live <span className="text-purple animate-text-glow">Flight Tracker</span>
+              Most <span className="text-purple animate-text-glow">Tracked Flights</span>
             </h1>
             <p className="text-xl text-gray-light animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Track real-time aircraft positions, routes, and flight statuses across the globe.
+              Track the world's most followed flights in real-time with live positions and detailed information.
             </p>
-            
-            <div className="mt-4 bg-gray-dark/30 p-3 rounded-lg border border-gray-light/10 text-sm">
-              <div className="flex items-center gap-2">
-                <Plane className="h-4 w-4 text-purple" />
-                <p className="text-gray-light">
-                  Currently tracking aircraft around Soekarno-Hatta International Airport (CGK) in Jakarta, Indonesia.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -72,12 +63,9 @@ const LiveFlightTracker = () => {
                   <div className="space-y-2">
                     <h4 className="text-sm font-semibold text-white">About this data</h4>
                     <p className="text-xs">
-                      This flight tracker displays real-time aircraft data using ADS-B (Automatic Dependent Surveillance–Broadcast) 
-                      technology. Data is refreshed every 20 seconds and includes commercial, private, and military aircraft 
-                      broadcasting their position.
-                    </p>
-                    <p className="text-xs">
-                      Not all aircraft broadcast complete information. Position accuracy and coverage may vary.
+                      This flight tracker displays real-time data for the most tracked flights worldwide. 
+                      Data is refreshed every 60 seconds and includes commercial, private, and special flights 
+                      that are currently being followed by users around the globe.
                     </p>
                   </div>
                 </HoverCardContent>
@@ -91,7 +79,6 @@ const LiveFlightTracker = () => {
         </Tabs>
       </section>
       
-      {/* Footer */}
       <Footer />
     </div>
   );
