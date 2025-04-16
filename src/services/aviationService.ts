@@ -92,18 +92,16 @@ export interface Flight {
 }
 
 export interface Airport {
+  id: string;
   name: string;
-  iata_code: string;
-  icao_code: string;
+  city: string;
+  country: string;
+  iata: string;
+  icao: string;
   lat: number;
-  lng: number;
-  country_code: string;
-  city?: string;
-  city_code?: string;
-  timezone?: string;
-  phone?: string;
-  website?: string;
-  distance?: number;
+  lon: number;
+  alt: number;
+  timezone: string;
 }
 
 export interface Airline {
@@ -308,7 +306,7 @@ export async function fetchAirports(params: Record<string, string> = {}) {
   }
 }
 
-export async function fetchAirportByIATA(iata: string) {
+export async function fetchAirportByIATA(iata: string): Promise<Airport | null> {
   if (!iata) return null;
   
   const formattedCode = iata.trim().toUpperCase();
@@ -319,10 +317,8 @@ export async function fetchAirportByIATA(iata: string) {
   
   try {
     const res = await fetch(`https://littleboy-dun.vercel.app/api/airports?iata=${formattedCode}`);
-    if (!res.ok) throw new Error("Failed to fetch");
+    if (!res.ok) throw new Error("Failed to fetch airport data");
     const data = await res.json();
-    
-    console.log(`Airport data for IATA ${formattedCode}:`, data);
     return data;
   } catch (error) {
     console.error(`Error fetching airport by IATA ${formattedCode}:`, error);

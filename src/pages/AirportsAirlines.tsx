@@ -213,39 +213,38 @@ const AirportsAirlines = () => {
   };
   
   const handleSearch = async () => {
-    setPage(1);
+    const code = searchTerm.trim().toUpperCase();
     setSearchPerformed(true);
     setLoading(true);
     setSingleAirportData(null);
     setSearchError(null);
     
-    try {
-      if (activeTab === 'airports' && searchTerm.trim().length === 3) {
-        const result = await fetchAirportByIATA(searchTerm.trim().toUpperCase());
+    if (activeTab === 'airports' && code.length === 3) {
+      try {
+        const result = await fetchAirportByIATA(code);
         
         if (!result || Object.keys(result).length === 0) {
-          setSearchError(`No airport found with IATA code "${searchTerm.toUpperCase()}"`);
+          setSearchError(`No airport found with IATA code "${code}"`);
           setFilteredAirports([]);
         } else {
-          setFilteredAirports([result]);
           setSingleAirportData(result);
+          setFilteredAirports([]);
           toast.success(`Found airport: ${result.name}`);
         }
-      } else {
-        if (activeTab === 'airports') {
-          applyFilters();
-        } else {
-          filterAirlines();
-        }
+      } catch (error) {
+        console.error('Search error:', error);
+        setSearchError("Something went wrong. Please try again.");
+        setFilteredAirports([]);
+        toast.error("Failed to search for airport");
       }
-    } catch (error) {
-      console.error('Search error:', error);
-      setSearchError("Something went wrong. Please try again.");
+    } else if (activeTab === 'airports' && code.length !== 3) {
+      setSearchError("Please enter a valid 3-letter IATA code");
       setFilteredAirports([]);
-      toast.error("Failed to search for airport");
-    } finally {
-      setLoading(false);
+    } else {
+      filterAirlines();
     }
+    
+    setLoading(false);
   };
   
   const handleRegionSelect = (region: string) => {
@@ -696,28 +695,34 @@ const AirportsAirlines = () => {
       </section>
       
       {searchError && (
-        <div className="glass-panel p-4 mb-4 text-red-400 flex items-center gap-2">
-          <AlertCircle className="h-5 w-5" />
-          {searchError}
+        <div className="max-w-6xl mx-auto px-4 mb-4">
+          <div className="glass-panel p-4 text-red-400 flex items-center gap-2">
+            <AlertCircle className="h-5 w-5" />
+            {searchError}
+          </div>
         </div>
       )}
       
       {singleAirportData && (
-        <div className="glass-panel p-6 mb-4">
-          <h2 className="text-2xl font-bold mb-4">
-            {singleAirportData.name} 
-            <span className="ml-2 text-purple">
-              ({singleAirportData.iata_code})
-            </span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-light">
-            <p className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              {singleAirportData.city}, {singleAirportData.country_code}
-            </p>
-            <p>ICAO: {singleAirportData.icao_code}</p>
-            <p>Latitude: {singleAirportData.lat}</p>
-            <p>Longitude: {singleAirportData.lng}</p>
+        <div className="max-w-6xl mx-auto px-4 mb-4">
+          <div className="glass-panel p-6">
+            <h2 className="text-2xl font-bold mb-4">
+              {singleAirportData.name} 
+              <span className="ml-2 text-purple">
+                ({singleAirportData.iata_code})
+              </span>
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-light">
+              <p className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                {singleAirportData.city}, {singleAirportData.country}
+              </p>
+              <p className="flex items-center gap-2">ICAO: {singleAirportData.icao}</p>
+              <p className="flex items-center gap-2">Latitude: {singleAirportData.lat}</p>
+              <p className="flex items-center gap-2">Longitude: {singleAirportData.lon}</p>
+              <p className="flex items-center gap-2">Altitude: {singleAirportData.alt}ft</p>
+              <p className="flex items-center gap-2">Timezone: UTC{singleAirportData.timezone}</p>
+            </div>
           </div>
         </div>
       )}
