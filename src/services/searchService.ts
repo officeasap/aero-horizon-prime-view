@@ -19,11 +19,18 @@ export async function fetchSuggestions(query: string) {
 export async function fetchAirportsAndAirlines(searchTerm: string = "") {
   try {
     if (!searchTerm || searchTerm.length < 2) {
+      console.log("Fetching default airport list with no search term");
       const airports = await fetchWithCache("airports", { 
         comprehensive: "true",
         limit: "100" 
       });
       
+      if (!airports || !Array.isArray(airports)) {
+        console.error("Invalid response format for airports", airports);
+        return [];
+      }
+      
+      console.log(`Fetched ${airports.length} airports`);
       return airports as Airport[];
     }
     
