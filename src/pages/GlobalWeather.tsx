@@ -117,7 +117,6 @@ const GlobalWeather = () => {
         )}
       </div>
       
-      {/* Footer */}
       <Footer />
     </div>
   );
