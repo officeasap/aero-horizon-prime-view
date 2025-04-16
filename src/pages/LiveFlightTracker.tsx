@@ -5,7 +5,7 @@ import FlightTracker from '@/components/FlightTracker';
 import FlightMap from '@/components/FlightMap';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, List, Info } from 'lucide-react';
+import { MapPin, List, Info, Plane } from 'lucide-react';
 import { 
   HoverCard,
   HoverCardContent,
@@ -31,7 +31,7 @@ const LiveFlightTracker = () => {
             
             <div className="mt-4 bg-gray-dark/30 p-3 rounded-lg border border-gray-light/10 text-sm">
               <div className="flex items-center gap-2">
-                <Info className="h-4 w-4 text-purple" />
+                <Plane className="h-4 w-4 text-purple" />
                 <p className="text-gray-light">
                   Currently tracking aircraft around Soekarno-Hatta International Airport (CGK) in Jakarta, Indonesia.
                 </p>
@@ -73,7 +73,7 @@ const LiveFlightTracker = () => {
                     <h4 className="text-sm font-semibold text-white">About this data</h4>
                     <p className="text-xs">
                       This flight tracker displays real-time aircraft data using ADS-B (Automatic Dependent Surveillance–Broadcast) 
-                      technology. Data is refreshed every 30 seconds and includes commercial, private, and military aircraft 
+                      technology. Data is refreshed every 20 seconds and includes commercial, private, and military aircraft 
                       broadcasting their position.
                     </p>
                     <p className="text-xs">

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -13,9 +14,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoibG92YWJsZS1haSIsImEiOiJjbHoyZnB4M3QwMTJkMnFxaHVnZjZ3b3poIn0.a-KotZQ2w1QKqifWWYK-Sw';
 
 // Default coordinates for Soekarno-Hatta Airport (CGK)
-const DEFAULT_LAT = -6.127;
-const DEFAULT_LON = 106.653;
-const DEFAULT_DIST = 200; // 200 km radius
+const DEFAULT_LAT = -6.1256;
+const DEFAULT_LON = 106.6559;
+const DEFAULT_DIST = 150; // 150 km radius
 
 interface FlightMapProps {
   selectedAirline?: string;
@@ -240,13 +241,12 @@ const FlightMap: React.FC<FlightMapProps> = ({ selectedAirline, selectedFlight }
       console.log('Map loaded successfully');
       loadFlights();
       
-      // Set up interval for data refresh every 30 seconds
+      // Set up interval for data refresh every 20 seconds
       const interval = setInterval(() => {
         console.log('Refreshing flight data');
         loadFlights();
-      }, 30000);
+      }, 20000);
       
-      // Store the interval ID, not the interval itself
       setRefreshInterval(interval);
     });
     

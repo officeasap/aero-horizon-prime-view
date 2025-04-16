@@ -75,6 +75,7 @@ export interface AircraftRawData {
 
 export async function fetchAircraftInRange(lat: number, lon: number, dist: number) {
   try {
+    // Use the correct API endpoint
     const url = `https://aircraft-adsb-data.p.rapidapi.com/aircraft/json/lat/${lat}/lon/${lon}/dist/${dist}`;
     
     const options = {

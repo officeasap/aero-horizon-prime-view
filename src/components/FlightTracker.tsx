@@ -13,9 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { SuggestResult } from '@/services/aviationService';
 
 // Default coordinates for Soekarno-Hatta Airport (CGK)
-const DEFAULT_LAT = -6.127;
-const DEFAULT_LON = 106.653;
-const DEFAULT_DIST = 200; // 200 km radius
+const DEFAULT_LAT = -6.1256;
+const DEFAULT_LON = 106.6559;
+const DEFAULT_DIST = 150; // 150 km radius
 
 // Extended SuggestResult interface with lat/lon properties
 interface AirportSuggestResult extends SuggestResult {
@@ -39,12 +39,11 @@ const FlightTracker = () => {
   useEffect(() => {
     loadFlights();
     
-    // Set up interval to refresh data every 30 seconds
+    // Set up interval to refresh data every 20 seconds
     const interval = setInterval(() => {
       loadFlights(false);
-    }, 30000);
+    }, 20000);
     
-    // Store the interval ID, not the interval itself
     setRefreshInterval(interval);
     
     return () => {
