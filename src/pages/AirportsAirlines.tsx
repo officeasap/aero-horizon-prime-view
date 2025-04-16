@@ -11,7 +11,7 @@ import {
   fetchComprehensiveAirports,
   fetchComprehensiveAirlines,
   fetchAirportByIATA,
-  searchAirportsByRegion,
+  searchAirportByIATA,
   Airport, 
   Airline 
 } from '@/services/aviationService';
