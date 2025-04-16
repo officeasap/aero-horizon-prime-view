@@ -99,7 +99,7 @@ function parseWeatherData(currentData: any, forecastData?: any): OpenWeatherData
       
       // If this is noon or closest to noon, use this icon
       const hour = date.getHours();
-      if (!dayData.icon || Math.abs(hour - 12) < Math.abs(dayData.iconHour - 12)) {
+      if (!dayData.icon || (typeof dayData.iconHour === 'number' && Math.abs(hour - 12) < Math.abs(dayData.iconHour - 12))) {
         dayData.icon = item.weather[0].icon;
         dayData.iconHour = hour;
         dayData.description = item.weather[0].description;
@@ -117,7 +117,7 @@ function parseWeatherData(currentData: any, forecastData?: any): OpenWeatherData
       let mostCommonCondition = '';
       let maxCount = 0;
       for (const [condition, count] of Object.entries(data.conditions)) {
-        if (count > maxCount) {
+        if (count as number > maxCount) {
           mostCommonCondition = condition;
           maxCount = count as number;
         }
@@ -132,8 +132,8 @@ function parseWeatherData(currentData: any, forecastData?: any): OpenWeatherData
         condition: mostCommonCondition,
         icon: data.icon || '',
         description: data.description,
-        humidity: Math.round(data.humidity.reduce((a, b) => a + b, 0) / data.humidity.length),
-        wind: Math.round(data.wind.reduce((a, b) => a + b, 0) / data.wind.length * 10) / 10,
+        humidity: Math.round(data.humidity.reduce((a: number, b: number) => a + b, 0) / data.humidity.length),
+        wind: Math.round(data.wind.reduce((a: number, b: number) => a + b, 0) / data.wind.length * 10) / 10,
         date: data.date,
       });
     }
