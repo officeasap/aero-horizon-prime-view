@@ -308,29 +308,25 @@ export async function fetchAirports(params: Record<string, string> = {}) {
   }
 }
 
-export async function fetchAirportByIATA(iataCode: string): Promise<Airport | null> {
-  if (!iataCode) return null;
+export async function fetchAirportByIATA(iata: string) {
+  if (!iata) return null;
   
-  const formattedCode = iataCode.trim().toUpperCase();
+  const formattedCode = iata.trim().toUpperCase();
   if (formattedCode.length !== 3) {
-    console.warn("Invalid IATA code format:", iataCode);
+    console.warn("Invalid IATA code format:", iata);
     return null;
   }
   
   try {
-    console.log(`Fetching airport by IATA code: ${formattedCode}`);
-    const data = await fetchWithCache("airports", { iata_code: formattedCode });
+    const res = await fetch(`https://littleboy-dun.vercel.app/api/airports?iata=${formattedCode}`);
+    if (!res.ok) throw new Error("Failed to fetch");
+    const data = await res.json();
     
-    if (Array.isArray(data) && data.length > 0) {
-      console.log(`Found airport for IATA ${formattedCode}:`, data[0]);
-      return data[0] as Airport;
-    }
-    
-    console.log(`No airport found for IATA code: ${formattedCode}`);
-    return null;
+    console.log(`Airport data for IATA ${formattedCode}:`, data);
+    return data;
   } catch (error) {
     console.error(`Error fetching airport by IATA ${formattedCode}:`, error);
-    return null;
+    throw error;
   }
 }
 

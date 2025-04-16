@@ -59,6 +59,8 @@ const AirportsAirlines = () => {
   const [selectedRegion, setSelectedRegion] = useState<string>('');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchPerformed, setSearchPerformed] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [singleAirportData, setSingleAirportData] = useState<Airport | null>(null);
   const itemsPerPage = 15;
   
   useEffect(() => {
@@ -213,14 +215,36 @@ const AirportsAirlines = () => {
   const handleSearch = async () => {
     setPage(1);
     setSearchPerformed(true);
+    setLoading(true);
+    setSingleAirportData(null);
+    setSearchError(null);
     
-    const isIATAFound = await checkForIATACode();
-    if (!isIATAFound) {
-      if (activeTab === 'airports') {
-        applyFilters();
+    try {
+      if (activeTab === 'airports' && searchTerm.trim().length === 3) {
+        const result = await fetchAirportByIATA(searchTerm.trim().toUpperCase());
+        
+        if (!result || Object.keys(result).length === 0) {
+          setSearchError(`No airport found with IATA code "${searchTerm.toUpperCase()}"`);
+          setFilteredAirports([]);
+        } else {
+          setFilteredAirports([result]);
+          setSingleAirportData(result);
+          toast.success(`Found airport: ${result.name}`);
+        }
       } else {
-        filterAirlines();
+        if (activeTab === 'airports') {
+          applyFilters();
+        } else {
+          filterAirlines();
+        }
       }
+    } catch (error) {
+      console.error('Search error:', error);
+      setSearchError("Something went wrong. Please try again.");
+      setFilteredAirports([]);
+      toast.error("Failed to search for airport");
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -670,6 +694,33 @@ const AirportsAirlines = () => {
           </div>
         </div>
       </section>
+      
+      {searchError && (
+        <div className="glass-panel p-4 mb-4 text-red-400 flex items-center gap-2">
+          <AlertCircle className="h-5 w-5" />
+          {searchError}
+        </div>
+      )}
+      
+      {singleAirportData && (
+        <div className="glass-panel p-6 mb-4">
+          <h2 className="text-2xl font-bold mb-4">
+            {singleAirportData.name} 
+            <span className="ml-2 text-purple">
+              ({singleAirportData.iata_code})
+            </span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-light">
+            <p className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              {singleAirportData.city}, {singleAirportData.country_code}
+            </p>
+            <p>ICAO: {singleAirportData.icao_code}</p>
+            <p>Latitude: {singleAirportData.lat}</p>
+            <p>Longitude: {singleAirportData.lng}</p>
+          </div>
+        </div>
+      )}
       
       <Footer />
     </div>
