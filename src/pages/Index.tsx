@@ -1,11 +1,13 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BackgroundAircraft from '@/components/BackgroundAircraft';
 import VideoBackground from '@/components/VideoBackground';
-import { Plane, Clock } from 'lucide-react';
+import { Plane, Clock, Calendar, Cloud, AlertTriangle, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AboutSection from '@/components/AboutSection';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 
 const Index = () => {
   return (
