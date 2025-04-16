@@ -345,32 +345,6 @@ export async function searchAirportByIATA(iataCode: string): Promise<Airport[]> 
   }
 }
 
-function filterAirports(airports: Airport[], filters: Record<string, string>): Airport[] {
-  const { comprehensive, limit, ...actualFilters } = filters;
-  
-  if (Object.keys(actualFilters).length === 0) {
-    return airports;
-  }
-  
-  return airports.filter(airport => {
-    return Object.entries(actualFilters).every(([key, value]) => {
-      if (!value) return true;
-      
-      const airportValue = (airport as any)[key];
-      if (!airportValue) return false;
-      
-      if (typeof airportValue === 'string') {
-        if (key === 'iata_code') {
-          return airportValue.toLowerCase() === value.toLowerCase();
-        }
-        return airportValue.toLowerCase().includes(value.toLowerCase());
-      }
-      
-      return airportValue === value;
-    });
-  });
-}
-
 export async function fetchNearbyAirports(lat: number, lng: number, distance: number = 100) {
   try {
     const data = await fetchWithCache("nearby", {
