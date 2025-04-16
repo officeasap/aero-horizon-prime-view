@@ -196,7 +196,7 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
   };
 
   // Format timestamp to time
-  const formatTime = (timestamp: number, timezone: number) => {
+  const formatTime = (timestamp: number, timezone: number = 0) => {
     try {
       const date = new Date((timestamp + timezone) * 1000);
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -335,7 +335,7 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
                 <Clock className="h-4 w-4" />
                 <span>
                   {weatherData.current.timezone && typeof weatherData.current.timezone === 'number' ? 
-                    formatTime(Math.floor(Date.now() / 1000), weatherData.current.timezone / 3600) : 
+                    formatTime(Math.floor(Date.now() / 1000), weatherData.current.timezone) : 
                     new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                   }
                 </span>
@@ -439,6 +439,23 @@ const OpenWeatherWidget: React.FC<OpenWeatherWidgetProps> = ({ selectedCity: pro
           {weatherData.location.lat !== undefined && weatherData.location.lon !== undefined && (
             <div className="mt-6 pt-4 border-t border-white/10 text-center text-xs text-gray-light">
               <p>Location: {weatherData.location.lat.toFixed(2)}°N, {weatherData.location.lon.toFixed(2)}°E</p>
+            </div>
+          )}
+          
+          {weatherData.current.sunrise && weatherData.current.sunset && (
+            <div className="mt-4 flex justify-center gap-8 p-3 bg-white/5 rounded-lg">
+              <div className="text-center">
+                <div className="text-xs text-gray-light mb-1">Sunrise</div>
+                <div className="font-medium">
+                  {formatTime(weatherData.current.sunrise, weatherData.current.timezone)}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs text-gray-light mb-1">Sunset</div>
+                <div className="font-medium">
+                  {formatTime(weatherData.current.sunset, weatherData.current.timezone)}
+                </div>
+              </div>
             </div>
           )}
         </div>
