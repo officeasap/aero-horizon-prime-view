@@ -10,15 +10,12 @@ import Contact from "./pages/Contact";
 import FlightStatus from "./pages/FlightStatus";
 import FlightSchedulePage from "./pages/FlightSchedulePage";
 import LiveFlightTracker from "./pages/LiveFlightTracker";
-import AirportsAirlines from "./pages/AirportsAirlines";
-import AirportAirlineSearchPage from "./pages/AirportAirlineSearchPage";
 import FlightStatusDetailPage from "./pages/FlightStatusDetailPage";
 import NearbyAirportsPage from "./pages/NearbyAirportsPage";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
-// Define the router before the App component
 const router = createBrowserRouter([
   {
     path: "/",
@@ -48,18 +45,6 @@ const router = createBrowserRouter([
   {
     path: "/live-flight-tracker",
     element: <LiveFlightTracker />
-  },
-  {
-    path: "/airports-airlines",
-    element: <AirportsAirlines />
-  },
-  {
-    path: "/airport-airline-search",
-    element: <AirportAirlineSearchPage />
-  },
-  {
-    path: "/nearby-airports",
-    element: <NearbyAirportsPage />
   },
   {
     path: "/flight/:flightId",
