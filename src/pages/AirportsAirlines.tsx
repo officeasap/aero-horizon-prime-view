@@ -188,13 +188,11 @@ const AirportsAirlines = () => {
     if (/^[A-Z]{3}$/.test(formattedSearch) && activeTab === 'airports') {
       setLoading(true);
       try {
-        console.log(`Checking for IATA code: ${formattedSearch}`);
-        const airport = await fetchAirportByIATA(formattedSearch);
+        const airports = await searchAirportByIATA(formattedSearch);
         
-        if (airport) {
-          console.log(`Found airport for IATA ${formattedSearch}:`, airport);
-          setFilteredAirports([airport]);
-          toast.success(`Found airport with IATA code ${formattedSearch}`);
+        if (airports && airports.length > 0) {
+          setFilteredAirports(airports);
+          toast.success(`Found airport(s) with IATA code ${formattedSearch}`);
           return true;
         } else {
           console.error(`No airport found for IATA code: ${formattedSearch}`);
@@ -397,7 +395,12 @@ const AirportsAirlines = () => {
                   defaultValue="airports" 
                   className="w-full md:w-auto" 
                   value={activeTab}
-                  onValueChange={setActiveTab}
+                  onValueChange={(value) => {
+                    setActiveTab(value);
+                    if (searchTerm.trim()) {
+                      handleSearch();
+                    }
+                  }}
                 >
                   <TabsList className="bg-gray-dark/50">
                     <TabsTrigger value="airports" className="data-[state=active]:bg-purple">

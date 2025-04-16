@@ -334,6 +334,25 @@ export async function fetchAirportByIATA(iataCode: string): Promise<Airport | nu
   }
 }
 
+export async function searchAirportByIATA(iataCode: string): Promise<Airport[]> {
+  try {
+    console.log('Searching airport by IATA:', iataCode);
+    const url = `${BASE_URL}/airports?iata=${iataCode}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Airport search failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('Airport search response:', data);
+    return data;
+  } catch (error) {
+    console.error('Error searching airport by IATA:', error);
+    throw error;
+  }
+}
+
 function filterAirports(airports: Airport[], filters: Record<string, string>): Airport[] {
   const { comprehensive, limit, ...actualFilters } = filters;
   
