@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BackgroundAircraft from '@/components/BackgroundAircraft';
 import VideoBackground from '@/components/VideoBackground';
-import { Plane, Calendar, Building, Map } from 'lucide-react';
+import { Plane, Calendar, Building, Map, AlertTriangle, MapPin, Cloud, Clock, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AboutSection from '@/components/AboutSection';
 import CurrencyConverter from '@/components/CurrencyConverter';
