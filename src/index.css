@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -164,6 +165,16 @@
   .code-icon {
     @apply bg-[#1A1A1A] text-[#8B0000];
   }
+}
+
+/* Hide Lovable edit button */
+#lov-edit {
+  display: none !important;
+}
+
+.mapboxgl-ctrl-logo, 
+.mapboxgl-ctrl-attrib {
+  display: none !important;
 }
 
 @keyframes float {
