@@ -65,7 +65,7 @@ const ASAPAgentChatWindow: React.FC<ASAPAgentChatWindowProps> = ({ onClose }) =>
             </Avatar>
             <div className="bg-[#2C2C2C] rounded-lg rounded-tl-none p-3 max-w-[85%]">
               <p className="text-white text-sm">
-                Hello! I'm your ASAP Agent. How can I help you with flight tracking, schedules, or other aviation information today?
+                Hello! I'm your ASAP Agent. How can I assist you with flight tracking, schedules, or any aviation information? Whether you need help with flight status, airport details, or travel planning, I'm here to help!
               </p>
             </div>
           </div>
@@ -122,7 +122,7 @@ const ASAPAgentChatWindow: React.FC<ASAPAgentChatWindowProps> = ({ onClose }) =>
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
+            placeholder="Ask about flights, airports, or travel..."
             className="flex-1 bg-[#2C2C2C] text-white rounded-l-lg px-4 py-2 outline-none focus:ring-1 focus:ring-[#8B0000] placeholder:text-gray-400"
             disabled={isLoading}
           />
