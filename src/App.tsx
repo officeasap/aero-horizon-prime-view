@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { registerServiceWorker } from "./services/notificationService";
+import ASAPAgentButton from "./components/ASAPAgent/ASAPAgentButton";
 
 const router = createBrowserRouter([
   {
@@ -87,6 +88,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
         <Toaster />
+        <ASAPAgentButton />
       </QueryClientProvider>
     </StrictMode>
   );
