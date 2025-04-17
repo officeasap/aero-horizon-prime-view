@@ -192,7 +192,8 @@ const FlightMap: React.FC = () => {
       style: 'mapbox://styles/mapbox/dark-v11',
       center: [0, 20],
       zoom: 2,
-      projection: 'globe'
+      projection: 'globe',
+      attributionControl: false // Remove attribution control with Mapbox logo
     });
     
     // Add navigation controls
@@ -201,6 +202,12 @@ const FlightMap: React.FC = () => {
       showZoom: true,
       visualizePitch: true
     }), 'top-right');
+
+    // Add custom attribution without Mapbox logo
+    map.current.addControl(new mapboxgl.AttributionControl({
+      customAttribution: 'Flight data © OpenSky Network',
+      compact: true
+    }));
 
     // Add atmosphere and fog effects
     map.current.on('style.load', () => {
@@ -262,6 +269,16 @@ const FlightMap: React.FC = () => {
       
       .mapboxgl-popup-tip {
         border-top-color: rgba(26, 26, 26, 0.95) !important;
+      }
+      
+      /* Hide mapbox logo */
+      .mapboxgl-ctrl-logo {
+        display: none !important;
+      }
+      
+      /* Hide attribution text */
+      .mapboxgl-ctrl-attrib-inner {
+        display: none !important;
       }
     `;
     document.head.appendChild(style);

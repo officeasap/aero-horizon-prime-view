@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import FlightTracker from '@/components/FlightTracker';
 import FlightMap from '@/components/FlightMap';
 import Footer from '@/components/Footer';
+import CurrencyConverter from '@/components/CurrencyConverter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, List, Info, Plane, LocateFixed } from 'lucide-react';
 import { 
@@ -100,6 +101,11 @@ const LiveFlightTracker = () => {
             <FlightTracker />
           </TabsContent>
         </Tabs>
+      </section>
+      
+      {/* Currency Converter Section */}
+      <section className="py-6 container mx-auto px-4 relative z-20">
+        <CurrencyConverter />
       </section>
       
       <Footer />

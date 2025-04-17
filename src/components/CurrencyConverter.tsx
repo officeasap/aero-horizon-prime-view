@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { fetchCurrencies, convertCurrency } from '@/services/currencyService';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -254,16 +255,16 @@ const CurrencyConverter = () => {
                   </div>
                 </div>
 
-                <div className="mt-8 p-4 bg-[#8B0000]/10 rounded-md border border-[#8B0000]/20">
+                <div className="mt-6 p-3 bg-[#8B0000]/10 rounded-md border border-[#8B0000]/20">
                   <div className="text-center">
-                    <h3 className="text-white text-lg mb-2">Conversion Result</h3>
-                    <div className="flex justify-center items-center h-16">
+                    <h3 className="text-white text-lg mb-1">Conversion Result</h3>
+                    <div className="flex justify-center items-center h-12">
                       {isConverting ? (
                         <Loader2 className="h-6 w-6 text-[#8B0000] animate-spin" />
                       ) : (
                         <div 
                           className={cn(
-                            "text-2xl font-bold text-white transition-all",
+                            "text-xl font-bold text-white transition-all",
                             convertedAnimation && "animate-fade-in"
                           )}
                         >
@@ -291,7 +292,7 @@ const CurrencyConverter = () => {
                   </div>
                 </div>
 
-                <div className="mt-4 text-center text-xs text-gray-light">
+                <div className="mt-2 text-center text-xs text-gray-light">
                   <p>Currency data refreshed every 60 seconds</p>
                 </div>
               </Form>
