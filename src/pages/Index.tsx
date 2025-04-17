@@ -47,9 +47,6 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Currency Converter Section */}
-      <CurrencyConverter />
-      
       {/* Features Section */}
       <section className="py-12 relative z-10 bg-dark content-overlay w-full">
         <div className="w-full px-8 mx-auto">
@@ -204,6 +201,15 @@ const Index = () => {
                 </Button>
               </a>
             </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Currency Converter Section - Moved below Contact Us button */}
+      <section className="pt-8 pb-12 relative z-10 bg-dark content-overlay w-full">
+        <div className="w-full px-8 mx-auto">
+          <div className="max-w-3xl mx-auto">
+            <CurrencyConverter />
           </div>
         </div>
       </section>
