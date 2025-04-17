@@ -4,7 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BackgroundAircraft from '@/components/BackgroundAircraft';
 import VideoBackground from '@/components/VideoBackground';
-import { Plane, Clock, Calendar, Cloud, AlertTriangle, MapPin, Phone } from 'lucide-react';
+import { Plane, Clock, Calendar, Cloud, AlertTriangle, MapPin, Phone, Building, BellRing, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AboutSection from '@/components/AboutSection';
 import CurrencyConverter from '@/components/CurrencyConverter';
@@ -29,17 +29,40 @@ const Index = () => {
             <p className="text-xl text-gray-light mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
               Track flights, check schedules, monitor delays, and stay updated with global weather forecasts - all in one place.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <div className="flex flex-wrap justify-center gap-3 animate-fade-in" style={{ animationDelay: '0.4s' }}>
               <a href="https://app.asaptracker.com" target="_blank" rel="noopener noreferrer">
                 <Button variant="redGradient" size="lg" className="w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000]">
                   <Plane className="h-4 w-4" />
                   Sign up for free
                 </Button>
               </a>
-              <a href="/world-clock" target="_blank" rel="noopener noreferrer">
+              
+              {/* New Service Buttons */}
+              <a href="/flight-schedule" rel="noopener noreferrer">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <Clock className="h-4 w-4" />
-                  World Clock
+                  <Calendar className="h-4 w-4" />
+                  Arrival/Departure Boards
+                </Button>
+              </a>
+              
+              <a href="/live-flight-tracker" rel="noopener noreferrer">
+                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
+                  <Map className="h-4 w-4" />
+                  Route Map Tool
+                </Button>
+              </a>
+              
+              <a href="/flight-status" rel="noopener noreferrer">
+                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
+                  <BellRing className="h-4 w-4" />
+                  Flight Alerts
+                </Button>
+              </a>
+              
+              <a href="/airports-airlines" rel="noopener noreferrer">
+                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
+                  <Building className="h-4 w-4" />
+                  Airport Information
                 </Button>
               </a>
             </div>
