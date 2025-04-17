@@ -1,4 +1,5 @@
 
+import { StrictMode } from "react";
 import "./App.css";
 import "./index.css";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
@@ -82,10 +83,12 @@ function App() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <Toaster />
-    </QueryClientProvider>
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <Toaster />
+      </QueryClientProvider>
+    </StrictMode>
   );
 }
 

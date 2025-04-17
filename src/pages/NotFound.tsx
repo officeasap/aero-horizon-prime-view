@@ -1,10 +1,11 @@
 
-import { useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.error(
@@ -26,19 +27,22 @@ const NotFound = () => {
           <div className="mb-6 p-4 bg-purple/10 rounded-lg">
             <p className="mb-2">Looking for the flight tracker?</p>
             <p className="text-sm mb-4">The correct URL is <span className="font-mono text-purple">/live-flight-tracker</span></p>
-            <Link 
-              to="/live-flight-tracker" 
+            <button 
+              onClick={() => navigate("/live-flight-tracker")}
               className="inline-flex items-center px-4 py-2 bg-purple hover:bg-purple/80 text-white rounded-md transition-colors"
             >
               Go to Flight Tracker
-            </Link>
+            </button>
           </div>
         )}
         
-        <Link to="/" className="inline-flex items-center text-purple hover:text-purple/80 underline">
+        <button 
+          onClick={() => navigate("/")}
+          className="inline-flex items-center text-purple hover:text-purple/80 underline"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Return to Home
-        </Link>
+        </button>
       </div>
     </div>
   );
