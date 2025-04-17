@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -235,272 +234,274 @@ const AirportsAirlinesPage = () => {
       
       {/* Main Content */}
       <section className="py-10 container mx-auto px-4">
-        <Tabs 
-          defaultValue="airports" 
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="w-full"
-        >
-          <div className="flex flex-col md:flex-row justify-between mb-8 gap-4">
-            <TabsList className="grid w-full max-w-md grid-cols-2">
-              <TabsTrigger value="airports" className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                <span>Airports</span>
-              </TabsTrigger>
-              <TabsTrigger value="airlines" className="flex items-center gap-2">
-                <PlaneTakeoff className="h-4 w-4" />
-                <span>Airlines</span>
-              </TabsTrigger>
-            </TabsList>
-            
-            <div className="flex gap-2 w-full md:w-auto">
-              <div className="relative flex-1">
-                <Input
-                  type="text"
-                  placeholder={`Search ${activeTab}...`}
-                  value={searchTerm}
-                  onChange={handleFilterChange}
-                  className="bg-gray-dark/50 border-gray-dark text-white pl-9"
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                />
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
+        <div className="border-4 border-[#8B0000] rounded-2xl shadow-[0_4px_12px_rgba(139,0,0,0.4)] overflow-hidden">
+          <Tabs 
+            defaultValue="airports" 
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <div className="flex flex-col md:flex-row justify-between mb-8 gap-4">
+              <TabsList className="grid w-full max-w-md grid-cols-2">
+                <TabsTrigger value="airports" className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>Airports</span>
+                </TabsTrigger>
+                <TabsTrigger value="airlines" className="flex items-center gap-2">
+                  <PlaneTakeoff className="h-4 w-4" />
+                  <span>Airlines</span>
+                </TabsTrigger>
+              </TabsList>
+              
+              <div className="flex gap-2 w-full md:w-auto">
+                <div className="relative flex-1">
+                  <Input
+                    type="text"
+                    placeholder={`Search ${activeTab}...`}
+                    value={searchTerm}
+                    onChange={handleFilterChange}
+                    className="bg-gray-dark/50 border-gray-dark text-white pl-9"
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={handleSearch}
+                  className="bg-gray-dark/50 border-gray-dark text-white"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Search className="h-4 w-4" />
+                  )}
+                </Button>
               </div>
-              
-              <Button 
-                variant="outline" 
-                onClick={handleSearch}
-                className="bg-gray-dark/50 border-gray-dark text-white"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Search className="h-4 w-4" />
-                )}
-              </Button>
             </div>
-          </div>
-          
-          <TabsContent value="airports" className="mt-0">
-            <Card className="bg-gray-dark/60 border-gray-light/20">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Building2 className="text-purple" />
-                  <span>Airports Directory</span>
-                </CardTitle>
-                <CardDescription>
-                  Browse {filteredAirports.length} airports from around the world
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent>
-                {isLoading ? (
-                  <div className="flex justify-center items-center p-12">
-                    <Loader2 className="animate-spin h-8 w-8 text-purple" />
-                  </div>
-                ) : filteredAirports.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-gray-light">No airports found matching your criteria.</p>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => loadAirports()}
-                      className="mt-4"
-                    >
-                      Load Airports
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="hover:bg-white/5">
-                          <TableHead 
-                            className="cursor-pointer"
-                            onClick={() => requestSort('airport_name')}
-                          >
-                            <div className="flex items-center">
-                              Airport Name
-                              {getSortIndicator('airport_name')}
-                            </div>
-                          </TableHead>
-                          <TableHead 
-                            className="cursor-pointer"
-                            onClick={() => requestSort('iata_code')}
-                          >
-                            <div className="flex items-center">
-                              IATA
-                              {getSortIndicator('iata_code')}
-                            </div>
-                          </TableHead>
-                          <TableHead 
-                            className="cursor-pointer"
-                            onClick={() => requestSort('icao_code')}
-                          >
-                            <div className="flex items-center">
-                              ICAO
-                              {getSortIndicator('icao_code')}
-                            </div>
-                          </TableHead>
-                          <TableHead 
-                            className="cursor-pointer"
-                            onClick={() => requestSort('country_name')}
-                          >
-                            <div className="flex items-center">
-                              Country
-                              {getSortIndicator('country_name')}
-                            </div>
-                          </TableHead>
-                          <TableHead>
-                            <div className="flex items-center justify-end">
-                              Details
-                            </div>
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredAirports.map((airport, index) => (
-                          <TableRow 
-                            key={`${airport.iata_code}-${index}`}
-                            className="hover:bg-white/5 cursor-pointer"
-                            onClick={() => handleOpenAirportDetail(airport)}
-                          >
-                            <TableCell className="font-medium">{airport.airport_name}</TableCell>
-                            <TableCell>
-                              <Badge variant="outline" className="font-mono">
-                                {airport.iata_code}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="secondary" className="font-mono">
-                                {airport.icao_code}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>{airport.country_name}</TableCell>
-                            <TableCell className="text-right">
-                              <Button variant="ghost" size="icon">
-                                <Info className="h-4 w-4" />
-                              </Button>
-                            </TableCell>
+            
+            <TabsContent value="airports" className="mt-0">
+              <Card className="bg-gray-dark/60 border-gray-light/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Building2 className="text-purple" />
+                    <span>Airports Directory</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Browse {filteredAirports.length} airports from around the world
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                  {isLoading ? (
+                    <div className="flex justify-center items-center p-12">
+                      <Loader2 className="animate-spin h-8 w-8 text-purple" />
+                    </div>
+                  ) : filteredAirports.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p className="text-gray-light">No airports found matching your criteria.</p>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => loadAirports()}
+                        className="mt-4"
+                      >
+                        Load Airports
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="hover:bg-white/5">
+                            <TableHead 
+                              className="cursor-pointer"
+                              onClick={() => requestSort('airport_name')}
+                            >
+                              <div className="flex items-center">
+                                Airport Name
+                                {getSortIndicator('airport_name')}
+                              </div>
+                            </TableHead>
+                            <TableHead 
+                              className="cursor-pointer"
+                              onClick={() => requestSort('iata_code')}
+                            >
+                              <div className="flex items-center">
+                                IATA
+                                {getSortIndicator('iata_code')}
+                              </div>
+                            </TableHead>
+                            <TableHead 
+                              className="cursor-pointer"
+                              onClick={() => requestSort('icao_code')}
+                            >
+                              <div className="flex items-center">
+                                ICAO
+                                {getSortIndicator('icao_code')}
+                              </div>
+                            </TableHead>
+                            <TableHead 
+                              className="cursor-pointer"
+                              onClick={() => requestSort('country_name')}
+                            >
+                              <div className="flex items-center">
+                                Country
+                                {getSortIndicator('country_name')}
+                              </div>
+                            </TableHead>
+                            <TableHead>
+                              <div className="flex items-center justify-end">
+                                Details
+                              </div>
+                            </TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="airlines" className="mt-0">
-            <Card className="bg-gray-dark/60 border-gray-light/20">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <PlaneTakeoff className="text-purple" />
-                  <span>Airlines Directory</span>
-                </CardTitle>
-                <CardDescription>
-                  Browse {filteredAirlines.length} airlines from around the world
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent>
-                {isLoading ? (
-                  <div className="flex justify-center items-center p-12">
-                    <Loader2 className="animate-spin h-8 w-8 text-purple" />
-                  </div>
-                ) : filteredAirlines.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-gray-light">No airlines found matching your criteria.</p>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => loadAirlines()}
-                      className="mt-4"
-                    >
-                      Load Airlines
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="hover:bg-white/5">
-                          <TableHead 
-                            className="cursor-pointer"
-                            onClick={() => requestSort('airline_name')}
-                          >
-                            <div className="flex items-center">
-                              Airline Name
-                              {getSortIndicator('airline_name')}
-                            </div>
-                          </TableHead>
-                          <TableHead 
-                            className="cursor-pointer"
-                            onClick={() => requestSort('airline_iata')}
-                          >
-                            <div className="flex items-center">
-                              IATA
-                              {getSortIndicator('airline_iata')}
-                            </div>
-                          </TableHead>
-                          <TableHead 
-                            className="cursor-pointer"
-                            onClick={() => requestSort('airline_icao')}
-                          >
-                            <div className="flex items-center">
-                              ICAO
-                              {getSortIndicator('airline_icao')}
-                            </div>
-                          </TableHead>
-                          <TableHead 
-                            className="cursor-pointer"
-                            onClick={() => requestSort('airline_country')}
-                          >
-                            <div className="flex items-center">
-                              Country
-                              {getSortIndicator('airline_country')}
-                            </div>
-                          </TableHead>
-                          <TableHead>
-                            <div className="flex items-center justify-end">
-                              Details
-                            </div>
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredAirlines.map((airline, index) => (
-                          <TableRow 
-                            key={`${airline.airline_iata}-${index}`}
-                            className="hover:bg-white/5 cursor-pointer"
-                            onClick={() => handleOpenAirlineDetail(airline)}
-                          >
-                            <TableCell className="font-medium">{airline.airline_name}</TableCell>
-                            <TableCell>
-                              <Badge variant="outline" className="font-mono">
-                                {airline.airline_iata}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="secondary" className="font-mono">
-                                {airline.airline_icao || 'N/A'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>{airline.airline_country || 'Unknown'}</TableCell>
-                            <TableCell className="text-right">
-                              <Button variant="ghost" size="icon">
-                                <Info className="h-4 w-4" />
-                              </Button>
-                            </TableCell>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredAirports.map((airport, index) => (
+                            <TableRow 
+                              key={`${airport.iata_code}-${index}`}
+                              className="hover:bg-white/5 cursor-pointer"
+                              onClick={() => handleOpenAirportDetail(airport)}
+                            >
+                              <TableCell className="font-medium">{airport.airport_name}</TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="font-mono">
+                                  {airport.iata_code}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="secondary" className="font-mono">
+                                  {airport.icao_code}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>{airport.country_name}</TableCell>
+                              <TableCell className="text-right">
+                                <Button variant="ghost" size="icon">
+                                  <Info className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="airlines" className="mt-0">
+              <Card className="bg-gray-dark/60 border-gray-light/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <PlaneTakeoff className="text-purple" />
+                    <span>Airlines Directory</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Browse {filteredAirlines.length} airlines from around the world
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                  {isLoading ? (
+                    <div className="flex justify-center items-center p-12">
+                      <Loader2 className="animate-spin h-8 w-8 text-purple" />
+                    </div>
+                  ) : filteredAirlines.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p className="text-gray-light">No airlines found matching your criteria.</p>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => loadAirlines()}
+                        className="mt-4"
+                      >
+                        Load Airlines
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="hover:bg-white/5">
+                            <TableHead 
+                              className="cursor-pointer"
+                              onClick={() => requestSort('airline_name')}
+                            >
+                              <div className="flex items-center">
+                                Airline Name
+                                {getSortIndicator('airline_name')}
+                              </div>
+                            </TableHead>
+                            <TableHead 
+                              className="cursor-pointer"
+                              onClick={() => requestSort('airline_iata')}
+                            >
+                              <div className="flex items-center">
+                                IATA
+                                {getSortIndicator('airline_iata')}
+                              </div>
+                            </TableHead>
+                            <TableHead 
+                              className="cursor-pointer"
+                              onClick={() => requestSort('airline_icao')}
+                            >
+                              <div className="flex items-center">
+                                ICAO
+                                {getSortIndicator('airline_icao')}
+                              </div>
+                            </TableHead>
+                            <TableHead 
+                              className="cursor-pointer"
+                              onClick={() => requestSort('airline_country')}
+                            >
+                              <div className="flex items-center">
+                                Country
+                                {getSortIndicator('airline_country')}
+                              </div>
+                            </TableHead>
+                            <TableHead>
+                              <div className="flex items-center justify-end">
+                                Details
+                              </div>
+                            </TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredAirlines.map((airline, index) => (
+                            <TableRow 
+                              key={`${airline.airline_iata}-${index}`}
+                              className="hover:bg-white/5 cursor-pointer"
+                              onClick={() => handleOpenAirlineDetail(airline)}
+                            >
+                              <TableCell className="font-medium">{airline.airline_name}</TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="font-mono">
+                                  {airline.airline_iata}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="secondary" className="font-mono">
+                                  {airline.airline_icao || 'N/A'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>{airline.airline_country || 'Unknown'}</TableCell>
+                              <TableCell className="text-right">
+                                <Button variant="ghost" size="icon">
+                                  <Info className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </section>
       
       {/* Airport Detail Dialog */}
