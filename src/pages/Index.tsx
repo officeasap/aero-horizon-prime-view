@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BackgroundAircraft from '@/components/BackgroundAircraft';
 import VideoBackground from '@/components/VideoBackground';
-import { Plane, Clock, Calendar, Cloud, AlertTriangle, MapPin, Phone, Building, Map } from 'lucide-react';
+import { Plane, Calendar, Building, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AboutSection from '@/components/AboutSection';
 import CurrencyConverter from '@/components/CurrencyConverter';
@@ -29,15 +29,7 @@ const Index = () => {
               Track flights, check schedules, monitor delays, and stay updated with global weather forecasts - all in one place.
             </p>
             <div className="flex flex-wrap justify-center gap-3 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              {/* World Clock Button - Keeping as requested */}
-              <a href="/world-clock" rel="noopener noreferrer">
-                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <Clock className="h-4 w-4" />
-                  World Clock
-                </Button>
-              </a>
-              
-              {/* New Service Buttons */}
+              {/* Only keep the requested 3 buttons */}
               <a href="/flight-schedule" rel="noopener noreferrer">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
                   <Calendar className="h-4 w-4" />

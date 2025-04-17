@@ -59,6 +59,10 @@ const router = createBrowserRouter([
     element: <Contact />
   },
   {
+    path: "/flight-alerts",
+    element: <Navigate to="/flight-status" replace />
+  },
+  {
     path: "*",
     element: <NotFound />
   }

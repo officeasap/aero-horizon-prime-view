@@ -44,10 +44,10 @@ const Header = () => {
     { name: 'Flight Schedule', path: '/flight-schedule', icon: <Clock className="h-4 w-4" /> },
     { name: 'Live Flight Tracker', path: '/live-flight-tracker', icon: <Plane className="h-4 w-4" /> },
     { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-4 w-4" /> },
-    { name: 'Sign Up for Free Flight Alerts', path: '/flight-status', icon: <BellRing className="h-4 w-4" /> },
     { name: 'Weather', path: '/global-weather', icon: <Cloud className="h-4 w-4" /> },
     { name: 'World Clock', path: '/world-clock', icon: <Clock className="h-4 w-4" /> },
-    { name: 'Contact', path: '/contact', icon: <Phone className="h-4 w-4" /> }
+    { name: 'Contact', path: '/contact', icon: <Phone className="h-4 w-4" /> },
+    { name: 'Sign Up for Free Flight Alerts', path: '/flight-alerts', icon: <BellRing className="h-4 w-4" /> }
   ];
   
   return (
@@ -88,13 +88,16 @@ const Header = () => {
             "flex",
             isMobile ? "flex-col w-full space-y-2" : "items-center space-x-2"
           )}>
-            {nav.map((link) => (
+            {nav.map((link, index) => (
               <Link
                 key={link.name}
                 to={link.path}
                 className={cn(
                   "flex items-center justify-center gap-1.5 text-sm font-medium text-white bg-[#8B0000] transition-all duration-200 border border-[#8B0000] rounded-[15px] px-3 py-1.5 hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]",
-                  location.pathname === link.path ? "border-[#8B0000] bg-[#A80000] shadow-[0_0_8px_#A80000]" : ""
+                  location.pathname === link.path ? "border-[#8B0000] bg-[#A80000] shadow-[0_0_8px_#A80000]" : "",
+                  // Add special styling for the Flight Alerts button
+                  link.name === "Sign Up for Free Flight Alerts" ? 
+                    "border-2 bg-[#A80000] shadow-[0_0_4px_#A80000] hover:shadow-[0_0_12px_#A80000]" : ""
                 )}
                 onClick={closeMenu}
               >
