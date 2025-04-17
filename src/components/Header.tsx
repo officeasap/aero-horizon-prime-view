@@ -5,7 +5,6 @@ import { X, Menu, Plane, Clock, AlertTriangle, Building2, Phone, Cloud, Radar, B
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-import NotificationBell from './NotificationBell';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -74,12 +73,9 @@ const Header = () => {
 
         {/* Mobile Menu Button */}
         {isMobile && (
-          <div className="flex items-center gap-2">
-            <NotificationBell className="mr-1" />
-            <Button variant="ghost" size="icon" onClick={toggleMenu} className="lg:hidden text-white hover:text-[#8B0000] hover:bg-[#8B0000]/10">
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
-          </div>
+          <Button variant="ghost" size="icon" onClick={toggleMenu} className="lg:hidden text-white hover:text-[#8B0000] hover:bg-[#8B0000]/10">
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
         )}
 
         {/* Navigation Links */}
@@ -111,13 +107,6 @@ const Header = () => {
             ))}
           </div>
         </nav>
-        
-        {/* Notification Bell (desktop) */}
-        {!isMobile && (
-          <div className="flex items-center">
-            <NotificationBell />
-          </div>
-        )}
       </div>
     </header>
   );

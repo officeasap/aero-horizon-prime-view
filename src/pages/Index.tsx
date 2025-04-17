@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import AboutSection from '@/components/AboutSection';
 import CurrencyConverter from '@/components/CurrencyConverter';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import NotificationBell from '@/components/NotificationBell';
 
 const Index = () => {
   return (
@@ -29,7 +31,7 @@ const Index = () => {
               Track flights, check schedules, monitor delays, and stay updated with global weather forecasts - all in one place.
             </p>
             <div className="flex flex-wrap justify-center gap-3 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              {/* Only keep the requested 3 buttons */}
+              {/* Hero buttons */}
               <a href="/flight-schedule" rel="noopener noreferrer">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
                   <Calendar className="h-4 w-4" />
@@ -50,6 +52,11 @@ const Index = () => {
                   Airport Information
                 </Button>
               </a>
+              
+              {/* Notification Bell */}
+              <div className="mt-2 sm:mt-0">
+                <NotificationBell variant="button" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]" />
+              </div>
             </div>
           </div>
         </div>
