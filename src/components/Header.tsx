@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X, Radar } from "lucide-react";
+import { Menu, X, Radar, Book, Home, Calendar, Plane, MapPin, Bell } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 
@@ -33,74 +33,74 @@ const Header = () => {
             <NavLink
               to="/aviation-info"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all flex items-center gap-2 ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
-              AviationInfo
+              <Book className="h-4 w-4" /> AviationInfo
             </NavLink>
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all flex items-center gap-2 ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
-              Home
+              <Home className="h-4 w-4" /> Home
             </NavLink>
             <NavLink
               to="/flight-schedule"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all flex items-center gap-2 ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
-              Flight Schedule
+              <Calendar className="h-4 w-4" /> Flight Schedule
             </NavLink>
             <NavLink
               to="/airports-airlines"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all flex items-center gap-2 ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
-              Airports & Airlines
+              <Plane className="h-4 w-4" /> Airports & Airlines
             </NavLink>
             <NavLink
               to="/live-flight-tracker"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all flex items-center gap-2 ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
-              Live Tracker
+              <MapPin className="h-4 w-4" /> Live Tracker
             </NavLink>
             <NavLink
               to="/flight-alerts"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all flex items-center gap-2 ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
-              Flight Alerts
+              <Bell className="h-4 w-4" /> Flight Alerts
             </NavLink>
           </nav>
 
@@ -123,69 +123,69 @@ const Header = () => {
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-dark/90 shadow-lg border-y border-white/5">
           <Link
             to="/aviation-info"
-            className={`block px-4 py-2 rounded-[15px] text-base font-medium ${
+            className={`block px-4 py-2 rounded-[15px] text-base font-medium flex items-center gap-2 ${
               location.pathname === "/aviation-info"
                 ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                 : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
-            AviationInfo
+            <Book className="h-4 w-4" /> AviationInfo
           </Link>
           <Link
             to="/"
-            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium flex items-center gap-2 ${
               location.pathname === "/"
                 ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                 : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
-            Home
+            <Home className="h-4 w-4" /> Home
           </Link>
           <Link
             to="/flight-schedule"
-            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium flex items-center gap-2 ${
               location.pathname === "/flight-schedule"
                 ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                 : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
-            Flight Schedule
+            <Calendar className="h-4 w-4" /> Flight Schedule
           </Link>
           <Link
             to="/airports-airlines"
-            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium flex items-center gap-2 ${
               location.pathname === "/airports-airlines"
                 ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                 : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
-            Airports & Airlines
+            <Plane className="h-4 w-4" /> Airports & Airlines
           </Link>
           <Link
             to="/live-flight-tracker"
-            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium flex items-center gap-2 ${
               location.pathname === "/live-flight-tracker"
                 ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                 : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
-            Live Tracker
+            <MapPin className="h-4 w-4" /> Live Tracker
           </Link>
           <Link
             to="/flight-alerts"
-            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium flex items-center gap-2 ${
               location.pathname === "/flight-alerts"
                 ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                 : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
-            Flight Alerts
+            <Bell className="h-4 w-4" /> Flight Alerts
           </Link>
           <Link
             to="/world-clock"
