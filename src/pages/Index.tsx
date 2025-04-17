@@ -7,6 +7,7 @@ import VideoBackground from '@/components/VideoBackground';
 import { Plane, Clock, Calendar, Cloud, AlertTriangle, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AboutSection from '@/components/AboutSection';
+import CurrencyConverter from '@/components/CurrencyConverter';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 
 const Index = () => {
@@ -45,6 +46,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+      
+      {/* Currency Converter Section */}
+      <CurrencyConverter />
       
       {/* Features Section */}
       <section className="py-12 relative z-10 bg-dark content-overlay w-full">
