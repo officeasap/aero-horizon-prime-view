@@ -145,8 +145,14 @@ export const RouteMap: React.FC<RouteMapProps> = ({
         }
         
         // Get coordinates
-        const fromCoords = [Number(from.longitude) || 0, Number(from.latitude) || 0];
-        const toCoords = [Number(to.longitude) || 0, Number(to.latitude) || 0];
+        const fromCoords = [
+          Number(from.longitude || from.lon || 0), 
+          Number(from.latitude || from.lat || 0)
+        ];
+        const toCoords = [
+          Number(to.longitude || to.lon || 0), 
+          Number(to.latitude || to.lat || 0)
+        ];
         
         // If we don't have valid coordinates, try to geocode using the airport names
         if (!fromCoords[0] || !toCoords[0]) {
@@ -205,7 +211,7 @@ export const RouteMap: React.FC<RouteMapProps> = ({
                   name: from.name,
                   code: from.iata_code,
                   city: from.city,
-                  country: from.country,
+                  country: from.country || from.country_code,
                   type: 'departure'
                 },
                 geometry: {
@@ -219,7 +225,7 @@ export const RouteMap: React.FC<RouteMapProps> = ({
                   name: to.name,
                   code: to.iata_code,
                   city: to.city,
-                  country: to.country,
+                  country: to.country || to.country_code,
                   type: 'arrival'
                 },
                 geometry: {
@@ -292,9 +298,10 @@ export const RouteMap: React.FC<RouteMapProps> = ({
         });
         
         // Fit map to show the entire route
-        const bounds = points.reduce((bounds, coord) => {
-          return bounds.extend(coord as [number, number]);
-        }, new mapboxgl.LngLatBounds(points[0] as [number, number], points[0] as [number, number]));
+        const bounds = new mapboxgl.LngLatBounds();
+        for (const coord of points) {
+          bounds.extend(coord as [number, number]);
+        }
         
         map.current.fitBounds(bounds, {
           padding: 50,
@@ -374,3 +381,4 @@ export const RouteMap: React.FC<RouteMapProps> = ({
     </div>
   );
 };
+

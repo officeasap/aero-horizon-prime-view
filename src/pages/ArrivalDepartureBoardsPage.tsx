@@ -1,267 +1,294 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { ArrivalBoard, DepartureBoard } from '@/components/FlightBoards';
-import { Check, Plane, Clock, Search, MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import AutocompleteSearch from '@/components/AutocompleteSearch';
-import { SuggestResult } from '@/services/aviationService';
+import { useToast } from "@/hooks/use-toast";
+import { 
+  fetchArrivalsDepartures,
+  Airport,
+} from '@/services/aviationService';
+import { 
+  Plane, 
+  Search, 
+  ArrowDownUp, 
+  Filter, 
+  Clock, 
+  Loader2,
+  ArrowRight,
+  ArrowLeft
+} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const ArrivalDepartureBoardsPage = () => {
-  const [selectedAirport, setSelectedAirport] = useState<SuggestResult | null>(null);
-  const [boardType, setBoardType] = useState<'arrivals' | 'departures'>('arrivals');
-  const [flightCode, setFlightCode] = useState('');
+interface FlightData {
+  id: string;
+  airline: string;
+  destination: string;
+  time: string;
+  status: string;
+  gate: string;
+}
+
+interface AnimatedTextProps {
+  text: string;
+}
+
+const AnimatedText: React.FC<AnimatedTextProps> = ({ text }) => {
+  const characters = text.split('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % characters.length);
+    }, 100);
+
+    return () => clearInterval(intervalId);
+  }, [characters.length]);
 
   return (
-    <div className="min-h-screen bg-dark text-white overflow-x-hidden">
-      <Header />
+    <div className="flex overflow-hidden">
+      {characters.map((char, index) => (
+        <span
+          key={index}
+          className={cn(
+            "transition-transform duration-200",
+            index === currentIndex ? "translate-y-0" : "-translate-y-full"
+          )}
+          style={{ transitionDelay: `${index * 50}ms` }}
+        >
+          {char}
+        </span>
+      ))}
+    </div>
+  );
+};
+
+interface AnimatedCharProps {
+  char: string;
+  index: number;
+  isActive: boolean;
+  hasFakeCaret?: boolean;
+}
+
+const AnimatedChar: React.FC<AnimatedCharProps> = ({ char, index, isActive, hasFakeCaret = false }) => {
+  return (
+    <span className={cn(
+      "relative",
+      isActive ? "text-white" : "text-gray-light",
+    )}>
+      {char}
+      {hasFakeCaret && <span className="absolute -right-0.5 top-0 h-full w-px bg-white animate-pulse" />}
+    </span>
+  );
+};
+
+const ArrivalDepartureBoardsPage: React.FC = () => {
+  const [flights, setFlights] = useState<FlightData[]>([]);
+  const [filteredFlights, setFilteredFlights] = useState<FlightData[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [airport, setAirport] = useState<Airport | null>(null);
+  const [type, setType] = useState<'arrivals' | 'departures'>('arrivals');
+  const [boardText, setBoardText] = useState('Arrivals');
+  const [animatedText, setAnimatedText] = useState('Arrivals');
+  const [animatedChars, setAnimatedChars] = useState<string[]>([]);
+  const [currentAnimatedIndex, setCurrentAnimatedIndex] = useState(0);
+  const [isAnimatedCharActive, setIsAnimatedCharActive] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setAnimatedChars(boardText.split(''));
+  }, [boardText]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentAnimatedIndex((prevIndex) => (prevIndex + 1) % animatedChars.length);
+      setIsAnimatedCharActive(true);
+      setTimeout(() => setIsAnimatedCharActive(false), 500);
+    }, 500);
+
+    return () => clearInterval(intervalId);
+  }, [animatedChars.length]);
+
+  const handleSearch = async () => {
+    setIsLoading(true);
+    try {
+      const params: Record<string, string> = {};
       
-      {/* Page Title Section */}
-      <section className="pt-32 pb-12 relative">
-        <div className="absolute inset-0 bg-radial-gradient from-[#8B0000]/10 via-transparent to-transparent z-0"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold font-space mb-4 animate-fade-in">
-              Papan <span className="text-[#8B0000] animate-text-glow">Kedatangan & Keberangkatan</span>
-            </h1>
-            <h2 className="text-xl md:text-2xl font-medium font-space mb-4 animate-fade-in">
-              Arrival & Departure Boards
-            </h2>
-            <p className="text-lg text-gray-light animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Selamat datang! View real-time arrivals and departures for airports worldwide.
-            </p>
-          </div>
+      if (airport?.iata_code) {
+        params.iata = airport.iata_code;
+      }
+      
+      const flightsData = await fetchArrivalsDepartures(type, params);
+      
+      if (flightsData.length === 0) {
+        toast({
+          title: "No flights found",
+          description: `No flights found for ${airport?.name}`,
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // setFlights(flightsData);
+      setFilteredFlights(flightsData as any);
+      
+      toast({
+        title: "Flights found",
+        description: `Found ${flightsData.length} flights for ${airport?.name}`,
+      });
+    } catch (error) {
+      console.error("Error searching for flights:", error);
+      toast({
+        title: "Error searching for flights",
+        description: "An error occurred while searching. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTextSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+    
+    if (!term.trim()) {
+      setFilteredFlights(flights);
+      return;
+    }
+    
+    const filtered = flights.filter(flight => 
+      flight.destination.toLowerCase().includes(term) || 
+      flight.airline.toLowerCase().includes(term) || 
+      flight.id.toLowerCase().includes(term)
+    );
+    
+    setFilteredFlights(filtered);
+  };
+
+  const handleSwapType = () => {
+    setType(type === 'arrivals' ? 'departures' : 'arrivals');
+    setBoardText(type === 'arrivals' ? 'Departures' : 'Arrivals');
+    setAnimatedText(type === 'arrivals' ? 'Departures' : 'Arrivals');
+  };
+
+  return (
+    <section id="arrival-departure-boards" className="py-8 w-full max-w-5xl mx-auto">
+      <div className="flex items-center justify-between mb-6 px-4">
+        <div className="flex items-center gap-2">
+          <Plane className="text-purple h-6 w-6" />
+          <h2 className="text-2xl font-semibold font-space">
+            <AnimatedText text={animatedText} />
+          </h2>
         </div>
-      </section>
-      
-      {/* Batik Pattern Divider */}
-      <div className="w-full h-8 bg-[url('/lovable-uploads/e61de6be-a0a9-4504-bfe9-7416e471d743.png')] bg-repeat-x opacity-15"></div>
-      
-      {/* Main Content */}
-      <section className="py-12 px-4 relative">
-        <div className="max-w-6xl mx-auto glass-panel p-6 md:p-10 backdrop-blur-md border-[#8B0000]/30">
-          <Tabs defaultValue="arrivals" className="w-full" onValueChange={(value) => setBoardType(value as 'arrivals' | 'departures')}>
-            <div className="mb-8">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-                <TabsTrigger 
-                  value="arrivals" 
-                  className={cn(
-                    "flex items-center gap-2 data-[state=active]:bg-[#8B0000] data-[state=active]:text-white",
-                    "data-[state=active]:shadow-[0_0_8px_#A80000]"
-                  )}
-                >
-                  <Plane className="h-4 w-4 rotate-45" />
-                  <span>Kedatangan · Arrivals</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="departures" 
-                  className={cn(
-                    "flex items-center gap-2 data-[state=active]:bg-[#8B0000] data-[state=active]:text-white",
-                    "data-[state=active]:shadow-[0_0_8px_#A80000]"
-                  )}
-                >
-                  <Plane className="h-4 w-4 -rotate-45" />
-                  <span>Keberangkatan · Departures</span>
-                </TabsTrigger>
-              </TabsList>
-            </div>
-            
-            <div className="mb-8">
-              <div className="max-w-2xl mx-auto">
-                <div className="flex flex-col md:flex-row items-start gap-4">
-                  <div className="flex-1 w-full">
-                    <p className="mb-2 text-sm text-gray-light">Airport</p>
-                    <div className="relative">
-                      <AutocompleteSearch 
-                        placeholder="Enter airport name or code..." 
-                        onSelect={setSelectedAirport}
-                        type="airport"
-                        className="w-full rounded-[14px] bg-[#1A1A1A] border-[#8B0000]/20 text-white"
-                      />
-                      <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
-                    </div>
-                    {selectedAirport && (
-                      <div className="mt-2 text-sm">
-                        <span className="bg-[#8B0000]/20 text-white px-2 py-1 rounded">
-                          {selectedAirport.name} ({selectedAirport.iata_code})
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="w-full md:w-auto mt-4 md:mt-6">
-                    <Button
-                      className="w-full bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]"
-                    >
-                      <Search className="mr-2 h-4 w-4" />
-                      View Flights
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mb-10 max-w-md mx-auto text-center">
-              <p className="text-sm text-gray-light mb-3">or enter flight number</p>
-              <div className="flex items-center justify-center gap-2">
-                <InputOTP 
-                  maxLength={6}
-                  value={flightCode}
-                  onChange={(value) => setFlightCode(value)}
-                  render={({ slots }) => (
-                    <InputOTPGroup className="gap-2">
-                      {slots.map((slot, index) => (
-                        <InputOTPSlot 
-                          key={index} 
-                          {...slot} 
-                          className={cn(
-                            "bg-[#1A1A1A] border-[#8B0000]/20 text-white w-12 h-12",
-                            "focus:border-[#8B0000] focus:ring-[#8B0000]/30"
-                          )}
-                        />
-                      ))}
-                    </InputOTPGroup>
-                  )}
-                />
-                <Button
-                  variant="ghost" 
-                  className="p-3 bg-[#1A1A1A] text-[#8B0000] hover:bg-[#8B0000]/10 hover:text-white"
-                >
-                  <Check className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-            
-            <TabsContent value="arrivals" className="mt-0">
-              <ArrivalBoard airport={selectedAirport?.iata_code} />
-            </TabsContent>
-            
-            <TabsContent value="departures" className="mt-0">
-              <DepartureBoard airport={selectedAirport?.iata_code} />
-            </TabsContent>
-          </Tabs>
+        
+        <div className="flex gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="rounded-full bg-white/5 hover:bg-white/10"
+            onClick={handleSwapType}
+          >
+            <ArrowDownUp className="h-4 w-4 rotate-90 md:rotate-0" />
+          </Button>
         </div>
-      </section>
-      
-      {/* Airport Info Section */}
-      <section className="py-12 px-4 bg-[#1A1A1A] relative">
-        <div className="absolute inset-0 bg-[url('/lovable-uploads/28f1aa86-908f-4a07-837d-7a69fa78941c.png')] bg-repeat opacity-5"></div>
-        <div className="max-w-6xl mx-auto relative">
-          <div className="text-center mb-10">
-            <h3 className="text-2xl font-semibold font-space mb-3">Layanan Bandara Utama</h3>
-            <h4 className="text-xl font-medium text-[#8B0000] mb-3">Featured Airports</h4>
-            <p className="text-gray-light max-w-2xl mx-auto">
-              Check real-time flight boards for major international airports in Indonesia and around the world.
-            </p>
+      </div>
+
+      <div className="mb-6 px-4">
+        <div className="flex gap-2">
+          <Input
+            type="text"
+            placeholder="Enter airport IATA code (e.g. CGK)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
+            className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          />
+          <Button 
+            className="bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" 
+            onClick={handleSearch}
+            disabled={isLoading}
+          >
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
+            Search
+          </Button>
+        </div>
+      </div>
+
+      <div className="px-4 mb-4">
+        <div className="relative">
+          <Input
+            type="text"
+            placeholder="Filter results..."
+            onChange={handleTextSearch}
+            className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg pr-10"
+          />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-light h-4 w-4" />
+        </div>
+      </div>
+
+      <div className="glass-panel overflow-hidden">
+        <div className="relative overflow-x-auto">
+          <div className="bg-gray-dark/50 p-2 flex justify-between border-b border-white/10 text-xs md:text-sm font-medium text-gray-light sticky top-0">
+            <div className="w-[15%] pl-4">Flight</div>
+            <div className="w-[25%]">Airline</div>
+            <div className="w-[25%]">Destination</div>
+            <div className="w-[15%] text-center">Time</div>
+            <div className="w-[10%] text-center">Gate</div>
+            <div className="w-[10%] text-center">Status</div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Jakarta - CGK */}
-            <div className="p-6 border border-[#8B0000]/20 rounded-lg bg-dark/30 backdrop-blur-sm hover:shadow-[0_0_12px_#A80000] transition-all">
-              <h5 className="font-semibold mb-2">Soekarno-Hatta International</h5>
-              <p className="text-sm text-gray-light mb-3">Jakarta, Indonesia (CGK)</p>
-              <div className="flex gap-3 mt-4">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  className="text-xs bg-transparent border-gray-light text-gray-light hover:bg-white/10"
-                  onClick={() => {
-                    setBoardType('arrivals');
-                    // Set Jakarta airport
-                  }}
-                >
-                  <Plane className="h-3 w-3 mr-1 rotate-45" />
-                  Arrivals
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  className="text-xs bg-transparent border-gray-light text-gray-light hover:bg-white/10"
-                  onClick={() => {
-                    setBoardType('departures');
-                    // Set Jakarta airport
-                  }}
-                >
-                  <Plane className="h-3 w-3 mr-1 -rotate-45" />
-                  Departures
-                </Button>
+          <div className="text-sm md:text-base font-mono">
+            {isLoading ? (
+              <div className="flex justify-center items-center p-12">
+                <Loader2 className="animate-spin h-8 w-8 text-purple" />
               </div>
-            </div>
-            
-            {/* Bali - DPS */}
-            <div className="p-6 border border-[#8B0000]/20 rounded-lg bg-dark/30 backdrop-blur-sm hover:shadow-[0_0_12px_#A80000] transition-all">
-              <h5 className="font-semibold mb-2">Ngurah Rai International</h5>
-              <p className="text-sm text-gray-light mb-3">Bali, Indonesia (DPS)</p>
-              <div className="flex gap-3 mt-4">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  className="text-xs bg-transparent border-gray-light text-gray-light hover:bg-white/10"
-                  onClick={() => {
-                    setBoardType('arrivals');
-                    // Set Bali airport
-                  }}
+            ) : filteredFlights.length > 0 ? (
+              filteredFlights.map((flight: any, index) => (
+                <div 
+                  key={flight.id + index} 
+                  className={cn(
+                    "flex justify-between items-center p-3 border-b border-white/5 transition-colors hover:bg-white/5",
+                    index % 2 === 0 ? 'bg-white/[0.02]' : ''
+                  )}
                 >
-                  <Plane className="h-3 w-3 mr-1 rotate-45" />
-                  Arrivals
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  className="text-xs bg-transparent border-gray-light text-gray-light hover:bg-white/10"
-                  onClick={() => {
-                    setBoardType('departures');
-                    // Set Bali airport
-                  }}
-                >
-                  <Plane className="h-3 w-3 mr-1 -rotate-45" />
-                  Departures
-                </Button>
+                  <div className="w-[15%] pl-4 font-medium">{flight.flight_number}</div>
+                  <div className="w-[25%] text-gray-light">{flight.airline.name}</div>
+                  <div className="w-[25%]">{flight.arrival.airport}</div>
+                  <div className="w-[15%] text-center font-medium">
+                    <span className="flight-cell">
+                      <span className="flight-cell-content">{flight.arrival.scheduled}</span>
+                    </span>
+                  </div>
+                  <div className="w-[10%] text-center">{flight.arrival.gate}</div>
+                  <div className="w-[10%] text-center">
+                    <span className={cn(
+                      "px-2 py-1 rounded-full text-xs font-semibold",
+                      flight.status === 'on-time' && "bg-green-900/30 text-green-400",
+                      flight.status === 'delayed' && "bg-red-900/30 text-red-400",
+                      flight.status === 'boarding' && "bg-blue-900/30 text-blue-400",
+                      flight.status === 'in-air' && "bg-purple-900/30 text-purple-400",
+                      flight.status === 'landed' && "bg-gray-900/30 text-gray-400",
+                      flight.status === 'cancelled' && "bg-red-900/50 text-red-500",
+                      flight.status === 'gate-change' && "bg-yellow-900/30 text-yellow-400",
+                      flight.status === 'diverted' && "bg-orange-900/30 text-orange-400"
+                    )}>
+                      {flight.status}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-gray-light">
+                No flights found matching your criteria.
               </div>
-            </div>
-            
-            {/* Singapore - SIN */}
-            <div className="p-6 border border-[#8B0000]/20 rounded-lg bg-dark/30 backdrop-blur-sm hover:shadow-[0_0_12px_#A80000] transition-all">
-              <h5 className="font-semibold mb-2">Changi International</h5>
-              <p className="text-sm text-gray-light mb-3">Singapore (SIN)</p>
-              <div className="flex gap-3 mt-4">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  className="text-xs bg-transparent border-gray-light text-gray-light hover:bg-white/10"
-                  onClick={() => {
-                    setBoardType('arrivals');
-                    // Set Singapore airport
-                  }}
-                >
-                  <Plane className="h-3 w-3 mr-1 rotate-45" />
-                  Arrivals
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  className="text-xs bg-transparent border-gray-light text-gray-light hover:bg-white/10"
-                  onClick={() => {
-                    setBoardType('departures');
-                    // Set Singapore airport
-                  }}
-                >
-                  <Plane className="h-3 w-3 mr-1 -rotate-45" />
-                  Departures
-                </Button>
-              </div>
-            </div>
+            )}
           </div>
         </div>
-      </section>
-      
-      <Footer />
-    </div>
+      </div>
+    </section>
   );
 };
 

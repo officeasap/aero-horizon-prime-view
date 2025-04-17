@@ -190,7 +190,10 @@ export interface SuggestResult {
   iata_code?: string;
   icao_code?: string;
   country_code?: string;
+  country?: string;
   type: "airport" | "city" | "airline";
   lat?: number;
   lon?: number;
+  latitude?: number;
+  longitude?: number;
 }

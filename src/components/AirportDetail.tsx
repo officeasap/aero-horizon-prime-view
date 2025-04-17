@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import { Building2, MapPin, Clock, Plane, Phone, Globe, Map, Info, AlertTriangle, Utensils, Coffee, BusFront, Train, Car, ArrowUpDown, Loader2 } from 'lucide-react';
+import { Building2, MapPin, Clock, Plane, Phone, Globe, Map, Info, AlertTriangle, Utensils, Coffee, BusFront, Train, Car, ArrowUpDown, Loader2, LineChart, ShoppingCart } from 'lucide-react';
 
 interface AirportDetailProps {
   airport: SuggestResult;
@@ -151,7 +151,7 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
             
             <div className="mt-6">
               <h4 className="text-lg font-medium mb-3 flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2 text-[#8B0000]" />
+                <LineChart className="h-5 w-5 mr-2 text-[#8B0000]" />
                 Current Traffic Status
               </h4>
               
@@ -161,7 +161,7 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
                     <ArrowUpDown className="h-3.5 w-3.5 mr-1" />
                     <span>Departures ({traffic.departures.count} flights today)</span>
                   </p>
-                  <Progress value={90} className="h-2 bg-white/10" indicatorClassName="bg-[#8B0000]" />
+                  <Progress value={90} className="h-2 bg-white/10" />
                   <div className="flex justify-between text-xs mt-1">
                     <span className="text-green-400">{Math.round((traffic.departures.onTime / traffic.departures.count) * 100)}% On Time</span>
                     <span className="text-yellow-400">{Math.round((traffic.departures.delayed / traffic.departures.count) * 100)}% Delayed</span>
@@ -174,7 +174,7 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
                     <ArrowUpDown className="h-3.5 w-3.5 mr-1" />
                     <span>Arrivals ({traffic.arrivals.count} flights today)</span>
                   </p>
-                  <Progress value={92} className="h-2 bg-white/10" indicatorClassName="bg-[#8B0000]" />
+                  <Progress value={92} className="h-2 bg-white/10" />
                   <div className="flex justify-between text-xs mt-1">
                     <span className="text-green-400">{Math.round((traffic.arrivals.onTime / traffic.arrivals.count) * 100)}% On Time</span>
                     <span className="text-yellow-400">{Math.round((traffic.arrivals.delayed / traffic.arrivals.count) * 100)}% Delayed</span>
@@ -271,7 +271,7 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
               The airport offers a range of domestic and international flights to destinations worldwide.
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-6">
               <div>
                 <h5 className="font-medium mb-3 flex items-center">
                   <AlertTriangle className="h-4 w-4 mr-2 text-[#8B0000]" />
@@ -347,7 +347,7 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
                       <h6 className="text-sm font-medium mb-2 text-[#8B0000]">Facilities</h6>
                       <div className="space-y-2 text-sm">
                         <p className="flex items-center">
-                          <ShoppingBag className="h-3.5 w-3.5 mr-2 text-gray-light" />
+                          <ShoppingCart className="h-3.5 w-3.5 mr-2 text-gray-light" />
                           <span>Shopping & Duty Free</span>
                         </p>
                         <p className="flex items-center">
@@ -402,7 +402,7 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
               
               <div>
                 <h5 className="text-lg font-medium mb-3 flex items-center">
-                  <ShoppingBag className="h-5 w-5 mr-2 text-[#8B0000]" />
+                  <ShoppingCart className="h-5 w-5 mr-2 text-[#8B0000]" />
                   Shopping
                 </h5>
                 <div className="space-y-3">

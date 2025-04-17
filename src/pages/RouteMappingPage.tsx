@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -18,6 +17,63 @@ const RouteMappingPage = () => {
     const temp = departureAirport;
     setDepartureAirport(arrivalAirport);
     setArrivalAirport(temp);
+  };
+
+  const setJakartaSingaporeRoute = () => {
+    setDepartureAirport({
+      name: "Jakarta Soekarno-Hatta International",
+      iata_code: "CGK",
+      icao_code: "WIII",
+      city: "Jakarta",
+      country_code: "Indonesia",
+      type: "airport"
+    });
+    setArrivalAirport({
+      name: "Singapore Changi International",
+      iata_code: "SIN",
+      icao_code: "WSSS",
+      city: "Singapore",
+      country_code: "Singapore",
+      type: "airport"
+    });
+  };
+
+  const setBaliTokyoRoute = () => {
+    setDepartureAirport({
+      name: "Ngurah Rai International",
+      iata_code: "DPS",
+      icao_code: "WADD",
+      city: "Denpasar",
+      country_code: "Indonesia",
+      type: "airport"
+    });
+    setArrivalAirport({
+      name: "Tokyo Narita International",
+      iata_code: "NRT",
+      icao_code: "RJAA",
+      city: "Tokyo",
+      country_code: "Japan",
+      type: "airport"
+    });
+  };
+
+  const setJakartaMelbourneRoute = () => {
+    setDepartureAirport({
+      name: "Jakarta Soekarno-Hatta International",
+      iata_code: "CGK",
+      icao_code: "WIII",
+      city: "Jakarta",
+      country_code: "Indonesia",
+      type: "airport"
+    });
+    setArrivalAirport({
+      name: "Melbourne Tullamarine Airport",
+      iata_code: "MEL",
+      icao_code: "YMML",
+      city: "Melbourne",
+      country_code: "Australia",
+      type: "airport"
+    });
   };
 
   return (
@@ -207,23 +263,7 @@ const RouteMappingPage = () => {
               </div>
               <Button 
                 className="w-full mt-4 bg-transparent border border-[#8B0000] text-white hover:bg-[#8B0000]/10"
-                onClick={() => {
-                  // Set this route
-                  setDepartureAirport({
-                    name: "Jakarta Soekarno-Hatta International",
-                    iata_code: "CGK",
-                    icao_code: "WIII",
-                    city: "Jakarta",
-                    country: "Indonesia"
-                  });
-                  setArrivalAirport({
-                    name: "Singapore Changi International",
-                    iata_code: "SIN",
-                    icao_code: "WSSS",
-                    city: "Singapore",
-                    country: "Singapore"
-                  });
-                }}
+                onClick={setJakartaSingaporeRoute}
               >
                 <Map className="h-4 w-4 mr-2" />
                 View Route
@@ -269,23 +309,7 @@ const RouteMappingPage = () => {
               </div>
               <Button 
                 className="w-full mt-4 bg-transparent border border-[#8B0000] text-white hover:bg-[#8B0000]/10"
-                onClick={() => {
-                  // Set this route
-                  setDepartureAirport({
-                    name: "Ngurah Rai International",
-                    iata_code: "DPS",
-                    icao_code: "WADD",
-                    city: "Denpasar",
-                    country: "Indonesia"
-                  });
-                  setArrivalAirport({
-                    name: "Tokyo Narita International",
-                    iata_code: "NRT",
-                    icao_code: "RJAA",
-                    city: "Tokyo",
-                    country: "Japan"
-                  });
-                }}
+                onClick={setBaliTokyoRoute}
               >
                 <Map className="h-4 w-4 mr-2" />
                 View Route
@@ -331,23 +355,7 @@ const RouteMappingPage = () => {
               </div>
               <Button 
                 className="w-full mt-4 bg-transparent border border-[#8B0000] text-white hover:bg-[#8B0000]/10"
-                onClick={() => {
-                  // Set this route
-                  setDepartureAirport({
-                    name: "Jakarta Soekarno-Hatta International",
-                    iata_code: "CGK",
-                    icao_code: "WIII",
-                    city: "Jakarta",
-                    country: "Indonesia"
-                  });
-                  setArrivalAirport({
-                    name: "Melbourne Tullamarine Airport",
-                    iata_code: "MEL",
-                    icao_code: "YMML",
-                    city: "Melbourne",
-                    country: "Australia"
-                  });
-                }}
+                onClick={setJakartaMelbourneRoute}
               >
                 <Map className="h-4 w-4 mr-2" />
                 View Route
