@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 import { fetchWithCache, AIRPORT_CACHE_DURATION } from "./shared/apiUtils";
 import type { Airport } from "./shared/types";
@@ -17,12 +16,19 @@ const airportCache: AirportCache = {
 
 export async function fetchAirports(params: Record<string, string> = {}) {
   try {
-    const data = await fetchWithCache("airports", params);
+    // Always request comprehensive data unless specifically filtered
+    const queryParams = {
+      ...params,
+      comprehensive: "true",
+      limit: params.limit || "1000" // Increased limit for global coverage
+    };
+
+    const data = await fetchWithCache("airports", queryParams);
     if (!data || !Array.isArray(data)) {
       console.error("Invalid response format for airports", data);
       return [];
     }
-    console.log(`Fetched ${data.length} airports with params:`, params);
+    console.log(`Fetched ${data.length} airports with params:`, queryParams);
     return data as Airport[];
   } catch (error) {
     console.error("Error fetching airports:", error);
@@ -131,16 +137,16 @@ export async function fetchComprehensiveAirports(): Promise<Airport[]> {
       return airportCache.data;
     }
     
-    console.log('Fetching comprehensive airport data...');
+    console.log('Fetching comprehensive global airport data...');
     const params = {
       comprehensive: "true",
-      limit: "1000"
+      limit: "2000" // Increased limit for truly global coverage
     };
     
     const data = await fetchWithCache("airports", params);
     
     if (Array.isArray(data) && data.length > 0) {
-      console.log(`Successfully fetched ${data.length} airports comprehensively`);
+      console.log(`Successfully fetched ${data.length} airports globally`);
       airportCache.data = data;
       airportCache.timestamp = Date.now();
       airportCache.isComprehensive = true;
@@ -149,7 +155,7 @@ export async function fetchComprehensiveAirports(): Promise<Airport[]> {
     }
     
     console.error('Comprehensive airport data is not an array or is empty:', data);
-    return data as Airport[];
+    return [];
   } catch (error) {
     console.error("Error fetching comprehensive airports:", error);
     toast.error("Failed to fetch global airport data. Please try again later.");

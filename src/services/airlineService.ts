@@ -14,7 +14,14 @@ const airlineCache: AirlineCache = {};
 
 export async function fetchAirlines(params: Record<string, string> = {}) {
   try {
-    const data = await fetchWithCache("airlines", params);
+    // Always request comprehensive data unless specifically filtered
+    const queryParams = {
+      ...params,
+      comprehensive: "true",
+      limit: params.limit || "1000" // Increased limit for global coverage
+    };
+
+    const data = await fetchWithCache("airlines", queryParams);
     return data as Airline[];
   } catch (error) {
     console.error("Error fetching airlines:", error);
@@ -66,14 +73,24 @@ export function getAirlineName(flight: any): string {
 export async function fetchComprehensiveAirlines(): Promise<Airline[]> {
   try {
     const params = {
-      limit: "500"
+      comprehensive: "true",
+      limit: "2000" // Increased limit for global coverage
     };
     
+    console.log('Fetching comprehensive global airline data...');
     const data = await fetchWithCache("airlines", params);
-    return data as Airline[];
+    
+    if (Array.isArray(data) && data.length > 0) {
+      console.log(`Successfully fetched ${data.length} airlines globally`);
+      return data as Airline[];
+    }
+    
+    console.error('Error: No airline data returned');
+    return [];
   } catch (error) {
     console.error("Error fetching comprehensive airlines:", error);
     toast.error("Failed to fetch global airline data. Please try again later.");
     return [];
   }
 }
+
