@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { X, Menu, Plane, Clock, AlertTriangle, Building2, Phone, Cloud, Radar } from 'lucide-react';
+import { X, Menu, Plane, Clock, AlertTriangle, Building2, Phone, Cloud, Radar, BellRing } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -44,6 +44,7 @@ const Header = () => {
     { name: 'Flight Schedule', path: '/flight-schedule', icon: <Clock className="h-4 w-4" /> },
     { name: 'Live Flight Tracker', path: '/live-flight-tracker', icon: <Plane className="h-4 w-4" /> },
     { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-4 w-4" /> },
+    { name: 'Sign Up for Free Flight Alerts', path: '/flight-status', icon: <BellRing className="h-4 w-4" /> },
     { name: 'Weather', path: '/global-weather', icon: <Cloud className="h-4 w-4" /> },
     { name: 'World Clock', path: '/world-clock', icon: <Clock className="h-4 w-4" /> },
     { name: 'Contact', path: '/contact', icon: <Phone className="h-4 w-4" /> }

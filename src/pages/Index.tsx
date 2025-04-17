@@ -1,10 +1,9 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BackgroundAircraft from '@/components/BackgroundAircraft';
 import VideoBackground from '@/components/VideoBackground';
-import { Plane, Clock, Calendar, Cloud, AlertTriangle, MapPin, Phone, Building, BellRing, Map } from 'lucide-react';
+import { Plane, Clock, Calendar, Cloud, AlertTriangle, MapPin, Phone, Building, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AboutSection from '@/components/AboutSection';
 import CurrencyConverter from '@/components/CurrencyConverter';
@@ -30,10 +29,11 @@ const Index = () => {
               Track flights, check schedules, monitor delays, and stay updated with global weather forecasts - all in one place.
             </p>
             <div className="flex flex-wrap justify-center gap-3 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              <a href="https://app.asaptracker.com" target="_blank" rel="noopener noreferrer">
-                <Button variant="redGradient" size="lg" className="w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000]">
-                  <Plane className="h-4 w-4" />
-                  Sign up for free
+              {/* World Clock Button - Keeping as requested */}
+              <a href="/world-clock" rel="noopener noreferrer">
+                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
+                  <Clock className="h-4 w-4" />
+                  World Clock
                 </Button>
               </a>
               
@@ -49,13 +49,6 @@ const Index = () => {
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
                   <Map className="h-4 w-4" />
                   Route Map Tool
-                </Button>
-              </a>
-              
-              <a href="/flight-status" rel="noopener noreferrer">
-                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <BellRing className="h-4 w-4" />
-                  Flight Alerts
                 </Button>
               </a>
               
