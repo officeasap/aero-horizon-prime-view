@@ -1,112 +1,257 @@
+import React, { useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { Menu, X, Bell, Clock, Cloud, Mail, ChevronsUpDown } from "lucide-react";
+import { useMobile } from "@/hooks/use-mobile";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { X, Menu, Plane, Clock, AlertTriangle, Building2, Phone, Cloud, Radar, BellRing } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/use-mobile';
+const NotificationBell = () => {
+  return (
+    <button className="relative rounded-full p-2 hover:bg-white/5">
+      <Bell className="h-5 w-5 text-gray-400" />
+      <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 border border-dark"></div>
+    </button>
+  );
+};
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const { isMobile } = useMobile();
   const location = useLocation();
-  const headerRef = useRef<HTMLElement>(null);
-  const isMobile = useIsMobile();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (headerRef.current) {
-        const headerHeight = headerRef.current.offsetHeight;
-        setIsScrolled(window.scrollY > headerHeight);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check initial scroll position on mount
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    setIsMenuOpen(false); // Close the menu when the route changes
-  }, [location]);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+    setIsOpen(!isOpen);
   };
 
   const closeMenu = () => {
-    setIsMenuOpen(false);
+    setIsOpen(false);
   };
 
-  const nav = [
-    { name: 'Home', path: '/', icon: <Building2 className="h-4 w-4" /> },
-    { name: 'Flight Schedule', path: '/flight-schedule', icon: <Clock className="h-4 w-4" /> },
-    { name: 'Live Flight Tracker', path: '/live-flight-tracker', icon: <Plane className="h-4 w-4" /> },
-    { name: 'Flight Status', path: '/flight-status', icon: <AlertTriangle className="h-4 w-4" /> },
-    { name: 'Weather', path: '/global-weather', icon: <Cloud className="h-4 w-4" /> },
-    { name: 'World Clock', path: '/world-clock', icon: <Clock className="h-4 w-4" /> },
-    { name: 'Contact', path: '/contact', icon: <Phone className="h-4 w-4" /> },
-    { name: 'Sign Up for Free Flight Alerts', path: '/flight-alerts', icon: <BellRing className="h-4 w-4" /> }
-  ];
-  
   return (
-    <header 
-      className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300" 
-      ref={headerRef}
-    >
-      <div className={cn(
-        "container flex items-center justify-between",
-        isScrolled ? "bg-dark/90 backdrop-blur-md border-b border-[#8B0000]/20" : "bg-dark",
-        isMobile ? "py-3 px-4" : "py-4 px-4"
-      )}>
-        <Link to="/" className="flex items-center font-bold font-space text-xl md:text-2xl text-white mr-8">
-          <Radar 
-            className="mr-2" 
-            size={28} 
-            strokeWidth={2} 
-            color="#8B0000"  // Dark red color
-            stroke="#8B0000"  // Dark red stroke
-          />
-          ASAP<span className="text-[#8B0000]">Tracker</span>
-        </Link>
-
-        {/* Mobile Menu Button */}
-        {isMobile && (
-          <Button variant="ghost" size="icon" onClick={toggleMenu} className="lg:hidden text-white hover:text-[#8B0000] hover:bg-[#8B0000]/10">
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </Button>
-        )}
-
-        {/* Navigation Links */}
-        <nav className={cn(
-          "lg:flex items-center gap-2 flex-grow justify-center",
-          isMobile && "fixed top-0 left-0 h-full w-screen bg-dark p-8 flex-col items-start space-y-4 z-50 border-r border-[#8B0000]/20",
-          isMenuOpen ? "flex" : "hidden"
-        )}>
-          <div className={cn(
-            "flex",
-            isMobile ? "flex-col w-full space-y-2" : "items-center space-x-2"
-          )}>
-            {nav.map((link, index) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className={cn(
-                  "flex items-center justify-center gap-1.5 text-sm font-medium text-white bg-[#8B0000] transition-all duration-200 border border-[#8B0000] rounded-[15px] px-3 py-1.5 hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]",
-                  location.pathname === link.path ? "border-[#8B0000] bg-[#A80000] shadow-[0_0_8px_#A80000]" : "",
-                  // Add special styling for the Flight Alerts button
-                  link.name === "Sign Up for Free Flight Alerts" ? 
-                    "border-2 bg-[#A80000] shadow-[0_0_4px_#A80000] hover:shadow-[0_0_12px_#A80000]" : ""
-                )}
-                onClick={closeMenu}
-              >
-                {link.icon}
-                <span className="text-[13px]">{link.name}</span>
-              </Link>
-            ))}
+    <header className="fixed top-0 left-0 right-0 z-50 bg-dark/80 backdrop-blur-lg border-b border-white/5">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue to-purple rounded-lg flex items-center justify-center text-white font-bold">
+                A
+              </div>
+              <span className="text-lg font-bold hidden sm:inline-block tracking-wide text-white">
+                AviationInfo
+              </span>
+            </Link>
           </div>
-        </nav>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-1">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? "text-white bg-primary/10"
+                    : "text-gray-300 hover:bg-white/5"
+                }`
+              }
+            >
+              Home
+            </NavLink>
+            <NavLink
+              to="/flight-schedule"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? "text-white bg-primary/10"
+                    : "text-gray-300 hover:bg-white/5"
+                }`
+              }
+            >
+              Flight Schedule
+            </NavLink>
+            <NavLink
+              to="/airports-airlines"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? "text-white bg-primary/10"
+                    : "text-gray-300 hover:bg-white/5"
+                }`
+              }
+            >
+              Airports & Airlines
+            </NavLink>
+            <NavLink
+              to="/live-flight-tracker"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? "text-white bg-primary/10"
+                    : "text-gray-300 hover:bg-white/5"
+                }`
+              }
+            >
+              Live Tracker
+            </NavLink>
+            <NavLink
+              to="/flight-alerts"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? "text-white bg-primary/10"
+                    : "text-gray-300 hover:bg-white/5"
+                }`
+              }
+            >
+              Flight Alerts
+            </NavLink>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex items-center gap-0.5 text-gray-300 hover:bg-white/5 px-3 py-2">
+                  <span>More</span>
+                  <ChevronsUpDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-gray-dark border-gray-light/20">
+                <DropdownMenuItem asChild>
+                  <Link to="/world-clock" className="cursor-pointer">
+                    <Clock className="mr-2 h-4 w-4" />
+                    <span>World Clock</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/global-weather" className="cursor-pointer">
+                    <Cloud className="mr-2 h-4 w-4" />
+                    <span>Weather</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/contact" className="cursor-pointer">
+                    <Mail className="mr-2 h-4 w-4" />
+                    <span>Contact</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </nav>
+
+          {/* Mobile Navigation Menu Button */}
+          <div className="flex md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(!isOpen)}
+              className={isMobile ? "visible" : "hidden"}
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+
+            <NotificationBell className="ml-4" />
+          </div>
+
+          {/* Right side actions (desktop) */}
+          <div className="hidden md:flex items-center space-x-4">
+            <NotificationBell />
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu, show/hide based on menu state */}
+      <div className={`md:hidden ${isOpen ? "block" : "hidden"}`}>
+        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-dark/90 shadow-lg border-y border-white/5">
+          <Link
+            to="/"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location.pathname === "/"
+                ? "text-white bg-primary/10"
+                : "text-gray-300 hover:bg-white/5"
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            to="/flight-schedule"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location.pathname === "/flight-schedule"
+                ? "text-white bg-primary/10"
+                : "text-gray-300 hover:bg-white/5"
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Flight Schedule
+          </Link>
+          <Link
+            to="/airports-airlines"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location.pathname === "/airports-airlines"
+                ? "text-white bg-primary/10"
+                : "text-gray-300 hover:bg-white/5"
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Airports & Airlines
+          </Link>
+          <Link
+            to="/live-flight-tracker"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location.pathname === "/live-flight-tracker"
+                ? "text-white bg-primary/10"
+                : "text-gray-300 hover:bg-white/5"
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Live Tracker
+          </Link>
+          <Link
+            to="/flight-alerts"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location.pathname === "/flight-alerts"
+                ? "text-white bg-primary/10"
+                : "text-gray-300 hover:bg-white/5"
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Flight Alerts
+          </Link>
+          <Link
+            to="/world-clock"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location.pathname === "/world-clock"
+                ? "text-white bg-primary/10"
+                : "text-gray-300 hover:bg-white/5"
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            World Clock
+          </Link>
+          <Link
+            to="/global-weather"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location.pathname === "/global-weather"
+                ? "text-white bg-primary/10"
+                : "text-gray-300 hover:bg-white/5"
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Weather
+          </Link>
+          <Link
+            to="/contact"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location.pathname === "/contact"
+                ? "text-white bg-primary/10"
+                : "text-gray-300 hover:bg-white/5"
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Contact
+          </Link>
+        </div>
       </div>
     </header>
   );
