@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X, Bell, Clock, Cloud, Mail, ChevronsUpDown } from "lucide-react";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +21,7 @@ const NotificationBell = () => {
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isMobile } = useMobile();
+  const isMobile = useIsMobile();
   const location = useLocation();
 
   const toggleMenu = () => {
@@ -150,7 +150,7 @@ const Header = () => {
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
 
-            <NotificationBell className="ml-4" />
+            <NotificationBell />
           </div>
 
           {/* Right side actions (desktop) */}
