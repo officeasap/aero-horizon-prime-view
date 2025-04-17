@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -54,9 +53,7 @@ const Index = () => {
               </a>
               
               {/* Notification Bell */}
-              <div className="mt-2 sm:mt-0">
-                <NotificationBell variant="button" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]" />
-              </div>
+              <NotificationBell variant="button" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]" />
             </div>
           </div>
         </div>

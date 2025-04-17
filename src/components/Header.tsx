@@ -1,23 +1,9 @@
+
 import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X, Bell, Clock, Cloud, Mail, ChevronsUpDown } from "lucide-react";
+import { Menu, X, Radar } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
-
-const NotificationBell = () => {
-  return (
-    <button className="relative rounded-full p-2 hover:bg-white/5">
-      <Bell className="h-5 w-5 text-gray-400" />
-      <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 border border-dark"></div>
-    </button>
-  );
-};
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,34 +14,31 @@ const Header = () => {
     setIsOpen(!isOpen);
   };
 
-  const closeMenu = () => {
-    setIsOpen(false);
-  };
-
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-dark/80 backdrop-blur-lg border-b border-white/5">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue to-purple rounded-lg flex items-center justify-center text-white font-bold">
-                A
+              <div className="w-8 h-8 bg-gradient-to-br from-[#8B0000] to-[#A80000] rounded-lg flex items-center justify-center text-white">
+                <Radar className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold hidden sm:inline-block tracking-wide text-white">
-                AviationInfo
+              <span className="text-lg font-bold tracking-wide">
+                <span className="text-white">ASAP</span>{" "}
+                <span className="text-[#8B0000]">Tracker</span>
               </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-2">
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
                   isActive
-                    ? "text-white bg-primary/10"
-                    : "text-gray-300 hover:bg-white/5"
+                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
@@ -64,10 +47,10 @@ const Header = () => {
             <NavLink
               to="/flight-schedule"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
                   isActive
-                    ? "text-white bg-primary/10"
-                    : "text-gray-300 hover:bg-white/5"
+                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
@@ -76,10 +59,10 @@ const Header = () => {
             <NavLink
               to="/airports-airlines"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
                   isActive
-                    ? "text-white bg-primary/10"
-                    : "text-gray-300 hover:bg-white/5"
+                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
@@ -88,10 +71,10 @@ const Header = () => {
             <NavLink
               to="/live-flight-tracker"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
                   isActive
-                    ? "text-white bg-primary/10"
-                    : "text-gray-300 hover:bg-white/5"
+                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
@@ -100,43 +83,51 @@ const Header = () => {
             <NavLink
               to="/flight-alerts"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
                   isActive
-                    ? "text-white bg-primary/10"
-                    : "text-gray-300 hover:bg-white/5"
+                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
                 }`
               }
             >
               Flight Alerts
             </NavLink>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-0.5 text-gray-300 hover:bg-white/5 px-3 py-2">
-                  <span>More</span>
-                  <ChevronsUpDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-gray-dark border-gray-light/20">
-                <DropdownMenuItem asChild>
-                  <Link to="/world-clock" className="cursor-pointer">
-                    <Clock className="mr-2 h-4 w-4" />
-                    <span>World Clock</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/global-weather" className="cursor-pointer">
-                    <Cloud className="mr-2 h-4 w-4" />
-                    <span>Weather</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/contact" className="cursor-pointer">
-                    <Mail className="mr-2 h-4 w-4" />
-                    <span>Contact</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NavLink
+              to="/world-clock"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
+                }`
+              }
+            >
+              World Clock
+            </NavLink>
+            <NavLink
+              to="/global-weather"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
+                }`
+              }
+            >
+              Weather
+            </NavLink>
+            <NavLink
+              to="/contact"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
+                }`
+              }
+            >
+              Contact
+            </NavLink>
           </nav>
 
           {/* Mobile Navigation Menu Button */}
@@ -149,13 +140,6 @@ const Header = () => {
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
-
-            <NotificationBell />
-          </div>
-
-          {/* Right side actions (desktop) */}
-          <div className="hidden md:flex items-center space-x-4">
-            <NotificationBell />
           </div>
         </div>
       </div>
@@ -165,10 +149,10 @@ const Header = () => {
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-dark/90 shadow-lg border-y border-white/5">
           <Link
             to="/"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
               location.pathname === "/"
-                ? "text-white bg-primary/10"
-                : "text-gray-300 hover:bg-white/5"
+                ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
@@ -176,10 +160,10 @@ const Header = () => {
           </Link>
           <Link
             to="/flight-schedule"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
               location.pathname === "/flight-schedule"
-                ? "text-white bg-primary/10"
-                : "text-gray-300 hover:bg-white/5"
+                ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
@@ -187,10 +171,10 @@ const Header = () => {
           </Link>
           <Link
             to="/airports-airlines"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
               location.pathname === "/airports-airlines"
-                ? "text-white bg-primary/10"
-                : "text-gray-300 hover:bg-white/5"
+                ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
@@ -198,10 +182,10 @@ const Header = () => {
           </Link>
           <Link
             to="/live-flight-tracker"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
               location.pathname === "/live-flight-tracker"
-                ? "text-white bg-primary/10"
-                : "text-gray-300 hover:bg-white/5"
+                ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
@@ -209,10 +193,10 @@ const Header = () => {
           </Link>
           <Link
             to="/flight-alerts"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
               location.pathname === "/flight-alerts"
-                ? "text-white bg-primary/10"
-                : "text-gray-300 hover:bg-white/5"
+                ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
@@ -220,10 +204,10 @@ const Header = () => {
           </Link>
           <Link
             to="/world-clock"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
               location.pathname === "/world-clock"
-                ? "text-white bg-primary/10"
-                : "text-gray-300 hover:bg-white/5"
+                ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
@@ -231,10 +215,10 @@ const Header = () => {
           </Link>
           <Link
             to="/global-weather"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
               location.pathname === "/global-weather"
-                ? "text-white bg-primary/10"
-                : "text-gray-300 hover:bg-white/5"
+                ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
@@ -242,10 +226,10 @@ const Header = () => {
           </Link>
           <Link
             to="/contact"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
               location.pathname === "/contact"
-                ? "text-white bg-primary/10"
-                : "text-gray-300 hover:bg-white/5"
+                ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >

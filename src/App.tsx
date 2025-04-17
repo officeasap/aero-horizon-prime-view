@@ -81,6 +81,9 @@ function App() {
         console.error('Service worker registration failed:', error);
       });
     }
+    
+    // Update the document title
+    document.title = "ASAP Tracker - Real-Time Flight Services";
   }, []);
 
   return (
