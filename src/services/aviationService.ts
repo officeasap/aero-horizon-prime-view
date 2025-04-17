@@ -1,4 +1,3 @@
-
 // Re-export everything from individual service files
 export * from './shared/types';
 export * from './airportService';
@@ -205,3 +204,69 @@ export async function fetchNearbyAircraft(): Promise<Flight[]> {
 
 // Import getUserPosition from apiUtils
 import { getUserPosition } from './shared/apiUtils';
+
+/**
+ * Fetch arrivals or departures for a specific airport
+ */
+export async function fetchArrivalsDepartures(type: 'arrivals' | 'departures', params: Record<string, string> = {}): Promise<any[]> {
+  try {
+    // In a real implementation, we would call an actual API
+    // For now, we'll return mock data
+    console.log(`Fetching ${type} with params:`, params);
+    
+    // Sleep for 1 second to simulate network request
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Return mock data
+    return [
+      {
+        flight_number: 'GA422',
+        airline: { name: 'Garuda Indonesia' },
+        arrival: {
+          airport: 'Jakarta (CGK)',
+          scheduled: '09:45',
+          gate: 'D7'
+        },
+        departure: {
+          airport: 'Singapore (SIN)',
+          scheduled: '08:30',
+          gate: 'C5'
+        },
+        status: 'on-time'
+      },
+      {
+        flight_number: 'SQ956',
+        airline: { name: 'Singapore Airlines' },
+        arrival: {
+          airport: 'Jakarta (CGK)',
+          scheduled: '10:15',
+          gate: 'D2'
+        },
+        departure: {
+          airport: 'Singapore (SIN)',
+          scheduled: '09:00',
+          gate: 'B8'
+        },
+        status: 'delayed'
+      },
+      {
+        flight_number: 'MH711',
+        airline: { name: 'Malaysia Airlines' },
+        arrival: {
+          airport: 'Jakarta (CGK)',
+          scheduled: '10:30',
+          gate: 'C8'
+        },
+        departure: {
+          airport: 'Kuala Lumpur (KUL)',
+          scheduled: '09:15',
+          gate: 'A4'
+        },
+        status: 'boarding'
+      }
+    ];
+  } catch (error) {
+    console.error("Error fetching flight data:", error);
+    throw error;
+  }
+}

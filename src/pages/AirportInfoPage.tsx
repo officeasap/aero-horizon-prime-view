@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -11,13 +12,13 @@ const AirportInfoPage = () => {
   const [selectedAirport, setSelectedAirport] = useState<SuggestResult | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const sampleAirport = {
+  const sampleAirport: SuggestResult = {
     name: "Soekarno-Hatta International Airport",
     iata_code: "CGK",
     icao_code: "WIII",
     city: "Jakarta",
     country_code: "ID",
-    type: "airport"
+    type: "airport" // Explicitly set to "airport" to match SuggestResult type
   };
 
   useEffect(() => {

@@ -211,7 +211,7 @@ export const RouteMap: React.FC<RouteMapProps> = ({
                   name: from.name,
                   code: from.iata_code,
                   city: from.city,
-                  country: from.country || from.country_code,
+                  country: from.country_code,
                   type: 'departure'
                 },
                 geometry: {
@@ -225,7 +225,7 @@ export const RouteMap: React.FC<RouteMapProps> = ({
                   name: to.name,
                   code: to.iata_code,
                   city: to.city,
-                  country: to.country || to.country_code,
+                  country: to.country_code,
                   type: 'arrival'
                 },
                 geometry: {
@@ -272,7 +272,10 @@ export const RouteMap: React.FC<RouteMapProps> = ({
           if (!e.features || e.features.length === 0) return;
           
           const feature = e.features[0];
-          const coords = feature.geometry.coordinates.slice() as [number, number];
+          // TypeScript fix: Check that geometry is a Point before accessing coordinates
+          if (feature.geometry.type !== 'Point') return;
+          
+          const coords = (feature.geometry as GeoJSON.Point).coordinates.slice() as [number, number];
           const properties = feature.properties || {};
           
           const popupContent = `
@@ -381,4 +384,3 @@ export const RouteMap: React.FC<RouteMapProps> = ({
     </div>
   );
 };
-

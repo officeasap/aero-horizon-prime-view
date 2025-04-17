@@ -66,12 +66,11 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({ text }) => {
 
 interface AnimatedCharProps {
   char: string;
-  index: number;
   isActive: boolean;
   hasFakeCaret?: boolean;
 }
 
-const AnimatedChar: React.FC<AnimatedCharProps> = ({ char, index, isActive, hasFakeCaret = false }) => {
+const AnimatedChar: React.FC<AnimatedCharProps> = ({ char, isActive, hasFakeCaret = false }) => {
   return (
     <span className={cn(
       "relative",
