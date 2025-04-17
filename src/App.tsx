@@ -7,12 +7,15 @@ import WorldClock from "./pages/WorldClock";
 import GlobalWeather from "./pages/GlobalWeather";
 import NotFound from "./pages/NotFound";
 import Contact from "./pages/Contact";
-import FlightStatus from "./pages/FlightStatus";
+import EnhancedFlightStatusPage from "./pages/EnhancedFlightStatusPage";
 import FlightSchedulePage from "./pages/FlightSchedulePage";
 import LiveFlightTracker from "./pages/LiveFlightTracker";
 import FlightStatusDetailPage from "./pages/FlightStatusDetailPage";
 import NearbyAirportsPage from "./pages/NearbyAirportsPage";
 import FlightAlertsSignup from "./pages/FlightAlertsSignup";
+import ArrivalDepartureBoardsPage from "./pages/ArrivalDepartureBoardsPage";
+import RouteMappingPage from "./pages/RouteMappingPage";
+import AirportInfoPage from "./pages/AirportInfoPage";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
@@ -38,11 +41,23 @@ const router = createBrowserRouter([
   },
   {
     path: "/flight-status",
-    element: <FlightStatus />
+    element: <EnhancedFlightStatusPage />
   },
   {
     path: "/flight-schedule",
     element: <FlightSchedulePage />
+  },
+  {
+    path: "/arrival-departure-boards",
+    element: <ArrivalDepartureBoardsPage />
+  },
+  {
+    path: "/route-mapping",
+    element: <RouteMappingPage />
+  },
+  {
+    path: "/airport-information",
+    element: <AirportInfoPage />
   },
   {
     path: "/live-flight-tracker",
