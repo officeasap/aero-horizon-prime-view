@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X, Radar } from "lucide-react";
@@ -18,24 +17,35 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-dark/80 backdrop-blur-lg border-b border-white/5">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#8B0000] to-[#A80000] rounded-lg flex items-center justify-center text-white">
-                <Radar className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-lg font-bold tracking-wide">
-                <span className="text-white">ASAP</span>{" "}
-                <span className="text-[#8B0000]">Tracker</span>
-              </span>
-            </Link>
-          </div>
+          {/* Logo Section */}
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-[#8B0000] to-[#A80000] rounded-lg flex items-center justify-center">
+              <Radar className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-lg font-bold tracking-wide">
+              <span className="text-white">ASAP</span>{" "}
+              <span className="text-[#8B0000]">Tracker</span>
+            </span>
+          </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-2">
+          {/* Desktop Navigation - Centered */}
+          <nav className="hidden md:flex items-center justify-center flex-1 space-x-4 px-4 mx-4">
+            <NavLink
+              to="/aviation-info"
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
+                }`
+              }
+            >
+              AviationInfo
+            </NavLink>
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
@@ -47,7 +57,7 @@ const Header = () => {
             <NavLink
               to="/flight-schedule"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
@@ -59,7 +69,7 @@ const Header = () => {
             <NavLink
               to="/airports-airlines"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
@@ -71,7 +81,7 @@ const Header = () => {
             <NavLink
               to="/live-flight-tracker"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
@@ -83,7 +93,7 @@ const Header = () => {
             <NavLink
               to="/flight-alerts"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
+                `px-4 py-2 rounded-[15px] text-sm font-medium transition-all ${
                   isActive
                     ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                     : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
@@ -92,50 +102,14 @@ const Header = () => {
             >
               Flight Alerts
             </NavLink>
-            <NavLink
-              to="/world-clock"
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
-                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
-                }`
-              }
-            >
-              World Clock
-            </NavLink>
-            <NavLink
-              to="/global-weather"
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
-                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
-                }`
-              }
-            >
-              Weather
-            </NavLink>
-            <NavLink
-              to="/contact"
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-[14px] text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
-                    : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
-                }`
-              }
-            >
-              Contact
-            </NavLink>
           </nav>
 
-          {/* Mobile Navigation Menu Button */}
+          {/* Mobile Menu Button */}
           <div className="flex md:hidden">
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={toggleMenu}
               className={isMobile ? "visible" : "hidden"}
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -144,9 +118,20 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile menu, show/hide based on menu state */}
+      {/* Mobile Navigation Menu */}
       <div className={`md:hidden ${isOpen ? "block" : "hidden"}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-dark/90 shadow-lg border-y border-white/5">
+          <Link
+            to="/aviation-info"
+            className={`block px-4 py-2 rounded-[15px] text-base font-medium ${
+              location.pathname === "/aviation-info"
+                ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
+                : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            AviationInfo
+          </Link>
           <Link
             to="/"
             className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
