@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SuggestResult } from '@/services/aviationService';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import { Building2, MapPin, Clock, Plane, Phone, Globe, Map, Info, AlertTriangle, Utensils, Coffee, BusFront, Train, Car, Parking, ShoppingBag, TrendingUp, ArrowUpDown, Loader2 } from 'lucide-react';
+import { Building2, MapPin, Clock, Plane, Phone, Globe, Map, Info, AlertTriangle, Utensils, Coffee, BusFront, Train, Car, ArrowUpDown, Loader2 } from 'lucide-react';
 
 interface AirportDetailProps {
   airport: SuggestResult;
@@ -17,14 +16,12 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
   const [currentTime, setCurrentTime] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
   
-  // Sample terminals data - would come from API in real app
   const terminals = [
     { name: 'Terminal 1', international: true, domestic: true, airlines: ['Garuda Indonesia', 'Singapore Airlines', 'Emirates'] },
     { name: 'Terminal 2', international: true, domestic: true, airlines: ['Lion Air', 'Batik Air', 'Thai Airways'] },
     { name: 'Terminal 3', international: true, domestic: false, airlines: ['ANA', 'Cathay Pacific', 'Qatar Airways'] }
   ];
   
-  // Sample facilities data - would come from API in real app
   const facilities = {
     dining: [
       { name: 'Traditional Indonesian Food', location: 'Terminal 1, 2F', rating: 4.5 },
@@ -43,7 +40,6 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
     ]
   };
   
-  // Sample transportation data - would come from API in real app
   const transportation = {
     train: { available: true, info: 'Airport Express Train to city center every 15 minutes' },
     bus: { available: true, info: 'Public buses and airport shuttles available at all terminals' },
@@ -51,14 +47,12 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
     rideshare: { available: true, info: 'Grab and Gojek pickup zones at designated areas' }
   };
   
-  // Sample traffic data - would come from API in real app
   const traffic = {
     departures: { count: 148, onTime: 132, delayed: 12, cancelled: 4 },
     arrivals: { count: 152, onTime: 140, delayed: 11, cancelled: 1 }
   };
   
   useEffect(() => {
-    // Simulate API loading delay
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1500);
@@ -67,9 +61,7 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
   }, []);
   
   useEffect(() => {
-    // Update airport local time
     const updateTime = () => {
-      // In a real app, this would use the airport's timezone
       const now = new Date();
       setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     };
@@ -102,7 +94,7 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
                 <h3 className="text-2xl font-semibold mb-1">{airport.name}</h3>
                 <div className="flex items-center text-sm text-gray-light mb-4">
                   <MapPin className="h-4 w-4 mr-1 text-[#8B0000]" />
-                  <span>{airport.city}, {airport.country}</span>
+                  <span>{airport.city}, {airport.country_code || 'Unknown'}</span>
                 </div>
                 <div className="flex flex-wrap gap-3 mb-4">
                   <div className="flex items-center gap-1 bg-[#8B0000]/20 px-2 py-1 rounded text-sm">
@@ -157,7 +149,6 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
               </Button>
             </div>
             
-            {/* Traffic Status */}
             <div className="mt-6">
               <h4 className="text-lg font-medium mb-3 flex items-center">
                 <TrendingUp className="h-5 w-5 mr-2 text-[#8B0000]" />
@@ -240,7 +231,6 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
         </div>
       </div>
       
-      {/* Detailed Information Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full">
           <TabsTrigger 
@@ -277,7 +267,7 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
           <Card className="p-6 bg-[#1A1A1A] border-[#8B0000]/20">
             <h4 className="text-xl font-medium mb-4">About {airport.name}</h4>
             <p className="text-gray-light mb-4">
-              {airport.name} ({airport.iata_code}) is a major international airport serving {airport.city}, {airport.country}. 
+              {airport.name} ({airport.iata_code}) is a major international airport serving {airport.city}, {airport.country_code}. 
               The airport offers a range of domestic and international flights to destinations worldwide.
             </p>
             
@@ -548,7 +538,7 @@ export const AirportDetail: React.FC<AirportDetailProps> = ({ airport }) => {
               
               <div>
                 <h5 className="font-medium mb-3 flex items-center">
-                  <Parking className="h-5 w-5 mr-2 text-[#8B0000]" />
+                  <Car className="h-5 w-5 mr-2 text-[#8B0000]" />
                   Parking
                 </h5>
                 <div className="p-4 border border-white/10 rounded-lg bg-white/5 h-full">
