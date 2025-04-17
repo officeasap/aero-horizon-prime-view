@@ -1,6 +1,20 @@
+
 import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X, Radar, Book, Home, Calendar, Plane, MapPin, Bell } from "lucide-react";
+import { 
+  Menu, 
+  X, 
+  Radar, 
+  Book, 
+  Home, 
+  Calendar, 
+  Plane, 
+  MapPin, 
+  Bell, 
+  Clock, 
+  Cloud, 
+  Phone
+} from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 
@@ -189,36 +203,36 @@ const Header = () => {
           </Link>
           <Link
             to="/world-clock"
-            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium flex items-center gap-2 ${
               location.pathname === "/world-clock"
                 ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                 : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
-            World Clock
+            <Clock className="h-4 w-4" /> World Clock
           </Link>
           <Link
             to="/global-weather"
-            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium flex items-center gap-2 ${
               location.pathname === "/global-weather"
                 ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                 : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
-            Weather
+            <Cloud className="h-4 w-4" /> Weather
           </Link>
           <Link
             to="/contact"
-            className={`block px-3 py-2 rounded-[14px] text-base font-medium ${
+            className={`block px-3 py-2 rounded-[14px] text-base font-medium flex items-center gap-2 ${
               location.pathname === "/contact"
                 ? "bg-[#A80000] text-white shadow-[0_0_8px_#A80000]"
                 : "bg-[#8B0000] text-white hover:bg-[#A80000] hover:shadow-[0_0_8px_#A80000]"
             }`}
             onClick={() => setIsOpen(false)}
           >
-            Contact
+            <Phone className="h-4 w-4" /> Contact
           </Link>
         </div>
       </div>
