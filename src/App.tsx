@@ -12,9 +12,11 @@ import FlightSchedulePage from "./pages/FlightSchedulePage";
 import LiveFlightTracker from "./pages/LiveFlightTracker";
 import FlightStatusDetailPage from "./pages/FlightStatusDetailPage";
 import NearbyAirportsPage from "./pages/NearbyAirportsPage";
+import FlightAlertsSignup from "./pages/FlightAlertsSignup";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { registerServiceWorker } from "./services/notificationService";
 
 const router = createBrowserRouter([
   {
@@ -60,7 +62,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/flight-alerts",
-    element: <Navigate to="/flight-status" replace />
+    element: <FlightAlertsSignup />
   },
   {
     path: "*",
@@ -70,6 +72,15 @@ const router = createBrowserRouter([
 
 function App() {
   const [queryClient] = useState(() => new QueryClient());
+
+  useEffect(() => {
+    // Register service worker on app load
+    if ('serviceWorker' in navigator) {
+      registerServiceWorker().catch(error => {
+        console.error('Service worker registration failed:', error);
+      });
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
