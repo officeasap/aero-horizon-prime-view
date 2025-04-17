@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { fetchCurrencies, convertCurrency } from '@/services/currencyService';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -41,7 +40,6 @@ const CurrencyConverter = () => {
   const { watch, setValue } = form;
   const formValues = watch();
 
-  // Fetch available currencies on component mount
   useEffect(() => {
     const loadCurrencies = async () => {
       try {
@@ -59,7 +57,6 @@ const CurrencyConverter = () => {
     loadCurrencies();
   }, []);
 
-  // Perform conversion when form values change
   useEffect(() => {
     const { amount, fromCurrency, toCurrency } = formValues;
     
@@ -81,8 +78,8 @@ const CurrencyConverter = () => {
       } finally {
         setIsConverting(false);
       }
-    }, 500); // Debounce the API call
-    
+    }, 500);
+
     return () => clearTimeout(timer);
   }, [formValues]);
 
@@ -104,19 +101,16 @@ const CurrencyConverter = () => {
   };
 
   return (
-    <section className="py-12 w-full">
+    <section className="py-8 w-full">
       <div className="container px-4 mx-auto">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold font-space mb-4">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold font-space mb-3 mt-4">
               Convert Your <span className="text-[#8B0000] animate-text-glow">Currency</span> Instantly
             </h2>
-            <p className="text-gray-light mb-6">
-              Live conversion of both fiat & crypto — powered by CoinGecko
-            </p>
           </div>
 
-          <div className="bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-lg p-6 transition-all hover:shadow-[0_0_15px_rgba(139,0,0,0.3)]">
+          <div className="bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-lg p-5 transition-all hover:shadow-[0_0_15px_rgba(139,0,0,0.3)]">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center p-8">
                 <Loader2 className="h-10 w-10 text-[#8B0000] animate-spin mb-4" />
