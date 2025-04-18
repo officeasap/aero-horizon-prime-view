@@ -2,38 +2,17 @@ import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Search, Loader2, ArrowUpDown, Filter, PlaneTakeoff, Building2, Info, MapPin } from 'lucide-react';
-import { toast } from 'sonner';
-import { 
-  Table, 
-  TableBody, 
-  TableCaption, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
+import { PlaneTakeoff, Building2, Loader2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationEllipsis, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
-} from "@/components/ui/pagination";
-import { 
-  fetchAirports, 
-  fetchComprehensiveAirports, 
-  fetchAirlines,
-  fetchComprehensiveAirlines
-} from '@/services/aviationService';
+import { MapPin } from 'lucide-react';
+import { fetchAirports, fetchAirlines } from '@/services/aviationService';
 import type { Airport, Airline } from '@/services/shared/types';
+import SearchBar from '@/components/airports-airlines/SearchBar';
+import AirportTable from '@/components/airports-airlines/AirportTable';
+import AirlineTable from '@/components/airports-airlines/AirlineTable';
+import CustomPagination from '@/components/airports-airlines/CustomPagination';
 
 const ITEMS_PER_PAGE = 25;
 
@@ -364,32 +343,12 @@ const AirportsAirlinesPage = () => {
                 </TabsTrigger>
               </TabsList>
               
-              <div className="flex gap-2 w-full md:w-auto">
-                <div className="relative flex-1">
-                  <Input
-                    type="text"
-                    placeholder={`Search ${activeTab}...`}
-                    value={searchTerm}
-                    onChange={handleFilterChange}
-                    className="bg-gray-dark/50 border-gray-dark text-white pl-9"
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
-                </div>
-                
-                <Button 
-                  variant="outline" 
-                  onClick={handleSearch}
-                  className="bg-gray-dark/50 border-gray-dark text-white"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Search className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
+              <SearchBar
+                searchTerm={searchTerm}
+                isLoading={isLoading}
+                onSearchChange={handleFilterChange}
+                onSearch={handleSearch}
+              />
             </div>
             
             <TabsContent value="airports" className="mt-0">
@@ -422,106 +381,18 @@ const AirportsAirlinesPage = () => {
                     </div>
                   ) : (
                     <>
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="hover:bg-white/5">
-                              <TableHead 
-                                className="cursor-pointer"
-                                onClick={() => requestSort('name')}
-                              >
-                                <div className="flex items-center">
-                                  Airport Name
-                                  {getSortIndicator('name')}
-                                </div>
-                              </TableHead>
-                              <TableHead 
-                                className="cursor-pointer"
-                                onClick={() => requestSort('iata_code')}
-                              >
-                                <div className="flex items-center">
-                                  IATA
-                                  {getSortIndicator('iata_code')}
-                                </div>
-                              </TableHead>
-                              <TableHead 
-                                className="cursor-pointer"
-                                onClick={() => requestSort('icao_code')}
-                              >
-                                <div className="flex items-center">
-                                  ICAO
-                                  {getSortIndicator('icao_code')}
-                                </div>
-                              </TableHead>
-                              <TableHead 
-                                className="cursor-pointer"
-                                onClick={() => requestSort('country_code')}
-                              >
-                                <div className="flex items-center">
-                                  Country
-                                  {getSortIndicator('country_code')}
-                                </div>
-                              </TableHead>
-                              <TableHead>
-                                <div className="flex items-center justify-end">
-                                  Details
-                                </div>
-                              </TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {displayedAirports.map((airport, index) => (
-                              <TableRow 
-                                key={`${airport.iata_code || airport.icao_code || index}-${index}`}
-                                className="hover:bg-white/5 cursor-pointer"
-                                onClick={() => handleOpenAirportDetail(airport)}
-                              >
-                                <TableCell className="font-medium">{airport.name}</TableCell>
-                                <TableCell>
-                                  <Badge variant="outline" className="font-mono">
-                                    {airport.iata_code || 'N/A'}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell>
-                                  <Badge variant="secondary" className="font-mono">
-                                    {airport.icao_code || 'N/A'}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell>{airport.country || airport.country_code || 'Unknown'}</TableCell>
-                                <TableCell className="text-right">
-                                  <Button variant="ghost" size="icon">
-                                    <Info className="h-4 w-4" />
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
+                      <AirportTable
+                        airports={displayedAirports}
+                        onSort={requestSort}
+                        sortConfig={sortConfig}
+                        onAirportSelect={handleOpenAirportDetail}
+                      />
                       
-                      {totalPages > 1 && (
-                        <Pagination className="mt-4">
-                          <PaginationContent>
-                            <PaginationItem>
-                              <PaginationPrevious 
-                                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                                aria-disabled={currentPage === 1}
-                                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                              />
-                            </PaginationItem>
-                            
-                            {renderPaginationItems(currentPage, totalPages, handlePageChange)}
-                            
-                            <PaginationItem>
-                              <PaginationNext 
-                                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                                aria-disabled={currentPage === totalPages}
-                                className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                              />
-                            </PaginationItem>
-                          </PaginationContent>
-                        </Pagination>
-                      )}
+                      <CustomPagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                      />
                     </>
                   )}
                 </CardContent>
@@ -558,106 +429,18 @@ const AirportsAirlinesPage = () => {
                     </div>
                   ) : (
                     <>
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="hover:bg-white/5">
-                              <TableHead 
-                                className="cursor-pointer"
-                                onClick={() => requestSort('name')}
-                              >
-                                <div className="flex items-center">
-                                  Airline Name
-                                  {getSortIndicator('name')}
-                                </div>
-                              </TableHead>
-                              <TableHead 
-                                className="cursor-pointer"
-                                onClick={() => requestSort('iata_code')}
-                              >
-                                <div className="flex items-center">
-                                  IATA
-                                  {getSortIndicator('iata_code')}
-                                </div>
-                              </TableHead>
-                              <TableHead 
-                                className="cursor-pointer"
-                                onClick={() => requestSort('icao_code')}
-                              >
-                                <div className="flex items-center">
-                                  ICAO
-                                  {getSortIndicator('icao_code')}
-                                </div>
-                              </TableHead>
-                              <TableHead 
-                                className="cursor-pointer"
-                                onClick={() => requestSort('country_code')}
-                              >
-                                <div className="flex items-center">
-                                  Country
-                                  {getSortIndicator('country_code')}
-                                </div>
-                              </TableHead>
-                              <TableHead>
-                                <div className="flex items-center justify-end">
-                                  Details
-                                </div>
-                              </TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {displayedAirlines.map((airline, index) => (
-                              <TableRow 
-                                key={`${airline.iata_code || airline.icao_code || index}-${index}`}
-                                className="hover:bg-white/5 cursor-pointer"
-                                onClick={() => handleOpenAirlineDetail(airline)}
-                              >
-                                <TableCell className="font-medium">{airline.name}</TableCell>
-                                <TableCell>
-                                  <Badge variant="outline" className="font-mono">
-                                    {airline.iata_code || 'N/A'}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell>
-                                  <Badge variant="secondary" className="font-mono">
-                                    {airline.icao_code || 'N/A'}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell>{airline.country_name || airline.country_code || 'Unknown'}</TableCell>
-                                <TableCell className="text-right">
-                                  <Button variant="ghost" size="icon">
-                                    <Info className="h-4 w-4" />
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
+                      <AirlineTable
+                        airlines={displayedAirlines}
+                        onSort={requestSort}
+                        sortConfig={sortConfig}
+                        onAirlineSelect={handleOpenAirlineDetail}
+                      />
                       
-                      {airlineTotalPages > 1 && (
-                        <Pagination className="mt-4">
-                          <PaginationContent>
-                            <PaginationItem>
-                              <PaginationPrevious 
-                                onClick={() => handleAirlinePageChange(Math.max(1, airlineCurrentPage - 1))}
-                                aria-disabled={airlineCurrentPage === 1}
-                                className={airlineCurrentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                              />
-                            </PaginationItem>
-                            
-                            {renderPaginationItems(airlineCurrentPage, airlineTotalPages, handleAirlinePageChange)}
-                            
-                            <PaginationItem>
-                              <PaginationNext 
-                                onClick={() => handleAirlinePageChange(Math.min(airlineTotalPages, airlineCurrentPage + 1))}
-                                aria-disabled={airlineCurrentPage === airlineTotalPages}
-                                className={airlineCurrentPage === airlineTotalPages ? "pointer-events-none opacity-50" : ""}
-                              />
-                            </PaginationItem>
-                          </PaginationContent>
-                        </Pagination>
-                      )}
+                      <CustomPagination
+                        currentPage={airlineCurrentPage}
+                        totalPages={airlineTotalPages}
+                        onPageChange={handleAirlinePageChange}
+                      />
                     </>
                   )}
                 </CardContent>
