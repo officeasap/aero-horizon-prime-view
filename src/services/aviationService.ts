@@ -270,3 +270,84 @@ export async function fetchArrivalsDepartures(type: 'arrivals' | 'departures', p
     throw error;
   }
 }
+
+// Import fetchFromAviationStack from aviationStackService
+import { fetchFromAviationStack } from './aviationStackService';
+import type { Airport, Airline } from './shared/types';
+import { toast } from 'sonner';
+
+/**
+ * Fetch airports from AviationStack API
+ */
+export async function fetchAirports(params: Record<string, string> = {}) {
+  try {
+    // Ensure we request comprehensive data by default
+    const queryParams = {
+      ...params,
+      comprehensive: "true",
+      limit: params.limit || "100" // Default to 100 results
+    };
+
+    const response = await fetchFromAviationStack('airports', queryParams);
+    
+    if (response.data && Array.isArray(response.data)) {
+      // Transform the data to match our internal Airport type
+      return response.data.map(airport => ({
+        id: airport.iata_code || String(Math.random()),
+        name: airport.airport_name,
+        city: airport.city_iata_code || '',
+        country: airport.country_name || '',
+        iata: airport.iata_code || '',
+        icao: airport.icao_code || '',
+        lat: airport.latitude,
+        lon: airport.longitude,
+        alt: 0, // Default since AviationStack doesn't provide this
+        timezone: airport.timezone || '',
+        iata_code: airport.iata_code,
+        icao_code: airport.icao_code,
+        country_code: airport.country_iso2
+      })) as Airport[];
+    }
+    
+    return [];
+  } catch (error) {
+    console.error("Error fetching airports:", error);
+    toast.error("Failed to fetch airport data. Please try again later.");
+    return [];
+  }
+}
+
+/**
+ * Fetch airlines from AviationStack API
+ */
+export async function fetchAirlines(params: Record<string, string> = {}) {
+  try {
+    const queryParams = {
+      ...params,
+      comprehensive: "true",
+      limit: params.limit || "100" // Default to 100 results
+    };
+
+    const response = await fetchFromAviationStack('airlines', queryParams);
+    
+    if (response.data && Array.isArray(response.data)) {
+      // Transform the data to match our internal Airline type
+      return response.data.map(airline => ({
+        name: airline.airline_name,
+        iata_code: airline.airline_iata || '',
+        icao_code: airline.airline_icao || '',
+        fleet_size: airline.fleet_size,
+        fleet_average_age: airline.fleet_average_age,
+        country_code: airline.airline_country,
+        country_name: airline.airline_country,
+        callsign: airline.airline_callsign
+      })) as Airline[];
+    }
+    
+    return [];
+  } catch (error) {
+    console.error("Error fetching airlines:", error);
+    toast.error("Failed to fetch airline data. Please try again later.");
+    return [];
+  }
+}

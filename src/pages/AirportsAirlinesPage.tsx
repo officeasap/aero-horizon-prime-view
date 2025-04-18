@@ -60,15 +60,11 @@ const AirportsAirlinesPage = () => {
   const [airlineTotalPages, setAirlineTotalPages] = useState(1);
 
   useEffect(() => {
-    const loadInitialData = async () => {
-      if (activeTab === "airports") {
-        await loadAirports();
-      } else {
-        await loadAirlines();
-      }
-    };
-    
-    loadInitialData();
+    if (activeTab === "airports") {
+      loadAirports();
+    } else {
+      loadAirlines();
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -106,13 +102,12 @@ const AirportsAirlinesPage = () => {
   const loadAirports = async (search: string = "") => {
     setIsLoading(true);
     try {
-      let airportData: Airport[] = [];
-      
+      const params: Record<string, string> = {};
       if (search) {
-        airportData = await fetchAirports({ search: search });
-      } else {
-        airportData = await fetchComprehensiveAirports();
+        params.search = search;
       }
+      
+      const airportData = await fetchAirports(params);
       
       if (airportData && airportData.length > 0) {
         setAirports(airportData);
@@ -135,13 +130,12 @@ const AirportsAirlinesPage = () => {
   const loadAirlines = async (search: string = "") => {
     setIsLoading(true);
     try {
-      let airlineData: Airline[] = [];
-      
+      const params: Record<string, string> = {};
       if (search) {
-        airlineData = await fetchAirlines({ search: search });
-      } else {
-        airlineData = await fetchComprehensiveAirlines();
+        params.search = search;
       }
+      
+      const airlineData = await fetchAirlines(params);
       
       if (airlineData && airlineData.length > 0) {
         setAirlines(airlineData);
