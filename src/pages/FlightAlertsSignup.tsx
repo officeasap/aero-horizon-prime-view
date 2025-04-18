@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
@@ -17,7 +16,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-// Form validation schema
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -48,7 +46,6 @@ const FlightAlertsSignup = () => {
   });
 
   useEffect(() => {
-    // Check if notifications are supported
     if ('Notification' in window) {
       setNotificationPermission(Notification.permission);
     }
@@ -58,7 +55,6 @@ const FlightAlertsSignup = () => {
     setIsSubmitting(true);
     
     try {
-      // Handle push notification subscription if selected
       if (data.pushNotifications) {
         const permission = await askForNotificationPermission();
         
@@ -73,14 +69,11 @@ const FlightAlertsSignup = () => {
         }
       }
       
-      // Simulate API call for email subscription
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Show success toast
       toast.success("Successfully signed up for flight alerts!");
       setIsSubscribed(true);
       
-      // Send a test notification
       if (data.pushNotifications && Notification.permission === 'granted') {
         const notification = new Notification("Welcome to ASAP Tracker Alerts!", {
           body: "You'll now receive real-time updates for your flights.",
@@ -210,7 +203,7 @@ const FlightAlertsSignup = () => {
                               name="departureAirport"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Departure Airport</FormLabel>
+                                  <FormLabel>Departure from</FormLabel>
                                   <FormControl>
                                     <Input placeholder="e.g. LAX" {...field} className="bg-[#222222]" />
                                   </FormControl>
@@ -226,7 +219,7 @@ const FlightAlertsSignup = () => {
                                 <FormItem>
                                   <FormLabel>Arrival Airport</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="e.g. JFK" {...field} className="bg-[#222222]" />
+                                    <Input placeholder="e.g. BKK" {...field} className="bg-[#222222]" />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
