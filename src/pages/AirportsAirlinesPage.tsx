@@ -629,7 +629,7 @@ const AirportsAirlinesPage = () => {
                                     {airline.icao_code || 'N/A'}
                                   </Badge>
                                 </TableCell>
-                                <TableCell>{airline.country || airline.country_code || 'Unknown'}</TableCell>
+                                <TableCell>{airline.country_name || airline.country_code || 'Unknown'}</TableCell>
                                 <TableCell className="text-right">
                                   <Button variant="ghost" size="icon">
                                     <Info className="h-4 w-4" />
