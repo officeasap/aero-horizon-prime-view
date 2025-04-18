@@ -42,7 +42,6 @@ const AirportsAirlinesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   
-  // Airports state
   const [airports, setAirports] = useState<Airport[]>([]);
   const [filteredAirports, setFilteredAirports] = useState<Airport[]>([]);
   const [displayedAirports, setDisplayedAirports] = useState<Airport[]>([]);
@@ -52,7 +51,6 @@ const AirportsAirlinesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   
-  // Airlines state
   const [airlines, setAirlines] = useState<Airline[]>([]);
   const [filteredAirlines, setFilteredAirlines] = useState<Airline[]>([]);
   const [displayedAirlines, setDisplayedAirlines] = useState<Airline[]>([]);
@@ -61,7 +59,6 @@ const AirportsAirlinesPage = () => {
   const [airlineCurrentPage, setAirlineCurrentPage] = useState(1);
   const [airlineTotalPages, setAirlineTotalPages] = useState(1);
 
-  // Load initial data on component mount
   useEffect(() => {
     const loadInitialData = async () => {
       if (activeTab === "airports") {
@@ -74,7 +71,6 @@ const AirportsAirlinesPage = () => {
     loadInitialData();
   }, [activeTab]);
 
-  // Update pagination when filtered data changes
   useEffect(() => {
     if (activeTab === "airports") {
       const total = Math.ceil(filteredAirports.length / ITEMS_PER_PAGE);
@@ -87,41 +83,34 @@ const AirportsAirlinesPage = () => {
     }
   }, [filteredAirports, filteredAirlines, currentPage, airlineCurrentPage, activeTab]);
 
-  // Update displayed airports based on current page
   const updateDisplayedAirports = (page: number) => {
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
     setDisplayedAirports(filteredAirports.slice(startIndex, endIndex));
   };
 
-  // Update displayed airlines based on current page
   const updateDisplayedAirlines = (page: number) => {
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
     setDisplayedAirlines(filteredAirlines.slice(startIndex, endIndex));
   };
 
-  // Handle page change for airports
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  // Handle page change for airlines
   const handleAirlinePageChange = (page: number) => {
     setAirlineCurrentPage(page);
   };
 
-  // Load airports
   const loadAirports = async (search: string = "") => {
     setIsLoading(true);
     try {
       let airportData: Airport[] = [];
       
       if (search) {
-        // If search term exists, fetch filtered airports
         airportData = await fetchAirports({ search: search });
       } else {
-        // Otherwise fetch comprehensive global airport data
         airportData = await fetchComprehensiveAirports();
       }
       
@@ -143,17 +132,14 @@ const AirportsAirlinesPage = () => {
     }
   };
 
-  // Load airlines
   const loadAirlines = async (search: string = "") => {
     setIsLoading(true);
     try {
       let airlineData: Airline[] = [];
       
       if (search) {
-        // If search term exists, fetch filtered airlines
         airlineData = await fetchAirlines({ search: search });
       } else {
-        // Otherwise fetch comprehensive global airline data
         airlineData = await fetchComprehensiveAirlines();
       }
       
@@ -175,7 +161,6 @@ const AirportsAirlinesPage = () => {
     }
   };
 
-  // Handle search
   const handleSearch = () => {
     if (activeTab === "airports") {
       loadAirports(searchTerm);
@@ -184,7 +169,6 @@ const AirportsAirlinesPage = () => {
     }
   };
 
-  // Handle filter as user types
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
@@ -223,7 +207,6 @@ const AirportsAirlinesPage = () => {
     }
   };
 
-  // Handle sorting
   const requestSort = (key: string) => {
     let direction: 'asc' | 'desc' = 'asc';
     
@@ -235,7 +218,6 @@ const AirportsAirlinesPage = () => {
     
     if (activeTab === "airports") {
       const sortedData = [...filteredAirports].sort((a, b) => {
-        // Type assertion and null check
         const aValue = (a as any)[key] || "";
         const bValue = (b as any)[key] || "";
         
@@ -247,7 +229,6 @@ const AirportsAirlinesPage = () => {
       setFilteredAirports(sortedData);
     } else {
       const sortedData = [...filteredAirlines].sort((a, b) => {
-        // Type assertion and null check
         const aValue = (a as any)[key] || "";
         const bValue = (b as any)[key] || "";
         
@@ -260,7 +241,6 @@ const AirportsAirlinesPage = () => {
     }
   };
 
-  // Get sort indicator
   const getSortIndicator = (key: string) => {
     if (!sortConfig || sortConfig.key !== key) {
       return <ArrowUpDown className="ml-1 h-4 w-4 text-gray-400" />;
@@ -271,24 +251,20 @@ const AirportsAirlinesPage = () => {
       : <ArrowUpDown className="ml-1 h-4 w-4 text-purple" />;
   };
 
-  // Open airport detail dialog
   const handleOpenAirportDetail = (airport: Airport) => {
     setSelectedAirport(airport);
     setIsAirportDialogOpen(true);
   };
 
-  // Open airline detail dialog
   const handleOpenAirlineDetail = (airline: Airline) => {
     setSelectedAirline(airline);
     setIsAirlineDialogOpen(true);
   };
 
-  // Generate pagination items
   const renderPaginationItems = (currentPage: number, totalPages: number, onPageChange: (page: number) => void) => {
     const items = [];
     const maxPageDisplay = 5;
     
-    // Always show first page
     items.push(
       <PaginationItem key="first">
         <PaginationLink 
@@ -300,7 +276,6 @@ const AirportsAirlinesPage = () => {
       </PaginationItem>
     );
     
-    // Show ellipsis if needed
     if (currentPage > 3) {
       items.push(
         <PaginationItem key="ellipsis-start">
@@ -309,20 +284,17 @@ const AirportsAirlinesPage = () => {
       );
     }
     
-    // Calculate range
     let startPage = Math.max(2, currentPage - 1);
     let endPage = Math.min(totalPages - 1, currentPage + 1);
     
-    // Adjust range if needed
     if (currentPage <= 3) {
       endPage = Math.min(maxPageDisplay, totalPages - 1);
     } else if (currentPage >= totalPages - 2) {
       startPage = Math.max(2, totalPages - maxPageDisplay + 1);
     }
     
-    // Add page numbers
     for (let i = startPage; i <= endPage; i++) {
-      if (i === 1 || i === totalPages) continue; // Skip first and last as they're added separately
+      if (i === 1 || i === totalPages) continue;
       
       items.push(
         <PaginationItem key={i}>
@@ -336,7 +308,6 @@ const AirportsAirlinesPage = () => {
       );
     }
     
-    // Show ellipsis if needed
     if (currentPage < totalPages - 2) {
       items.push(
         <PaginationItem key="ellipsis-end">
@@ -345,7 +316,6 @@ const AirportsAirlinesPage = () => {
       );
     }
     
-    // Always show last page if more than 1 page
     if (totalPages > 1) {
       items.push(
         <PaginationItem key="last">
@@ -366,7 +336,6 @@ const AirportsAirlinesPage = () => {
     <div className="min-h-screen bg-dark text-white">
       <Header />
       
-      {/* Hero Section */}
       <section className="pt-32 pb-12 relative">
         <div className="absolute inset-0 bg-radial-gradient from-[#4c2a90]/10 via-transparent to-transparent z-0"></div>
         <div className="container mx-auto px-4 relative z-10">
@@ -381,7 +350,6 @@ const AirportsAirlinesPage = () => {
         </div>
       </section>
       
-      {/* Main Content */}
       <section className="py-10 container mx-auto px-4">
         <div className="border-4 border-[#8B0000] rounded-2xl shadow-[0_4px_12px_rgba(139,0,0,0.4)] overflow-hidden">
           <Tabs 
@@ -537,7 +505,6 @@ const AirportsAirlinesPage = () => {
                         </Table>
                       </div>
                       
-                      {/* Pagination for airports */}
                       {totalPages > 1 && (
                         <Pagination className="mt-4">
                           <PaginationContent>
@@ -674,7 +641,6 @@ const AirportsAirlinesPage = () => {
                         </Table>
                       </div>
                       
-                      {/* Pagination for airlines */}
                       {airlineTotalPages > 1 && (
                         <Pagination className="mt-4">
                           <PaginationContent>
@@ -707,7 +673,6 @@ const AirportsAirlinesPage = () => {
         </div>
       </section>
       
-      {/* Airport Detail Dialog */}
       <Dialog open={isAirportDialogOpen} onOpenChange={setIsAirportDialogOpen}>
         <DialogContent className="bg-gray-dark border-gray-light/20 text-white">
           {selectedAirport && (
@@ -767,7 +732,6 @@ const AirportsAirlinesPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Airline Detail Dialog */}
       <Dialog open={isAirlineDialogOpen} onOpenChange={setIsAirlineDialogOpen}>
         <DialogContent className="bg-gray-dark border-gray-light/20 text-white">
           {selectedAirline && (
@@ -785,7 +749,7 @@ const AirportsAirlinesPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div className="space-y-2">
                   <h4 className="text-sm font-semibold text-gray-light">Information</h4>
-                  <p>Country: {selectedAirline.country || selectedAirline.country_code || 'Unknown'}</p>
+                  <p>Country: {selectedAirline.country_name || selectedAirline.country_code || 'Unknown'}</p>
                   <p>IATA Code: {selectedAirline.iata_code || 'N/A'}</p>
                   <p>ICAO Code: {selectedAirline.icao_code || 'N/A'}</p>
                 </div>
@@ -793,7 +757,7 @@ const AirportsAirlinesPage = () => {
                 <div>
                   <div className="bg-black/30 p-4 rounded-lg">
                     <h4 className="text-sm font-semibold text-gray-light mb-2">Additional Details</h4>
-                    <p>Airline ID: {selectedAirline.id || 'Unknown'}</p>
+                    <p>Callsign: {selectedAirline.callsign || 'Unknown'}</p>
                     
                     <div className="mt-4 flex flex-col gap-2">
                       <DialogClose asChild>

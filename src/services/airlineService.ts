@@ -93,4 +93,3 @@ export async function fetchComprehensiveAirlines(): Promise<Airline[]> {
     return [];
   }
 }
-
