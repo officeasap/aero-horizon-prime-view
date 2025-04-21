@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -5,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { PlaneTakeoff, Building2, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { MapPin } from 'lucide-react';
 import { fetchAirports, fetchAirlines } from '@/services/aviationService';
 import type { Airport, Airline } from '@/services/shared/types';
@@ -13,6 +13,11 @@ import SearchBar from '@/components/airports-airlines/SearchBar';
 import AirportTable from '@/components/airports-airlines/AirportTable';
 import AirlineTable from '@/components/airports-airlines/AirlineTable';
 import CustomPagination from '@/components/airports-airlines/CustomPagination';
+import AirportDialog from '@/components/airports-airlines/AirportDialog';
+import AirlineDialog from '@/components/airports-airlines/AirlineDialog';
+// Fix Toast and missing ArrowUpDown import:
+import { useToast, toast } from "@/hooks/use-toast";
+import { ArrowUpDown } from "lucide-react";
 
 const ITEMS_PER_PAGE = 25;
 
@@ -20,7 +25,7 @@ const AirportsAirlinesPage = () => {
   const [activeTab, setActiveTab] = useState("airports");
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [airports, setAirports] = useState<Airport[]>([]);
   const [filteredAirports, setFilteredAirports] = useState<Airport[]>([]);
   const [displayedAirports, setDisplayedAirports] = useState<Airport[]>([]);
@@ -29,7 +34,7 @@ const AirportsAirlinesPage = () => {
   const [isAirportDialogOpen, setIsAirportDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  
+
   const [airlines, setAirlines] = useState<Airline[]>([]);
   const [filteredAirlines, setFilteredAirlines] = useState<Airline[]>([]);
   const [displayedAirlines, setDisplayedAirlines] = useState<Airline[]>([]);
@@ -44,6 +49,7 @@ const AirportsAirlinesPage = () => {
     } else {
       loadAirlines();
     }
+    // eslint-disable-next-line
   }, [activeTab]);
 
   useEffect(() => {
@@ -56,6 +62,7 @@ const AirportsAirlinesPage = () => {
       setAirlineTotalPages(total || 1);
       updateDisplayedAirlines(airlineCurrentPage);
     }
+    // eslint-disable-next-line
   }, [filteredAirports, filteredAirlines, currentPage, airlineCurrentPage, activeTab]);
 
   const updateDisplayedAirports = (page: number) => {
@@ -85,22 +92,32 @@ const AirportsAirlinesPage = () => {
       if (search) {
         params.search = search;
       }
-      
+
       const airportData = await fetchAirports(params);
-      
+
       if (airportData && airportData.length > 0) {
         setAirports(airportData);
         setFilteredAirports(airportData);
         setCurrentPage(1);
-        toast.success(`Loaded ${airportData.length} airports`);
+        toast({
+          title: "Airports Loaded",
+          description: `Loaded ${airportData.length} airports`,
+        });
       } else {
-        toast.info("No airports found for your search");
+        toast({
+          title: "No airports found",
+          description: "No airports found for your search",
+        });
         setAirports([]);
         setFilteredAirports([]);
       }
     } catch (error) {
       console.error("Error loading airports:", error);
-      toast.error("Failed to load airports. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to load airports. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -113,22 +130,32 @@ const AirportsAirlinesPage = () => {
       if (search) {
         params.search = search;
       }
-      
+
       const airlineData = await fetchAirlines(params);
-      
+
       if (airlineData && airlineData.length > 0) {
         setAirlines(airlineData);
         setFilteredAirlines(airlineData);
         setAirlineCurrentPage(1);
-        toast.success(`Loaded ${airlineData.length} airlines`);
+        toast({
+          title: "Airlines Loaded",
+          description: `Loaded ${airlineData.length} airlines`,
+        });
       } else {
-        toast.info("No airlines found for your search");
+        toast({
+          title: "No airlines found",
+          description: "No airlines found for your search",
+        });
         setAirlines([]);
         setFilteredAirlines([]);
       }
     } catch (error) {
       console.error("Error loading airlines:", error);
-      toast.error("Failed to load airlines. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to load airlines. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -145,21 +172,21 @@ const AirportsAirlinesPage = () => {
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
-    
+
     if (activeTab === "airports") {
       if (!value.trim()) {
         setFilteredAirports(airports);
         return;
       }
-      
-      const filtered = airports.filter(airport => 
-        airport.name.toLowerCase().includes(value) || 
+
+      const filtered = airports.filter(airport =>
+        airport.name.toLowerCase().includes(value) ||
         (airport.iata_code && airport.iata_code.toLowerCase().includes(value)) ||
         (airport.icao_code && airport.icao_code.toLowerCase().includes(value)) ||
         (airport.country_code && airport.country_code.toLowerCase().includes(value)) ||
         (airport.city && airport.city.toLowerCase().includes(value))
       );
-      
+
       setFilteredAirports(filtered);
       setCurrentPage(1);
     } else {
@@ -167,14 +194,14 @@ const AirportsAirlinesPage = () => {
         setFilteredAirlines(airlines);
         return;
       }
-      
-      const filtered = airlines.filter(airline => 
-        airline.name.toLowerCase().includes(value) || 
+
+      const filtered = airlines.filter(airline =>
+        airline.name.toLowerCase().includes(value) ||
         (airline.iata_code && airline.iata_code.toLowerCase().includes(value)) ||
         (airline.icao_code && airline.icao_code.toLowerCase().includes(value)) ||
         (airline.country_code && airline.country_code.toLowerCase().includes(value))
       );
-      
+
       setFilteredAirlines(filtered);
       setAirlineCurrentPage(1);
     }
@@ -182,34 +209,34 @@ const AirportsAirlinesPage = () => {
 
   const requestSort = (key: string) => {
     let direction: 'asc' | 'desc' = 'asc';
-    
+
     if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
-    
+
     setSortConfig({ key, direction });
-    
+
     if (activeTab === "airports") {
       const sortedData = [...filteredAirports].sort((a, b) => {
         const aValue = (a as any)[key] || "";
         const bValue = (b as any)[key] || "";
-        
+
         if (aValue < bValue) return direction === 'asc' ? -1 : 1;
         if (aValue > bValue) return direction === 'asc' ? 1 : -1;
         return 0;
       });
-      
+
       setFilteredAirports(sortedData);
     } else {
       const sortedData = [...filteredAirlines].sort((a, b) => {
         const aValue = (a as any)[key] || "";
         const bValue = (b as any)[key] || "";
-        
+
         if (aValue < bValue) return direction === 'asc' ? -1 : 1;
         if (aValue > bValue) return direction === 'asc' ? 1 : -1;
         return 0;
       });
-      
+
       setFilteredAirlines(sortedData);
     }
   };
@@ -218,8 +245,8 @@ const AirportsAirlinesPage = () => {
     if (!sortConfig || sortConfig.key !== key) {
       return <ArrowUpDown className="ml-1 h-4 w-4 text-gray-400" />;
     }
-    
-    return sortConfig.direction === 'asc' 
+
+    return sortConfig.direction === 'asc'
       ? <ArrowUpDown className="ml-1 h-4 w-4 text-purple rotate-180" />
       : <ArrowUpDown className="ml-1 h-4 w-4 text-purple" />;
   };
@@ -234,81 +261,10 @@ const AirportsAirlinesPage = () => {
     setIsAirlineDialogOpen(true);
   };
 
-  const renderPaginationItems = (currentPage: number, totalPages: number, onPageChange: (page: number) => void) => {
-    const items = [];
-    const maxPageDisplay = 5;
-    
-    items.push(
-      <PaginationItem key="first">
-        <PaginationLink 
-          isActive={currentPage === 1} 
-          onClick={() => onPageChange(1)}
-        >
-          1
-        </PaginationLink>
-      </PaginationItem>
-    );
-    
-    if (currentPage > 3) {
-      items.push(
-        <PaginationItem key="ellipsis-start">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-    
-    let startPage = Math.max(2, currentPage - 1);
-    let endPage = Math.min(totalPages - 1, currentPage + 1);
-    
-    if (currentPage <= 3) {
-      endPage = Math.min(maxPageDisplay, totalPages - 1);
-    } else if (currentPage >= totalPages - 2) {
-      startPage = Math.max(2, totalPages - maxPageDisplay + 1);
-    }
-    
-    for (let i = startPage; i <= endPage; i++) {
-      if (i === 1 || i === totalPages) continue;
-      
-      items.push(
-        <PaginationItem key={i}>
-          <PaginationLink 
-            isActive={currentPage === i} 
-            onClick={() => onPageChange(i)}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    
-    if (currentPage < totalPages - 2) {
-      items.push(
-        <PaginationItem key="ellipsis-end">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-    
-    if (totalPages > 1) {
-      items.push(
-        <PaginationItem key="last">
-          <PaginationLink 
-            isActive={currentPage === totalPages} 
-            onClick={() => onPageChange(totalPages)}
-          >
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    
-    return items;
-  };
-
   return (
     <div className="min-h-screen bg-dark text-white">
       <Header />
-      
+
       <section className="pt-32 pb-12 relative">
         <div className="absolute inset-0 bg-radial-gradient from-[#4c2a90]/10 via-transparent to-transparent z-0"></div>
         <div className="container mx-auto px-4 relative z-10">
@@ -322,11 +278,11 @@ const AirportsAirlinesPage = () => {
           </div>
         </div>
       </section>
-      
+
       <section className="py-10 container mx-auto px-4">
         <div className="border-4 border-[#8B0000] rounded-2xl shadow-[0_4px_12px_rgba(139,0,0,0.4)] overflow-hidden">
-          <Tabs 
-            defaultValue="airports" 
+          <Tabs
+            defaultValue="airports"
             value={activeTab}
             onValueChange={setActiveTab}
             className="w-full"
@@ -342,7 +298,7 @@ const AirportsAirlinesPage = () => {
                   <span>Airlines</span>
                 </TabsTrigger>
               </TabsList>
-              
+
               <SearchBar
                 searchTerm={searchTerm}
                 isLoading={isLoading}
@@ -350,7 +306,7 @@ const AirportsAirlinesPage = () => {
                 onSearch={handleSearch}
               />
             </div>
-            
+
             <TabsContent value="airports" className="mt-0">
               <Card className="bg-gray-dark/60 border-gray-light/20">
                 <CardHeader>
@@ -362,7 +318,7 @@ const AirportsAirlinesPage = () => {
                     Browse {filteredAirports.length} airports from around the world
                   </CardDescription>
                 </CardHeader>
-                
+
                 <CardContent>
                   {isLoading ? (
                     <div className="flex justify-center items-center p-12">
@@ -371,8 +327,8 @@ const AirportsAirlinesPage = () => {
                   ) : filteredAirports.length === 0 ? (
                     <div className="text-center py-12">
                       <p className="text-gray-light">No airports found matching your criteria.</p>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => loadAirports()}
                         className="mt-4"
                       >
@@ -387,7 +343,7 @@ const AirportsAirlinesPage = () => {
                         sortConfig={sortConfig}
                         onAirportSelect={handleOpenAirportDetail}
                       />
-                      
+
                       <CustomPagination
                         currentPage={currentPage}
                         totalPages={totalPages}
@@ -398,7 +354,7 @@ const AirportsAirlinesPage = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="airlines" className="mt-0">
               <Card className="bg-gray-dark/60 border-gray-light/20">
                 <CardHeader>
@@ -410,7 +366,7 @@ const AirportsAirlinesPage = () => {
                     Browse {filteredAirlines.length} airlines from around the world
                   </CardDescription>
                 </CardHeader>
-                
+
                 <CardContent>
                   {isLoading ? (
                     <div className="flex justify-center items-center p-12">
@@ -419,8 +375,8 @@ const AirportsAirlinesPage = () => {
                   ) : filteredAirlines.length === 0 ? (
                     <div className="text-center py-12">
                       <p className="text-gray-light">No airlines found matching your criteria.</p>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => loadAirlines()}
                         className="mt-4"
                       >
@@ -435,7 +391,7 @@ const AirportsAirlinesPage = () => {
                         sortConfig={sortConfig}
                         onAirlineSelect={handleOpenAirlineDetail}
                       />
-                      
+
                       <CustomPagination
                         currentPage={airlineCurrentPage}
                         totalPages={airlineTotalPages}
@@ -449,111 +405,19 @@ const AirportsAirlinesPage = () => {
           </Tabs>
         </div>
       </section>
-      
-      <Dialog open={isAirportDialogOpen} onOpenChange={setIsAirportDialogOpen}>
-        <DialogContent className="bg-gray-dark border-gray-light/20 text-white">
-          {selectedAirport && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-xl flex items-center gap-2">
-                  <Building2 className="text-purple" />
-                  {selectedAirport.name}
-                </DialogTitle>
-                <DialogDescription className="text-gray-light">
-                  {selectedAirport.iata_code || 'N/A'} • {selectedAirport.icao_code || 'N/A'}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold text-gray-light">Location</h4>
-                  <p>{selectedAirport.city || 'Unknown'}, {selectedAirport.country || selectedAirport.country_code || 'Unknown'}</p>
-                  
-                  <h4 className="text-sm font-semibold text-gray-light mt-4">Coordinates</h4>
-                  <p>Latitude: {selectedAirport.lat}</p>
-                  <p>Longitude: {selectedAirport.lon}</p>
-                  
-                  <h4 className="text-sm font-semibold text-gray-light mt-4">Time Zone</h4>
-                  <p>{selectedAirport.timezone || 'Unknown'}</p>
-                </div>
-                
-                <div>
-                  <div className="bg-black/30 p-4 rounded-lg">
-                    <h4 className="text-sm font-semibold text-gray-light mb-2">Additional Information</h4>
-                    <p>Altitude: {selectedAirport.alt || 'Not available'} ft</p>
-                    
-                    <div className="mt-4 flex flex-col gap-2">
-                      <Button 
-                        variant="outline" 
-                        className="w-full bg-gray-dark/50 border-gray-light/20"
-                        onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${selectedAirport.lat},${selectedAirport.lon}`, '_blank')}
-                      >
-                        <MapPin className="h-4 w-4 mr-2" />
-                        View on Google Maps
-                      </Button>
-                      
-                      <DialogClose asChild>
-                        <Button 
-                          variant="outline" 
-                          className="w-full bg-gray-dark/50 border-gray-light/20"
-                        >
-                          Close
-                        </Button>
-                      </DialogClose>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-      
-      <Dialog open={isAirlineDialogOpen} onOpenChange={setIsAirlineDialogOpen}>
-        <DialogContent className="bg-gray-dark border-gray-light/20 text-white">
-          {selectedAirline && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-xl flex items-center gap-2">
-                  <PlaneTakeoff className="text-purple" />
-                  {selectedAirline.name}
-                </DialogTitle>
-                <DialogDescription className="text-gray-light">
-                  {selectedAirline.iata_code || 'N/A'} • {selectedAirline.icao_code || 'N/A'}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold text-gray-light">Information</h4>
-                  <p>Country: {selectedAirline.country_name || selectedAirline.country_code || 'Unknown'}</p>
-                  <p>IATA Code: {selectedAirline.iata_code || 'N/A'}</p>
-                  <p>ICAO Code: {selectedAirline.icao_code || 'N/A'}</p>
-                </div>
-                
-                <div>
-                  <div className="bg-black/30 p-4 rounded-lg">
-                    <h4 className="text-sm font-semibold text-gray-light mb-2">Additional Details</h4>
-                    <p>Callsign: {selectedAirline.callsign || 'Unknown'}</p>
-                    
-                    <div className="mt-4 flex flex-col gap-2">
-                      <DialogClose asChild>
-                        <Button 
-                          variant="outline" 
-                          className="w-full bg-gray-dark/50 border-gray-light/20"
-                        >
-                          Close
-                        </Button>
-                      </DialogClose>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-      
+
+      <AirportDialog
+        open={isAirportDialogOpen}
+        onOpenChange={setIsAirportDialogOpen}
+        airport={selectedAirport}
+      />
+
+      <AirlineDialog
+        open={isAirlineDialogOpen}
+        onOpenChange={setIsAirlineDialogOpen}
+        airline={selectedAirline}
+      />
+
       <Footer />
     </div>
   );
