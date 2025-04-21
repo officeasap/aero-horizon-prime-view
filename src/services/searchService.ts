@@ -1,98 +1,50 @@
 
-import { toast } from "sonner";
-import { fetchWithCache } from "./shared/apiUtils";
-import type { Airport, Airline, SuggestResult } from "./shared/types";
+import { fetchAirports } from './airportService';
+import { fetchAirlines } from './airlineService';
 
-export async function fetchSuggestions(query: string) {
-  try {
-    if (!query || query.length < 2) return [];
-    
-    const data = await fetchWithCache("suggest", { q: query });
-    
-    // Ensure all results have the expected fields
-    const processedData = (data as SuggestResult[]).map(item => {
-      if (item.type === "airport") {
-        // Add lat/lon if it's an airport result
-        return {
-          ...item,
-          lat: item.lat || 0,
-          lon: item.lon || 0
-        };
-      }
-      return item;
-    });
-    
-    return processedData;
-  } catch (error) {
-    console.error("Error fetching suggestions:", error);
-    toast.error("Failed to fetch search suggestions. Please try again later.");
-    return [];
-  }
+/**
+ * Suggest result type for autocomplete or unified search
+ */
+export interface SuggestResult {
+  name: string;
+  iata_code: string;
+  icao_code: string;
+  city?: string;
+  country?: string;
+  country_code?: string;
+  lat?: number;
+  lon?: number;
+  timezone?: string;
+  type: 'airport' | 'airline';
 }
 
-export async function fetchAirportsAndAirlines(searchTerm: string = "") {
-  try {
-    if (!searchTerm || searchTerm.length < 2) {
-      console.log("Fetching default airport list with no search term");
-      const airports = await fetchWithCache("airports", { 
-        comprehensive: "true",
-        limit: "100" 
-      });
-      
-      if (!airports || !Array.isArray(airports)) {
-        console.error("Invalid response format for airports", airports);
-        return [];
-      }
-      
-      console.log(`Fetched ${airports.length} airports`);
-      return airports as Airport[];
-    }
-    
-    const formattedSearch = searchTerm.trim().toUpperCase();
-    if (/^[A-Z]{3}$/.test(formattedSearch)) {
-      console.log(`Searching for IATA code: ${formattedSearch}`);
-      const iataResults = await fetchWithCache("airports", { iata_code: formattedSearch });
-      
-      if (iataResults && iataResults.length > 0) {
-        console.log(`Found ${iataResults.length} airports with IATA code ${formattedSearch}`);
-        return iataResults as Airport[];
-      }
-    }
-    
-    const suggestions = await fetchSuggestions(searchTerm);
-    if (suggestions.length > 0) {
-      // Filter to only include airport type results and convert them to Airport type
-      const airportSuggestions = suggestions
-        .filter(item => item.type === "airport")
-        .map(item => {
-          // Create a proper Airport object from the SuggestResult
-          return {
-            id: item.iata_code || String(Math.random()),
-            name: item.name,
-            city: item.city || "",
-            country: item.country_code || "",
-            iata: item.iata_code || "",
-            icao: item.icao_code || "",
-            lat: item.lat || 0,
-            lon: item.lon || 0,
-            alt: 0, // Default value since SuggestResult doesn't have this
-            timezone: "",  // Default value since SuggestResult doesn't have this
-            iata_code: item.iata_code,
-            icao_code: item.icao_code,
-            country_code: item.country_code
-          } as Airport;
-        });
-      
-      return airportSuggestions;
-    }
-    
-    return fetchWithCache("airports", { 
-      name: searchTerm.trim(),
-      limit: "100"
-    }) as Promise<Airport[]>;
-  } catch (error) {
-    console.error("Error fetching airports/airlines:", error);
-    toast.error("Failed to fetch airport and airline data. Please try again later.");
+export async function fetchSuggestions(query: string): Promise<SuggestResult[]> {
+  if (!query || query.length < 2) {
     return [];
   }
+  // Fetch airport and airline suggestions
+  const [airports, airlines] = await Promise.all([
+    fetchAirports({ search: query }),
+    fetchAirlines({ search: query }),
+  ]);
+  const airportResults = airports.map(a => ({
+    name: a.name,
+    iata_code: a.iata_code || a.iata,
+    icao_code: a.icao_code || a.icao,
+    city: a.city,
+    country: a.country,
+    country_code: a.country_code,
+    lat: a.lat,
+    lon: a.lon,
+    timezone: a.timezone,
+    type: 'airport' as const
+  }));
+  const airlineResults = airlines.map(al => ({
+    name: al.name,
+    iata_code: al.iata_code,
+    icao_code: al.icao_code,
+    country_code: al.country_code,
+    type: 'airline' as const,
+  }));
+  return [...airportResults, ...airlineResults];
 }
