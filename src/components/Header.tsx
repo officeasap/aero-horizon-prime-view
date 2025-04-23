@@ -11,7 +11,8 @@ import {
   Plane,
   Book,
   Bell,
-  Phone
+  Phone,
+  Clock
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,8 @@ const Header = () => {
     { path: "/flight-schedule", label: "Flight Schedule", icon: Calendar },
     { path: "/live-flight-tracker", label: "Live Tracker", icon: MapPin },
     { path: "/airports-airlines", label: "Airports & Airlines", icon: Plane },
+    { path: "/flight-status", label: "Flight Status", icon: Calendar },
+    { path: "/world-clock", label: "World Clock", icon: Clock },
     { path: "/aviation-info", label: "AviationInfo", icon: Book },
     { path: "/flight-alerts", label: "Flight Alerts", icon: Bell },
     { path: "/contact", label: "Contact", icon: Phone }

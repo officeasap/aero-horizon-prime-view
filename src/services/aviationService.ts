@@ -6,3 +6,4 @@ export * from './airlineService';
 export * from './flightTrackingService';
 export * from './searchService';
 export * from './shared/apiUtils';
+export * from './flightService';

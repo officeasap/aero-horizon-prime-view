@@ -15,6 +15,7 @@ import FlightStatusDetailPage from "./pages/FlightStatusDetailPage";
 import FlightAlertsSignup from "./pages/FlightAlertsSignup";
 import AviationInfo from "./pages/AviationInfo";
 import AirportInfoPage from "./pages/AirportInfoPage";
+import FlightStatus from "./pages/FlightStatus";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
   {
     path: "/airport-info",
     element: <AirportInfoPage />
+  },
+  {
+    path: "/flight-status",
+    element: <FlightStatus />
   },
   {
     path: "*",
