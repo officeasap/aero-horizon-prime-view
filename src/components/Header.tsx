@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { 
@@ -10,7 +9,6 @@ import {
   MapPin,
   Plane,
   Bell,
-  Phone,
   Clock,
   Cloud
 } from "lucide-react";
@@ -34,15 +32,13 @@ const Header = () => {
     { path: "/flight-status", label: "Flight Status", icon: Calendar },
     { path: "/world-clock", label: "World Clock", icon: Clock },
     { path: "/global-weather", label: "Weather", icon: Cloud },
-    { path: "/flight-alerts", label: "Flight Alerts", icon: Bell },
-    { path: "/contact", label: "Contact", icon: Phone }
+    { path: "/flight-alerts", label: "Flight Alerts", icon: Bell }
   ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-dark/80 backdrop-blur-lg border-b border-white/5">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo Section with Updated Styling */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-br from-[#8B0000] to-[#A80000] rounded-lg flex items-center justify-center">
               <Radar className="h-5 w-5 text-white" />
@@ -53,7 +49,6 @@ const Header = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation - Centered */}
           <nav className="hidden md:flex items-center justify-center flex-1 space-x-4 px-4 mx-4">
             {navigationItems.map(({ path, label, icon: Icon }) => (
               <NavLink
@@ -72,7 +67,6 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Mobile Menu Button */}
           <div className="flex md:hidden">
             <Button
               variant="ghost"
@@ -86,7 +80,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
       <div className={`md:hidden ${isOpen ? "block" : "hidden"}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-dark/90 shadow-lg border-y border-white/5">
           {navigationItems.map(({ path, label, icon: Icon }) => (

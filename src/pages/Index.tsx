@@ -66,6 +66,13 @@ const Index = () => {
                 </Button>
               </a>
               
+              <a href="/contact" rel="noopener noreferrer">
+                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
+                  <Phone className="h-4 w-4" />
+                  Contact Support
+                </Button>
+              </a>
+              
               {/* Notification Bell */}
               <NotificationBell variant="button" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]" />
             </div>
