@@ -10,6 +10,7 @@ import {
   Plane,
   Cloud,
   Clock,
+  Bell,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
