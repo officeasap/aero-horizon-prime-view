@@ -1,8 +1,6 @@
-
-import { fetchAirportsByCode, fetchAirportsByLocation, fetchAirports } from './airportService';
+import { fetchAirports, fetchAirportByIATA, fetchNearbyAirports, searchAirportsByRegion } from './airportService';
 import { fetchAirlines } from './airlineService';
-import { fetchRecentFlightDetails } from './flightService';
-import { Airport, Airline, Flight, SuggestResult } from './shared/types';
+import { Flight, Airport, Airline, SuggestResult } from './shared/types';
 
 // Re-export types from shared/types
 export type { Airport, Airline, Flight, SuggestResult };
@@ -98,8 +96,8 @@ export const searchFlights = async (
 export const getAirportDetails = async (airportCode: string): Promise<Airport | null> => {
   try {
     // Call the airport service to fetch airport details by code
-    const airport = await fetchAirportsByCode(airportCode);
-    return airport ? airport : null;
+    const airport = await fetchAirportByIATA(airportCode);
+    return airport;
   } catch (error) {
     console.error('Error fetching airport details:', error);
     return null;
@@ -118,20 +116,19 @@ export const getAirlines = async (searchQuery: string): Promise<Airline[]> => {
 };
 
 export const getRecentFlights = async (): Promise<Flight[]> => {
-    try {
-        // Call the flight service to fetch recent flight details
-        const flights = await fetchRecentFlightDetails();
-        return flights;
-    } catch (error) {
-        console.error('Error fetching recent flights:', error);
-        return [];
-    }
+  try {
+    // Since fetchRecentFlightDetails is not available, return mock data instead
+    return getMockFlights(5);
+  } catch (error) {
+    console.error('Error fetching recent flights:', error);
+    return [];
+  }
 };
 
 export const getAirportsByLocation = async (latitude: number, longitude: number): Promise<Airport[]> => {
   try {
-    // Call the airport service to fetch airports by location
-    const airports = await fetchAirportsByLocation(latitude, longitude);
+    // Use fetchNearbyAirports instead of fetchAirportsByLocation
+    const airports = await fetchNearbyAirports(latitude, longitude, 100);
     return airports;
   } catch (error) {
     console.error('Error fetching airports by location:', error);
@@ -139,30 +136,10 @@ export const getAirportsByLocation = async (latitude: number, longitude: number)
   }
 };
 
-// Add missing functions required by components
-export const fetchAirportByIATA = async (iataCode: string): Promise<Airport | null> => {
-  try {
-    console.log(`Fetching airport with IATA code: ${iataCode}`);
-    // Mock data for demonstration
-    const mockAirport: Airport = {
-      id: `airport-${iataCode}`,
-      name: `${iataCode} International Airport`,
-      city: "Sample City",
-      country: "Sample Country",
-      iata: iataCode,
-      icao: `${iataCode}X`,
-      lat: 0,
-      lon: 0,
-      alt: 0,
-      timezone: "GMT+0",
-    };
-    return mockAirport;
-  } catch (error) {
-    console.error('Error fetching airport by IATA:', error);
-    return null;
-  }
-};
+// Export fetchAirportByIATA directly
+export { fetchAirportByIATA };
 
+// Add missing fetchSuggestions function
 export const fetchSuggestions = async (query: string): Promise<SuggestResult[]> => {
   console.log(`Fetching suggestions for query: ${query}`);
   // Mock data
@@ -285,7 +262,7 @@ export const fetchMostTrackedFlights = async (): Promise<Flight[]> => {
   return mockFlights;
 };
 
-export const fetchNearbyAircraft = async (lat: number, lng: number, radius: number): Promise<Flight[]> => {
+export const fetchNearbyAircraft = async (lat: number, lng: number, radius: number = 100): Promise<Flight[]> => {
   console.log(`Fetching nearby aircraft around lat=${lat}, lng=${lng} with radius=${radius}km`);
   
   // Generate random aircraft in the vicinity
@@ -315,7 +292,7 @@ export const fetchNearbyAircraft = async (lat: number, lng: number, radius: numb
   return mockAircraft;
 };
 
-export const fetchLiveFlights = async (filters?: { status?: string, delayed?: boolean }): Promise<Flight[]> => {
+export const fetchLiveFlights = async (filters: { status?: string, delayed?: boolean } = {}): Promise<Flight[]> => {
   console.log('Fetching live flights with filters:', filters);
   
   // Mock data for live flights
@@ -345,6 +322,14 @@ export const fetchLiveFlights = async (filters?: { status?: string, delayed?: bo
       arr_delayed: isDelayed ? delayTime - 5 : 0,
       dep_estimated: isDelayed ? `2025-04-23T${(8 + i) % 24}:${delayTime}:00` : undefined,
       dep_actual: `2025-04-23T${(8 + i) % 24}:${isDelayed ? delayTime : 0}:00`,
+      hex: `A${i}B${i}C${i}`,
+      lat: 35 + (i * 0.5),
+      lng: -100 + (i * 2),
+      alt: 30000 + (i * 1000),
+      speed: 400 + (i * 20),
+      dir: (i * 45) % 360,
+      v_speed: i % 2 === 0 ? 0 : 500,
+      squawk: `${1000 + i}`
     };
   });
   
@@ -374,7 +359,7 @@ export const fetchLiveFlights = async (filters?: { status?: string, delayed?: bo
 
 export const fetchFlightSchedules = async (
   airportCode: string, 
-  date: string, 
+  date: string = new Date().toISOString().split('T')[0], 
   type: 'departures' | 'arrivals' = 'departures'
 ): Promise<Flight[]> => {
   console.log(`Fetching ${type} for airport ${airportCode} on ${date}`);
@@ -410,55 +395,10 @@ export const fetchFlightSchedules = async (
   return mockSchedules;
 };
 
-// Add fetchNearbyAirports function for NearbyAirports component
-export const fetchNearbyAirports = async (lat: number, lng: number, radius: number): Promise<Airport[]> => {
-  console.log(`Fetching nearby airports around lat=${lat}, lng=${lng} with radius=${radius}km`);
-  
-  // Generate 5-8 random airports nearby
-  const count = 5 + Math.floor(Math.random() * 4);
-  const mockAirports: Airport[] = Array(count).fill(null).map((_, i) => {
-    // Calculate random position within the radius
-    const angle = Math.random() * 2 * Math.PI;
-    const distance = Math.random() * radius * 0.8; // Keep within 80% of the radius for better display
-    const latChange = distance * Math.cos(angle) / 111; // Approx 111km per degree of latitude
-    const lngChange = distance * Math.sin(angle) / (111 * Math.cos((lat + latChange) * Math.PI / 180));
-    
-    // Calculate distance in kilometers
-    const airportLat = lat + latChange;
-    const airportLng = lng + lngChange;
-    const airportDistance = Math.round(
-      Math.sqrt(
-        Math.pow(111 * (airportLat - lat), 2) + 
-        Math.pow(111 * Math.cos(lat * Math.PI / 180) * (airportLng - lng), 2)
-      )
-    );
-    
-    const codes = ["JFK", "LAX", "ORD", "LHR", "CDG", "FRA", "NRT", "SYD", "DXB", "GIG", "MEX", "DEL"][i % 12];
-    const cityNames = ["New York", "Los Angeles", "Chicago", "London", "Paris", "Frankfurt", "Tokyo", "Sydney", "Dubai", "Rio", "Mexico City", "Delhi"][i % 12];
-    const countries = ["United States", "United States", "United States", "United Kingdom", "France", "Germany", "Japan", "Australia", "UAE", "Brazil", "Mexico", "India"][i % 12];
-    
-    return {
-      id: `nearby-${i + 1}`,
-      name: `${cityNames} ${["International", "Regional", "Municipal", "National"][i % 4]} Airport`,
-      city: cityNames,
-      country: countries,
-      iata: `${codes}${i+1}`,
-      icao: `${codes}${i+1}X`,
-      lat: airportLat,
-      lon: airportLng,
-      alt: Math.floor(Math.random() * 2000),
-      timezone: "UTC",
-      distance: airportDistance,
-    };
-  });
-  
-  // Sort by distance
-  mockAirports.sort((a, b) => (a.distance || 0) - (b.distance || 0));
-  
-  return mockAirports;
-};
+// Export fetchNearbyAirports directly
+export { fetchNearbyAirports };
 
-// Function for getting user position
+// Add getUserPosition function
 export const getUserPosition = (): Promise<{lat: number, lng: number}> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -480,3 +420,51 @@ export const getUserPosition = (): Promise<{lat: number, lng: number}> => {
     );
   });
 };
+
+// Add fetchFlightsByStatus function that was missing
+export const fetchFlightsByStatus = async (status: string, limit: number = 10): Promise<Flight[]> => {
+  console.log(`Fetching flights with status: ${status}, limit: ${limit}`);
+  
+  // Use fetchLiveFlights with status filter
+  const flights = await fetchLiveFlights({ status });
+  return flights.slice(0, limit);
+};
+
+// Add a helper function for creating mock flights
+const getMockFlights = (count: number): Flight[] => {
+  return Array(count).fill(null).map((_, i) => ({
+    flight_number: `MF${1000 + i}`,
+    flight_iata: `MF${1000 + i}`,
+    flight_icao: `MFL${1000 + i}`,
+    status: ['active', 'scheduled', 'landed', 'delayed'][i % 4],
+    departure_airport: ['JFK', 'LAX', 'ORD', 'ATL', 'DFW'][i % 5],
+    arrival_airport: ['LHR', 'CDG', 'FRA', 'AMS', 'MAD'][i % 5],
+    dep_iata: ['JFK', 'LAX', 'ORD', 'ATL', 'DFW'][i % 5],
+    arr_iata: ['LHR', 'CDG', 'FRA', 'AMS', 'MAD'][i % 5],
+    dep_name: `${['New York', 'Los Angeles', 'Chicago', 'Atlanta', 'Dallas'][i % 5]} Airport`,
+    arr_name: `${['London', 'Paris', 'Frankfurt', 'Amsterdam', 'Madrid'][i % 5]} Airport`,
+    dep_city: ['New York', 'Los Angeles', 'Chicago', 'Atlanta', 'Dallas'][i % 5],
+    arr_city: ['London', 'Paris', 'Frankfurt', 'Amsterdam', 'Madrid'][i % 5],
+    airline_name: ['Mock Airlines', 'Test Airways', 'Sample Air', 'Global Flights', 'Sky Express'][i % 5],
+    dep_time: `2025-04-23T${(8 + i) % 24}:00:00`,
+    dep_time_utc: `2025-04-23T${(12 + i) % 24}:00:00Z`,
+    arr_time: `2025-04-23T${(12 + i) % 24}:00:00`,
+    arr_time_utc: `2025-04-23T${(16 + i) % 24}:00:00Z`,
+    dep_terminal: `T${1 + (i % 3)}`,
+    dep_gate: `G${10 + i}`,
+    hex: `D${i}E${i}F${i}`,
+    lat: 35 + (i * 0.5),
+    lng: -100 + (i * 2),
+    alt: 30000 + (i * 1000),
+    speed: 400 + (i * 20),
+    dir: (i * 45) % 360,
+    v_speed: i % 2 === 0 ? 0 : 500,
+    squawk: `${1000 + i}`,
+    delay: i % 3 === 0 ? 15 + i : undefined,
+    dep_delayed: i % 3 === 0 ? 15 + i : 0,
+    arr_delayed: i % 3 === 0 ? 10 + i : 0
+  }));
+};
+
+// Re-export fetchAirports for use in AirportsAirlinesPage
+export { fetchAirports };
