@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -100,121 +99,94 @@ const AviationInfo = () => {
   // Define mock data
   const mockAirports: Airport[] = [
     { 
+      id: "CGK",
       name: "Soekarno-Hatta International Airport", 
-      iata_code: "CGK", 
-      icao_code: "WIII", 
+      iata: "CGK", 
+      icao: "WIII", 
       city: "Jakarta", 
       country: "Indonesia", 
       country_code: "ID", 
       lat: -6.1254, 
-      lon: 106.6558, 
-      timezone: "Asia/Jakarta"
+      lon: 106.6558,
+      alt: 10,
+      timezone: "Asia/Jakarta",
+      iata_code: "CGK",
+      icao_code: "WIII"
     },
     { 
+      id: "SIN",
       name: "Singapore Changi Airport", 
-      iata_code: "SIN", 
-      icao_code: "WSSS", 
+      iata: "SIN", 
+      icao: "WSSS", 
       city: "Singapore", 
       country: "Singapore", 
       country_code: "SG", 
       lat: 1.3644, 
       lon: 103.9915, 
-      timezone: "Asia/Singapore"
+      alt: 7,
+      timezone: "Asia/Singapore",
+      iata_code: "SIN",
+      icao_code: "WSSS"
     },
     { 
+      id: "DXB",
       name: "Dubai International Airport", 
-      iata_code: "DXB", 
-      icao_code: "OMDB", 
+      iata: "DXB", 
+      icao: "OMDB", 
       city: "Dubai", 
       country: "United Arab Emirates", 
       country_code: "AE", 
       lat: 25.2528, 
       lon: 55.3644, 
-      timezone: "Asia/Dubai"
+      alt: 19,
+      timezone: "Asia/Dubai",
+      iata_code: "DXB",
+      icao_code: "OMDB"
     },
     { 
+      id: "ICN",
       name: "Incheon International Airport", 
-      iata_code: "ICN", 
-      icao_code: "RKSI", 
+      iata: "ICN", 
+      icao: "RKSI", 
       city: "Seoul", 
       country: "South Korea", 
       country_code: "KR", 
       lat: 37.4692, 
       lon: 126.4505, 
-      timezone: "Asia/Seoul"
+      alt: 23,
+      timezone: "Asia/Seoul",
+      iata_code: "ICN",
+      icao_code: "RKSI"
     },
     { 
+      id: "DOH",
       name: "Hamad International Airport", 
-      iata_code: "DOH", 
-      icao_code: "OTHH", 
+      iata: "DOH", 
+      icao: "OTHH", 
       city: "Doha", 
       country: "Qatar", 
       country_code: "QA", 
       lat: 25.2608, 
       lon: 51.6138, 
-      timezone: "Asia/Qatar"
+      alt: 13,
+      timezone: "Asia/Qatar",
+      iata_code: "DOH",
+      icao_code: "OTHH"
     },
     { 
+      id: "HND",
       name: "Tokyo Haneda Airport", 
-      iata_code: "HND", 
-      icao_code: "RJTT", 
+      iata: "HND", 
+      icao: "RJTT", 
       city: "Tokyo", 
       country: "Japan", 
       country_code: "JP", 
       lat: 35.5493, 
       lon: 139.7798, 
-      timezone: "Asia/Tokyo"
-    }
-  ];
-
-  const mockAirlines: Airline[] = [
-    { 
-      name: "Emirates", 
-      iata_code: "EK", 
-      icao_code: "UAE", 
-      country_name: "United Arab Emirates", 
-      country_code: "AE", 
-      callsign: "EMIRATES" 
-    },
-    { 
-      name: "Singapore Airlines", 
-      iata_code: "SQ", 
-      icao_code: "SIA", 
-      country_name: "Singapore", 
-      country_code: "SG", 
-      callsign: "SINGAPORE" 
-    },
-    { 
-      name: "Qatar Airways", 
-      iata_code: "QR", 
-      icao_code: "QTR", 
-      country_name: "Qatar", 
-      country_code: "QA", 
-      callsign: "QATARI" 
-    },
-    { 
-      name: "Garuda Indonesia", 
-      iata_code: "GA", 
-      icao_code: "GIA", 
-      country_name: "Indonesia", 
-      country_code: "ID", 
-      callsign: "INDONESIA" 
-    },
-    { 
-      name: "Cathay Pacific", 
-      iata_code: "CX", 
-      icao_code: "CPA", 
-      country_name: "Hong Kong", 
-      country_code: "HK", 
-      callsign: "CATHAY" 
-    },
-    { 
-      name: "ANA", 
-      iata_code: "NH", 
-      icao_code: "ANA", 
-      country_name: "Japan", 
-      country_code: "JP", 
-      callsign: "ALL NIPPON" 
+      alt: 21,
+      timezone: "Asia/Tokyo",
+      iata_code: "HND",
+      icao_code: "RJTT"
     }
   ];
 

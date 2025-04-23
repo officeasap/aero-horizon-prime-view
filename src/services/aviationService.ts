@@ -4,11 +4,9 @@ export type {
   Airport,
   Airline,
   Flight,
-  Route
+  Route,
+  SuggestResult
 } from './shared/types';
-
-// We need to manually define FlightStatus, FlightTrackingResult, and SearchResult 
-// since they don't exist in shared/types.ts
 
 // Basic FlightStatus type definition
 export type FlightStatus = 'scheduled' | 'active' | 'landed' | 'delayed' | 'cancelled' | 'incident' | 'diverted' | 'unknown';
@@ -60,4 +58,12 @@ export const getUserPosition = (): Promise<{ lat: number; lng: number }> => {
       { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
     );
   });
+};
+
+// Stub for the missing fetchArrivalsDepartures function
+export const fetchArrivalsDepartures = async (type: 'arrivals' | 'departures', params: Record<string, string>) => {
+  console.log(`Fetching ${type} with params:`, params);
+  // In a real app, this would make an API call
+  // For now, return mock data
+  return [];
 };

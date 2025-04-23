@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { SuggestResult } from '@/services/aviationService';
@@ -144,14 +143,14 @@ export const RouteMap: React.FC<RouteMapProps> = ({
           map.current.removeSource('airports');
         }
         
-        // Get coordinates
+        // Get coordinates - support both naming conventions
         const fromCoords = [
-          Number(from.longitude || from.lon || 0), 
-          Number(from.latitude || from.lat || 0)
+          Number(from.lon || from.longitude || 0), 
+          Number(from.lat || from.latitude || 0)
         ];
         const toCoords = [
-          Number(to.longitude || to.lon || 0), 
-          Number(to.latitude || to.lat || 0)
+          Number(to.lon || to.longitude || 0), 
+          Number(to.lat || to.latitude || 0)
         ];
         
         // If we don't have valid coordinates, try to geocode using the airport names

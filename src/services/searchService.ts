@@ -14,8 +14,10 @@ export interface SuggestResult {
   country_code?: string;
   lat?: number;
   lon?: number;
+  longitude?: number;
+  latitude?: number;
   timezone?: string;
-  type: 'airport' | 'airline';
+  type: 'airport' | 'airline' | 'city';
 }
 
 export async function fetchSuggestions(query: string): Promise<SuggestResult[]> {
@@ -36,6 +38,8 @@ export async function fetchSuggestions(query: string): Promise<SuggestResult[]> 
     country_code: a.country_code,
     lat: a.lat,
     lon: a.lon,
+    longitude: a.lon,
+    latitude: a.lat,
     timezone: a.timezone,
     type: 'airport' as const
   }));

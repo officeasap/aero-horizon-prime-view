@@ -132,7 +132,7 @@ const AutocompleteSearch: React.FC<AutocompleteSearchProps> = ({
                   item.type === 'city' && "bg-green-500/20 text-green-400",
                   item.type === 'airline' && "bg-purple/20 text-purple-400"
                 )}>
-                  {item.type === 'airport' ? 'A' : item.type === 'city' ? 'C' : 'L'}
+                  {item.type === 'airport' ? 'A' : item.type === 'airline' ? 'L' : 'C'}
                 </div>
                 <div>
                   <div className="font-medium">
