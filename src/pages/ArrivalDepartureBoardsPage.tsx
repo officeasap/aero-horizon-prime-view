@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -113,29 +114,47 @@ const ArrivalDepartureBoardsPage: React.FC = () => {
   const handleSearch = async () => {
     setIsLoading(true);
     try {
-      const params: Record<string, string> = {};
-      
-      if (airport?.iata_code) {
-        params.iata = airport.iata_code;
-      }
-      
-      const flightsData = await fetchArrivalsDepartures(type, params);
-      
-      if (flightsData.length === 0) {
+      if (!airport?.iata_code) {
         toast({
-          title: "No flights found",
-          description: `No flights found for ${airport?.name}`,
+          title: "Airport code required",
+          description: "Please enter a valid airport code",
           variant: "destructive",
         });
+        setIsLoading(false);
         return;
       }
       
-      // setFlights(flightsData);
-      setFilteredFlights(flightsData as any);
+      const flightsData = await fetchArrivalsDepartures(airport.iata_code);
+      
+      // Get the right array based on the current tab
+      const flightsList = type === 'arrivals' ? flightsData.arrivals : flightsData.departures;
+      
+      if (flightsList.length === 0) {
+        toast({
+          title: "No flights found",
+          description: `No ${type} found for ${airport?.name || airport?.iata_code}`,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+      
+      // Transform the API data into FlightData format
+      const formattedFlights = flightsList.map((flight: any) => ({
+        id: flight.flight_number,
+        airline: { name: 'Garuda Indonesia' }, // Mock airline data
+        destination: type === 'arrivals' ? flight.dep_iata : flight.arr_iata,
+        time: type === 'arrivals' ? flight.scheduled_arrival : flight.scheduled_departure,
+        gate: type === 'arrivals' ? 'A1' : flight.gate || 'B2',
+        status: flight.status
+      }));
+      
+      setFlights(formattedFlights);
+      setFilteredFlights(formattedFlights);
       
       toast({
         title: "Flights found",
-        description: `Found ${flightsData.length} flights for ${airport?.name}`,
+        description: `Found ${formattedFlights.length} ${type} for ${airport?.name || airport?.iata_code}`,
       });
     } catch (error) {
       console.error("Error searching for flights:", error);

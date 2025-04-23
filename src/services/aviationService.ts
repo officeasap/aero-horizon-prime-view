@@ -1,12 +1,12 @@
+
 import { fetchAirports, fetchAirportByIATA, fetchNearbyAirports, searchAirportsByRegion } from './airportService';
-import { fetchAirlines } from './airlineService';
+import { fetchAirlines as fetchAirlinesFromService } from './airlineService';
 import { Flight, Airport, Airline, SuggestResult } from './shared/types';
 
 // Re-export types from shared/types
 export type { Airport, Airline, Flight, SuggestResult };
 
-// Export fetchAirportByIATA, fetchSuggestions, fetchMostTrackedFlights, fetchFlightStatus, fetchNearbyAircraft, fetchLiveFlights, 
-// fetchFlightSchedules, fetchFlightsByStatus, and other functions that are imported by other components
+// Export all required functions
 export { fetchAirportByIATA, fetchNearbyAirports, fetchAirports };
 
 // Mock function for fetchArrivalsDepartures
@@ -15,42 +15,42 @@ export const fetchArrivalsDepartures = async (airportCode: string) => {
     // This is a mock function that would normally call an aviation API
     console.log(`Fetching arrivals and departures for airport code: ${airportCode}`);
     
-    // For demo purposes, return mock data
+    // For demo purposes, return mock data with CGK
     return {
       arrivals: [
         {
-          flight_number: 'AA123',
-          departure_airport: 'LAX',
-          arrival_airport: airportCode,
+          flight_number: 'GA123',
+          dep_iata: 'SIN',
+          arr_iata: airportCode,
           status: 'On Time',
-          scheduled_arrival: '2023-04-23T13:45:00',
-          actual_arrival: '2023-04-23T13:43:00',
+          scheduled_arrival: '2025-04-23T13:45:00',
+          actual_arrival: '2025-04-23T13:43:00',
         },
         {
-          flight_number: 'UA456',
-          departure_airport: 'ORD',
-          arrival_airport: airportCode,
+          flight_number: 'SQ456',
+          dep_iata: 'KUL',
+          arr_iata: airportCode,
           status: 'Delayed',
-          scheduled_arrival: '2023-04-23T14:30:00',
-          actual_arrival: '2023-04-23T15:15:00',
+          scheduled_arrival: '2025-04-23T14:30:00',
+          actual_arrival: '2025-04-23T15:15:00',
           delay: 45,
         }
       ],
       departures: [
         {
-          flight_number: 'DL789',
-          departure_airport: airportCode,
-          arrival_airport: 'ATL',
+          flight_number: 'GA789',
+          dep_iata: airportCode,
+          arr_iata: 'DPS',
           status: 'On Time',
-          scheduled_departure: '2023-04-23T16:20:00',
-          actual_departure: '2023-04-23T16:18:00',
+          scheduled_departure: '2025-04-23T16:20:00',
+          actual_departure: '2025-04-23T16:18:00',
         },
         {
-          flight_number: 'WN321',
-          departure_airport: airportCode,
-          arrival_airport: 'DEN',
+          flight_number: 'QZ321',
+          dep_iata: airportCode,
+          arr_iata: 'SUB',
           status: 'Boarding',
-          scheduled_departure: '2023-04-23T17:00:00',
+          scheduled_departure: '2025-04-23T17:00:00',
         }
       ]
     };
@@ -68,9 +68,9 @@ export const searchFlights = async (
   // Mock flight data for demonstration purposes
   const mockFlights: Flight[] = [
     {
-      flight_number: 'UA123',
-      departure_airport: departureAirportCode,
-      arrival_airport: arrivalAirportCode,
+      flight_number: 'GA123',
+      dep_iata: departureAirportCode,
+      arr_iata: arrivalAirportCode,
       status: 'On Time',
       scheduled_departure: `${date}T08:00:00`,
       scheduled_arrival: `${date}T10:00:00`,
@@ -78,9 +78,9 @@ export const searchFlights = async (
       actual_arrival: `${date}T09:55:00`,
     },
     {
-      flight_number: 'AA456',
-      departure_airport: departureAirportCode,
-      arrival_airport: arrivalAirportCode,
+      flight_number: 'QZ456',
+      dep_iata: departureAirportCode,
+      arr_iata: arrivalAirportCode,
       status: 'Delayed',
       scheduled_departure: `${date}T12:00:00`,
       scheduled_arrival: `${date}T14:00:00`,
@@ -111,7 +111,7 @@ export const getAirportDetails = async (airportCode: string): Promise<Airport | 
 export const getAirlines = async (searchQuery: string): Promise<Airline[]> => {
   try {
     // Call the airline service to fetch airlines based on the search query
-    const airlines = await fetchAirlines({ search: searchQuery });
+    const airlines = await fetchAirlinesFromService(searchQuery);
     return airlines;
   } catch (error) {
     console.error('Error fetching airlines:', error);
@@ -140,46 +140,43 @@ export const getAirportsByLocation = async (latitude: number, longitude: number)
   }
 };
 
-// Export fetchAirportByIATA directly
-export { fetchAirportByIATA };
-
-// Add missing fetchSuggestions function
+// Add fetchSuggestions function
 export const fetchSuggestions = async (query: string): Promise<SuggestResult[]> => {
   console.log(`Fetching suggestions for query: ${query}`);
-  // Mock data
+  // Mock data with CGK airport
   const mockSuggestions: SuggestResult[] = [
     {
-      name: "London Heathrow Airport",
-      city: "London",
-      iata_code: "LHR",
-      icao_code: "EGLL",
-      country_code: "GB",
+      name: "Soekarno–Hatta International Airport",
+      city: "Jakarta",
+      iata_code: "CGK",
+      icao_code: "WIII",
+      country_code: "ID",
       type: "airport",
-      lat: 51.4775,
-      lon: -0.4614,
+      lat: -6.1256,
+      lon: 106.6558,
     },
     {
-      name: "London Gatwick Airport",
-      city: "London",
-      iata_code: "LGW",
-      icao_code: "EGKK",
-      country_code: "GB",
+      name: "Halim Perdanakusuma International Airport",
+      city: "Jakarta",
+      iata_code: "HLP",
+      icao_code: "WIHH",
+      country_code: "ID",
       type: "airport",
-      lat: 51.1481,
-      lon: -0.1903,
+      lat: -6.2666,
+      lon: 106.8906,
     },
     {
-      name: "London",
-      country_code: "GB",
+      name: "Jakarta",
+      country_code: "ID",
       type: "city",
-      lat: 51.5074,
-      lon: -0.1278,
+      lat: -6.1751,
+      lon: 106.8650,
     },
     {
-      name: "British Airways",
-      iata_code: "BA",
-      icao_code: "BAW",
-      country_code: "GB",
+      name: "Garuda Indonesia",
+      iata_code: "GA",
+      icao_code: "GIA",
+      country_code: "ID",
       type: "airline",
     }
   ];
@@ -195,44 +192,44 @@ export const fetchSuggestions = async (query: string): Promise<SuggestResult[]> 
 export const fetchFlightStatus = async (flightId: string): Promise<Flight | null> => {
   console.log(`Fetching flight status for ID: ${flightId}`);
   
-  // Mock flight status data
+  // Mock flight status data with CGK
   const mockFlight: Flight = {
     flight_number: flightId,
     flight_iata: flightId,
     flight_icao: `${flightId}X`,
     status: 'active',
-    dep_iata: 'JFK',
-    dep_icao: 'KJFK',
-    dep_name: 'John F. Kennedy International Airport',
-    dep_city: 'New York',
-    dep_country: 'United States',
-    arr_iata: 'LAX',
-    arr_icao: 'KLAX',
-    arr_name: 'Los Angeles International Airport',
-    arr_city: 'Los Angeles',
-    arr_country: 'United States',
-    airline_name: 'Sample Airlines',
-    airline_iata: 'SA',
-    airline_icao: 'SAL',
-    dep_time: '2023-04-23T08:00:00',
-    arr_time: '2023-04-23T11:15:00',
-    dep_time_utc: '2023-04-23T12:00:00Z',
-    arr_time_utc: '2023-04-23T15:15:00Z',
-    dep_terminal: 'T4',
+    dep_iata: 'CGK',
+    dep_icao: 'WIII',
+    dep_name: 'Soekarno–Hatta International Airport',
+    dep_city: 'Jakarta',
+    dep_country: 'Indonesia',
+    arr_iata: 'DPS',
+    arr_icao: 'WADD',
+    arr_name: 'Ngurah Rai International Airport',
+    arr_city: 'Denpasar',
+    arr_country: 'Indonesia',
+    airline_name: 'Garuda Indonesia',
+    airline_iata: 'GA',
+    airline_icao: 'GIA',
+    dep_time: '2025-04-23T08:00:00',
+    arr_time: '2025-04-23T11:15:00',
+    dep_time_utc: '2025-04-23T12:00:00Z',
+    arr_time_utc: '2025-04-23T15:15:00Z',
+    dep_terminal: 'T3',
     dep_gate: 'G12',
     arr_terminal: 'T1',
     arr_gate: 'B5',
     dep_delayed: 15,
     arr_delayed: 10,
-    dep_actual: '2023-04-23T08:15:00',
-    arr_actual: '2023-04-23T11:25:00',
-    dep_estimated: '2023-04-23T08:15:00',
-    arr_estimated: '2023-04-23T11:25:00',
+    dep_actual: '2025-04-23T08:15:00',
+    arr_actual: '2025-04-23T11:25:00',
+    dep_estimated: '2025-04-23T08:15:00',
+    arr_estimated: '2025-04-23T11:25:00',
     duration: 195,
     aircraft_icao: 'B738',
     hex: 'A1B2C3',
-    lat: 38.5,
-    lng: -95.7,
+    lat: -3.5,
+    lng: 110.7,
     dir: 270,
     alt: 35000,
     speed: 480,
@@ -246,16 +243,17 @@ export const fetchFlightStatus = async (flightId: string): Promise<Flight | null
 export const fetchMostTrackedFlights = async (): Promise<Flight[]> => {
   console.log('Fetching most tracked flights');
   
-  // Mock data for tracked flights
+  // Mock data for tracked flights with CGK
   const mockFlights: Flight[] = Array(8).fill(null).map((_, i) => ({
-    flight_number: `SA${1000 + i}`,
-    flight_iata: `SA${1000 + i}`,
-    flight_icao: `SAL${1000 + i}`,
+    flight_number: `GA${1000 + i}`,
+    flight_iata: `GA${1000 + i}`,
+    flight_icao: `GIA${1000 + i}`,
     status: i % 3 === 0 ? 'on-ground' : 'active',
-    dep_country: ['United States', 'United Kingdom', 'Germany', 'France', 'Spain'][i % 5],
+    dep_iata: 'CGK',
+    dep_country: 'Indonesia',
     hex: `A${i}B${i}C${i}`,
-    lat: 35 + (i * 0.5),
-    lng: -100 + (i * 2),
+    lat: -5 + (i * 0.5),
+    lng: 105 + (i * 2),
     alt: 30000 + (i * 1000),
     speed: 400 + (i * 20),
     dir: (i * 45) % 360,
@@ -278,9 +276,9 @@ export const fetchNearbyAircraft = async (lat: number, lng: number, radius: numb
     const lngChange = distance * Math.sin(angle) / (111 * Math.cos((lat + latChange) * Math.PI / 180));
     
     return {
-      flight_number: `AC${2000 + i}`,
-      flight_iata: `AC${2000 + i}`,
-      flight_icao: `ACR${2000 + i}`,
+      flight_number: `GA${2000 + i}`,
+      flight_iata: `GA${2000 + i}`,
+      flight_icao: `GIA${2000 + i}`,
       status: 'active',
       hex: `D${i}E${i}F${i}`,
       lat: lat + latChange,
@@ -299,36 +297,36 @@ export const fetchNearbyAircraft = async (lat: number, lng: number, radius: numb
 export const fetchLiveFlights = async (filters: { status?: string, delayed?: boolean, flight_iata?: string, limit?: string } = {}): Promise<Flight[]> => {
   console.log('Fetching live flights with filters:', filters);
   
-  // Mock data for live flights
+  // Mock data for live flights with CGK
   const mockFlights: Flight[] = Array(10).fill(null).map((_, i) => {
     const isDelayed = i % 3 === 0;
     const delayTime = isDelayed ? 10 + (i * 5) : 0;
     
     return {
-      flight_number: `FL${3000 + i}`,
-      flight_iata: `FL${3000 + i}`,
-      flight_icao: `FLT${3000 + i}`,
+      flight_number: `GA${3000 + i}`,
+      flight_iata: `GA${3000 + i}`,
+      flight_icao: `GIA${3000 + i}`,
       status: isDelayed ? 'delayed' : ['active', 'scheduled', 'landed'][i % 3],
-      dep_iata: ['JFK', 'LAX', 'ORD', 'ATL', 'DFW'][i % 5],
-      arr_iata: ['LHR', 'CDG', 'FRA', 'AMS', 'MAD'][i % 5],
-      dep_name: `${['New York', 'Los Angeles', 'Chicago', 'Atlanta', 'Dallas'][i % 5]} Airport`,
-      arr_name: `${['London', 'Paris', 'Frankfurt', 'Amsterdam', 'Madrid'][i % 5]} Airport`,
-      dep_city: ['New York', 'Los Angeles', 'Chicago', 'Atlanta', 'Dallas'][i % 5],
-      arr_city: ['London', 'Paris', 'Frankfurt', 'Amsterdam', 'Madrid'][i % 5],
-      airline_name: ['Sample Air', 'Test Airways', 'Mock Airlines', 'Example Air', 'Demo Flights'][i % 5],
+      dep_iata: 'CGK',
+      arr_iata: ['DPS', 'SUB', 'MES', 'UPG', 'BDO'][i % 5],
+      dep_name: 'Soekarno–Hatta International Airport',
+      arr_name: `${['Denpasar', 'Surabaya', 'Medan', 'Makassar', 'Bandung'][i % 5]} Airport`,
+      dep_city: 'Jakarta',
+      arr_city: ['Denpasar', 'Surabaya', 'Medan', 'Makassar', 'Bandung'][i % 5],
+      airline_name: 'Garuda Indonesia',
       dep_time: `2025-04-23T${(8 + i) % 24}:00:00`,
       dep_time_utc: `2025-04-23T${(12 + i) % 24}:00:00Z`,
       arr_time: `2025-04-23T${(12 + i) % 24}:00:00`,
       arr_time_utc: `2025-04-23T${(16 + i) % 24}:00:00Z`,
-      dep_terminal: `T${1 + (i % 5)}`,
+      dep_terminal: `T${1 + (i % 3)}`,
       dep_gate: `G${10 + i}`,
       dep_delayed: isDelayed ? delayTime : 0,
       arr_delayed: isDelayed ? delayTime - 5 : 0,
       dep_estimated: isDelayed ? `2025-04-23T${(8 + i) % 24}:${delayTime}:00` : undefined,
       dep_actual: `2025-04-23T${(8 + i) % 24}:${isDelayed ? delayTime : 0}:00`,
       hex: `A${i}B${i}C${i}`,
-      lat: 35 + (i * 0.5),
-      lng: -100 + (i * 2),
+      lat: -5 + (i * 0.5),
+      lng: 105 + (i * 2),
       alt: 30000 + (i * 1000),
       speed: 400 + (i * 20),
       dir: (i * 45) % 360,
@@ -373,13 +371,15 @@ export const fetchLiveFlights = async (filters: { status?: string, delayed?: boo
 };
 
 export const fetchFlightSchedules = async (
-  airportCode: string, 
-  date: string = new Date().toISOString().split('T')[0], 
-  type: 'departures' | 'arrivals' = 'departures'
+  params: Record<string, string> = {}
 ): Promise<Flight[]> => {
+  const airportCode = params.dep_iata || params.arr_iata || 'CGK';
+  const date = params.date || new Date().toISOString().split('T')[0];
+  const type = params.arr_iata ? 'arrivals' : 'departures';
+  
   console.log(`Fetching ${type} for airport ${airportCode} on ${date}`);
   
-  // Mock flight schedules
+  // Mock flight schedules with CGK
   const mockSchedules: Flight[] = Array(12).fill(null).map((_, i) => {
     const isDelayed = i % 4 === 0;
     const delayTime = isDelayed ? 15 + (i * 3) : 0;
@@ -387,17 +387,17 @@ export const fetchFlightSchedules = async (
     const minute = (i % 2) * 30;
     
     return {
-      flight_number: `SC${4000 + i}`,
-      flight_iata: `SC${4000 + i}`,
-      flight_icao: `SCH${4000 + i}`,
+      flight_number: `GA${4000 + i}`,
+      flight_iata: `GA${4000 + i}`,
+      flight_icao: `GIA${4000 + i}`,
       status: isDelayed ? 'delayed' : ['scheduled', 'active', 'boarding'][i % 3],
-      dep_iata: type === 'departures' ? airportCode : ['JFK', 'LAX', 'ORD', 'ATL', 'DFW', 'SFO'][i % 6],
-      arr_iata: type === 'arrivals' ? airportCode : ['LHR', 'CDG', 'FRA', 'AMS', 'MAD', 'DXB'][i % 6],
-      dep_name: type === 'departures' ? `${airportCode} Airport` : `${['New York', 'Los Angeles', 'Chicago', 'Atlanta', 'Dallas', 'San Francisco'][i % 6]} Airport`,
-      arr_name: type === 'arrivals' ? `${airportCode} Airport` : `${['London', 'Paris', 'Frankfurt', 'Amsterdam', 'Madrid', 'Dubai'][i % 6]} Airport`,
-      dep_city: type === 'departures' ? 'Current City' : ['New York', 'Los Angeles', 'Chicago', 'Atlanta', 'Dallas', 'San Francisco'][i % 6],
-      arr_city: type === 'arrivals' ? 'Current City' : ['London', 'Paris', 'Frankfurt', 'Amsterdam', 'Madrid', 'Dubai'][i % 6],
-      airline_name: ['World Air', 'Global Airways', 'Intercontinental', 'Express Flights', 'Premium Air'][i % 5],
+      dep_iata: type === 'departures' ? airportCode : ['SIN', 'KUL', 'BKK', 'HKG', 'MNL', 'HND'][i % 6],
+      arr_iata: type === 'arrivals' ? airportCode : ['DPS', 'SUB', 'MES', 'UPG', 'BDO', 'PLM'][i % 6],
+      dep_name: type === 'departures' ? 'Soekarno–Hatta International Airport' : `${['Singapore', 'Kuala Lumpur', 'Bangkok', 'Hong Kong', 'Manila', 'Tokyo'][i % 6]} Airport`,
+      arr_name: type === 'arrivals' ? 'Soekarno–Hatta International Airport' : `${['Denpasar', 'Surabaya', 'Medan', 'Makassar', 'Bandung', 'Palembang'][i % 6]} Airport`,
+      dep_city: type === 'departures' ? 'Jakarta' : ['Singapore', 'Kuala Lumpur', 'Bangkok', 'Hong Kong', 'Manila', 'Tokyo'][i % 6],
+      arr_city: type === 'arrivals' ? 'Jakarta' : ['Denpasar', 'Surabaya', 'Medan', 'Makassar', 'Bandung', 'Palembang'][i % 6],
+      airline_name: 'Garuda Indonesia',
       dep_time: `${date}T${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`,
       arr_time: `${date}T${(hour + 3).toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`,
       dep_terminal: `T${1 + (i % 3)}`,
@@ -409,9 +409,6 @@ export const fetchFlightSchedules = async (
   
   return mockSchedules;
 };
-
-// Export fetchNearbyAirports directly
-export { fetchNearbyAirports };
 
 // Add getUserPosition function
 export const getUserPosition = (): Promise<{lat: number, lng: number}> => {
@@ -436,7 +433,7 @@ export const getUserPosition = (): Promise<{lat: number, lng: number}> => {
   });
 };
 
-// Add fetchFlightsByStatus function that was missing
+// Add fetchFlightsByStatus function
 export const fetchFlightsByStatus = async (status: string, limit: number = 10): Promise<Flight[]> => {
   console.log(`Fetching flights with status: ${status}, limit: ${limit}`);
   
@@ -452,17 +449,17 @@ export const fetchFlightsByStatus = async (status: string, limit: number = 10): 
 // Add a helper function for creating mock flights
 const getMockFlights = (count: number): Flight[] => {
   return Array(count).fill(null).map((_, i) => ({
-    flight_number: `MF${1000 + i}`,
-    flight_iata: `MF${1000 + i}`,
-    flight_icao: `MFL${1000 + i}`,
+    flight_number: `GA${1000 + i}`,
+    flight_iata: `GA${1000 + i}`,
+    flight_icao: `GIA${1000 + i}`,
     status: ['active', 'scheduled', 'landed', 'delayed'][i % 4],
-    dep_iata: ['JFK', 'LAX', 'ORD', 'ATL', 'DFW'][i % 5],
-    arr_iata: ['LHR', 'CDG', 'FRA', 'AMS', 'MAD'][i % 5],
-    dep_name: `${['New York', 'Los Angeles', 'Chicago', 'Atlanta', 'Dallas'][i % 5]} Airport`,
-    arr_name: `${['London', 'Paris', 'Frankfurt', 'Amsterdam', 'Madrid'][i % 5]} Airport`,
-    dep_city: ['New York', 'Los Angeles', 'Chicago', 'Atlanta', 'Dallas'][i % 5],
-    arr_city: ['London', 'Paris', 'Frankfurt', 'Amsterdam', 'Madrid'][i % 5],
-    airline_name: ['Mock Airlines', 'Test Airways', 'Sample Air', 'Global Flights', 'Sky Express'][i % 5],
+    dep_iata: 'CGK',
+    arr_iata: ['DPS', 'SUB', 'MES', 'UPG', 'BDO'][i % 5],
+    dep_name: 'Soekarno–Hatta International Airport',
+    arr_name: `${['Denpasar', 'Surabaya', 'Medan', 'Makassar', 'Bandung'][i % 5]} Airport`,
+    dep_city: 'Jakarta',
+    arr_city: ['Denpasar', 'Surabaya', 'Medan', 'Makassar', 'Bandung'][i % 5],
+    airline_name: 'Garuda Indonesia',
     dep_time: `2025-04-23T${(8 + i) % 24}:00:00`,
     dep_time_utc: `2025-04-23T${(12 + i) % 24}:00:00Z`,
     arr_time: `2025-04-23T${(12 + i) % 24}:00:00`,
@@ -470,8 +467,8 @@ const getMockFlights = (count: number): Flight[] => {
     dep_terminal: `T${1 + (i % 3)}`,
     dep_gate: `G${10 + i}`,
     hex: `D${i}E${i}F${i}`,
-    lat: 35 + (i * 0.5),
-    lng: -100 + (i * 2),
+    lat: -5 + (i * 0.5),
+    lng: 105 + (i * 2),
     alt: 30000 + (i * 1000),
     speed: 400 + (i * 20),
     dir: (i * 45) % 360,

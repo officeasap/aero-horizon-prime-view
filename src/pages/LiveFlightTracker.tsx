@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import FlightTracker from '@/components/FlightTracker';
 import FlightMap from '@/components/FlightMap';
@@ -12,14 +12,17 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Button } from '@/components/ui/button';
-import { fetchNearbyAircraft } from '@/services/aviationService';
+import { fetchNearbyAircraft, getUserPosition } from '@/services/aviationService';
 import { toast } from 'sonner';
 
 const LiveFlightTracker = () => {
   const handleNearbySearch = async () => {
     try {
       toast.info("Finding aircraft near your location...");
-      await fetchNearbyAircraft();
+      // Get user position first
+      const position = await getUserPosition();
+      await fetchNearbyAircraft(position.lat, position.lng, 100);
+      toast.success("Found nearby aircraft");
       // The map and list components will update with the new data
     } catch (error) {
       toast.error("Could not access your location or find nearby aircraft");

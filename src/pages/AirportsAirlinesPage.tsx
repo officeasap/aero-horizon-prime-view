@@ -1,23 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { PlaneTakeoff, Building2, Loader2 } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { MapPin } from 'lucide-react';
-import { fetchAirports, fetchAirlines } from '@/services/aviationService';
-import type { Airport, Airline } from '@/services/shared/types';
-import SearchBar from '@/components/airports-airlines/SearchBar';
-import AirportTable from '@/components/airports-airlines/AirportTable';
-import AirlineTable from '@/components/airports-airlines/AirlineTable';
-import CustomPagination from '@/components/airports-airlines/CustomPagination';
-import AirportDialog from '@/components/airports-airlines/AirportDialog';
-import AirlineDialog from '@/components/airports-airlines/AirlineDialog';
-// Fix Toast and missing ArrowUpDown import:
-import { useToast, toast } from "@/hooks/use-toast";
-import { ArrowUpDown } from "lucide-react";
+import { fetchAirports } from '@/services/aviationService';
+
+const fetchAirportsWithParams = async (params: Record<string, string>) => {
+  try {
+    return await fetchAirports(params);
+  } catch (error) {
+    console.error("Error fetching airports:", error);
+    return [];
+  }
+};
 
 const ITEMS_PER_PAGE = 25;
 
@@ -93,7 +84,7 @@ const AirportsAirlinesPage = () => {
         params.search = search;
       }
 
-      const airportData = await fetchAirports(params);
+      const airportData = await fetchAirportsWithParams(params);
 
       if (airportData && airportData.length > 0) {
         setAirports(airportData);

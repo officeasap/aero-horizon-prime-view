@@ -27,6 +27,10 @@ const FlightMap: React.FC = () => {
   const [selectedAircraft, setSelectedAircraft] = useState<Flight | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [mapMode, setMapMode] = useState<'global' | 'local'>('global');
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number}>({
+    lat: -6.1256,  // Default to Jakarta/CGK
+    lng: 106.6558
+  });
 
   // Function to calculate aircraft rotation based on direction
   const getRotation = (direction: number | undefined) => {
@@ -116,7 +120,7 @@ const FlightMap: React.FC = () => {
       
       // Either fetch global data or nearby aircraft
       const data = useNearby 
-        ? await fetchNearbyAircraft() 
+        ? await fetchNearbyAircraft(userLocation.lat, userLocation.lng, 100) 
         : await fetchMostTrackedFlights();
       
       if (data.length === 0) {
@@ -190,8 +194,8 @@ const FlightMap: React.FC = () => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/dark-v11',
-      center: [0, 20],
-      zoom: 2,
+      center: [106.6558, -6.1256], // Center on Jakarta/CGK
+      zoom: 8,
       projection: 'globe',
       attributionControl: false // Remove attribution control with Mapbox logo
     });
