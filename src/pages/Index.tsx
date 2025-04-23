@@ -1,10 +1,9 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BackgroundAircraft from '@/components/BackgroundAircraft';
 import VideoBackground from '@/components/VideoBackground';
-import { Plane, Calendar, Building, Map, AlertTriangle, MapPin, Cloud, Clock, Phone } from 'lucide-react';
+import { Plane, Calendar, Building, Map, AlertTriangle, MapPin, Cloud, Clock, Phone, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AboutSection from '@/components/AboutSection';
 import CurrencyConverter from '@/components/CurrencyConverter';
@@ -50,6 +49,13 @@ const Index = () => {
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
                   <Building className="h-4 w-4" />
                   Airport Information
+                </Button>
+              </a>
+              
+              <a href="/aviation-info" rel="noopener noreferrer">
+                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
+                  <BookOpen className="h-4 w-4" />
+                  Aviation Info
                 </Button>
               </a>
               
