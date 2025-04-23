@@ -100,10 +100,15 @@ export interface Airport {
   alt: number;
   timezone: string;
   
+  // Additional properties for compatibility
   iata_code?: string;
   icao_code?: string;
   country_code?: string;
   distance?: number;
+  
+  // Support for backwards compatibility with longitude/latitude naming
+  longitude?: number;
+  latitude?: number;
 }
 
 export interface Airline {
@@ -199,4 +204,3 @@ export interface SuggestResult {
   longitude?: number;
   country?: string;
 }
-
