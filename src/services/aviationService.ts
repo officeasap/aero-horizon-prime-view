@@ -5,6 +5,10 @@ import { Flight, Airport, Airline, SuggestResult } from './shared/types';
 // Re-export types from shared/types
 export type { Airport, Airline, Flight, SuggestResult };
 
+// Export fetchAirportByIATA, fetchSuggestions, fetchMostTrackedFlights, fetchFlightStatus, fetchNearbyAircraft, fetchLiveFlights, 
+// fetchFlightSchedules, fetchFlightsByStatus, and other functions that are imported by other components
+export { fetchAirportByIATA, fetchNearbyAirports, fetchAirports };
+
 // Mock function for fetchArrivalsDepartures
 export const fetchArrivalsDepartures = async (airportCode: string) => {
   try {
@@ -292,7 +296,7 @@ export const fetchNearbyAircraft = async (lat: number, lng: number, radius: numb
   return mockAircraft;
 };
 
-export const fetchLiveFlights = async (filters: { status?: string, delayed?: boolean } = {}): Promise<Flight[]> => {
+export const fetchLiveFlights = async (filters: { status?: string, delayed?: boolean, flight_iata?: string, limit?: string } = {}): Promise<Flight[]> => {
   console.log('Fetching live flights with filters:', filters);
   
   // Mock data for live flights
@@ -335,23 +339,34 @@ export const fetchLiveFlights = async (filters: { status?: string, delayed?: boo
   
   // Apply filters if provided
   if (filters) {
-    return mockFlights.filter(flight => {
-      // Filter by status
-      if (filters.status && flight.status !== filters.status) {
-        return false;
+    let filtered = [...mockFlights];
+    
+    // Filter by status
+    if (filters.status) {
+      filtered = filtered.filter(flight => flight.status === filters.status);
+    }
+    
+    // Filter by delayed status
+    if (filters.delayed !== undefined) {
+      const isDelayed = (flight: Flight) => (flight.dep_delayed && flight.dep_delayed > 0) || 
+                       (flight.arr_delayed && flight.arr_delayed > 0);
+      filtered = filtered.filter(flight => filters.delayed === isDelayed(flight));
+    }
+    
+    // Filter by flight IATA code
+    if (filters.flight_iata) {
+      filtered = filtered.filter(flight => flight.flight_iata === filters.flight_iata);
+    }
+    
+    // Apply limit if provided
+    if (filters.limit) {
+      const limit = parseInt(filters.limit);
+      if (!isNaN(limit)) {
+        filtered = filtered.slice(0, limit);
       }
-      
-      // Filter by delayed status
-      if (filters.delayed !== undefined) {
-        const isDelayed = (flight.dep_delayed && flight.dep_delayed > 0) || 
-                          (flight.arr_delayed && flight.arr_delayed > 0);
-        if (filters.delayed !== isDelayed) {
-          return false;
-        }
-      }
-      
-      return true;
-    });
+    }
+    
+    return filtered;
   }
   
   return mockFlights;
@@ -426,8 +441,12 @@ export const fetchFlightsByStatus = async (status: string, limit: number = 10): 
   console.log(`Fetching flights with status: ${status}, limit: ${limit}`);
   
   // Use fetchLiveFlights with status filter
-  const flights = await fetchLiveFlights({ status });
-  return flights.slice(0, limit);
+  const flights = await fetchLiveFlights({ 
+    status: status,
+    limit: limit.toString()
+  });
+  
+  return flights;
 };
 
 // Add a helper function for creating mock flights
@@ -437,8 +456,6 @@ const getMockFlights = (count: number): Flight[] => {
     flight_iata: `MF${1000 + i}`,
     flight_icao: `MFL${1000 + i}`,
     status: ['active', 'scheduled', 'landed', 'delayed'][i % 4],
-    departure_airport: ['JFK', 'LAX', 'ORD', 'ATL', 'DFW'][i % 5],
-    arrival_airport: ['LHR', 'CDG', 'FRA', 'AMS', 'MAD'][i % 5],
     dep_iata: ['JFK', 'LAX', 'ORD', 'ATL', 'DFW'][i % 5],
     arr_iata: ['LHR', 'CDG', 'FRA', 'AMS', 'MAD'][i % 5],
     dep_name: `${['New York', 'Los Angeles', 'Chicago', 'Atlanta', 'Dallas'][i % 5]} Airport`,
@@ -460,11 +477,10 @@ const getMockFlights = (count: number): Flight[] => {
     dir: (i * 45) % 360,
     v_speed: i % 2 === 0 ? 0 : 500,
     squawk: `${1000 + i}`,
-    delay: i % 3 === 0 ? 15 + i : undefined,
     dep_delayed: i % 3 === 0 ? 15 + i : 0,
     arr_delayed: i % 3 === 0 ? 10 + i : 0
   }));
 };
 
-// Re-export fetchAirports for use in AirportsAirlinesPage
-export { fetchAirports };
+// Alias for fetchAirlines to maintain backward compatibility
+export const fetchAirlines = getAirlines;
