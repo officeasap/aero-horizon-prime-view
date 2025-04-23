@@ -1,16 +1,15 @@
+
 import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { 
   Menu, 
   X, 
   Radar,
-  Home,
   Calendar,
   MapPin,
   Plane,
-  Bell,
+  Cloud,
   Clock,
-  Cloud
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
@@ -25,14 +24,18 @@ const Header = () => {
   };
 
   const navigationItems = [
-    { path: "/", label: "Home", icon: Home },
     { path: "/flight-schedule", label: "Flight Schedule", icon: Calendar },
     { path: "/live-flight-tracker", label: "Live Tracker", icon: MapPin },
     { path: "/airports-airlines", label: "Airports & Airlines", icon: Plane },
-    { path: "/flight-status", label: "Flight Status", icon: Calendar },
     { path: "/world-clock", label: "World Clock", icon: Clock },
     { path: "/global-weather", label: "Weather", icon: Cloud },
-    { path: "/flight-alerts", label: "Flight Alerts", icon: Bell }
+  ];
+
+  // Mobile menu items include all navigation options
+  const mobileMenuItems = [
+    ...navigationItems,
+    { path: "/flight-status", label: "Flight Status", icon: Calendar },
+    { path: "/flight-alerts", label: "Flight Alerts", icon: Bell },
   ];
 
   return (
@@ -49,7 +52,7 @@ const Header = () => {
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center justify-center flex-1 space-x-4 px-4 mx-4">
+          <nav className="hidden md:flex items-center space-x-4 justify-center flex-1">
             {navigationItems.map(({ path, label, icon: Icon }) => (
               <NavLink
                 key={path}
@@ -80,9 +83,10 @@ const Header = () => {
         </div>
       </div>
 
+      {/* Mobile menu */}
       <div className={`md:hidden ${isOpen ? "block" : "hidden"}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-dark/90 shadow-lg border-y border-white/5">
-          {navigationItems.map(({ path, label, icon: Icon }) => (
+          {mobileMenuItems.map(({ path, label, icon: Icon }) => (
             <Link
               key={path}
               to={path}

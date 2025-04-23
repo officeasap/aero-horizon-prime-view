@@ -30,7 +30,6 @@ const Index = () => {
               Track flights, check schedules, monitor delays, and stay updated with global weather forecasts - all in one place.
             </p>
             <div className="flex flex-wrap justify-center gap-3 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              {/* Hero buttons */}
               <a href="/flight-schedule" rel="noopener noreferrer">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
                   <Calendar className="h-4 w-4" />
@@ -42,6 +41,13 @@ const Index = () => {
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
                   <Map className="h-4 w-4" />
                   Route Map Tool
+                </Button>
+              </a>
+              
+              <a href="/flight-status" rel="noopener noreferrer">
+                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
+                  <Calendar className="h-4 w-4" />
+                  Flight Status
                 </Button>
               </a>
               
@@ -73,14 +79,12 @@ const Index = () => {
                 </Button>
               </a>
               
-              {/* Notification Bell */}
               <NotificationBell variant="button" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]" />
             </div>
           </div>
         </div>
       </section>
       
-      {/* Features Section */}
       <section className="py-12 relative z-10 bg-dark content-overlay w-full">
         <div className="w-full px-8 mx-auto">
           <div className="max-w-6xl mx-auto">
@@ -94,7 +98,6 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Feature 1 */}
               <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
@@ -115,7 +118,6 @@ const Index = () => {
                 </CardFooter>
               </Card>
               
-              {/* Feature 2 */}
               <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
@@ -136,7 +138,6 @@ const Index = () => {
                 </CardFooter>
               </Card>
               
-              {/* Feature 3 */}
               <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
@@ -157,7 +158,6 @@ const Index = () => {
                 </CardFooter>
               </Card>
               
-              {/* Feature 4 */}
               <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
@@ -178,7 +178,6 @@ const Index = () => {
                 </CardFooter>
               </Card>
               
-              {/* Feature 5 */}
               <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
@@ -199,7 +198,6 @@ const Index = () => {
                 </CardFooter>
               </Card>
               
-              {/* Feature 6 */}
               <Card className="hover:bg-[#1A1A1A] transition-all duration-300 bg-[#1A1A1A] rounded-[12px] border-2 border-[#8B0000] shadow-sm">
                 <CardHeader>
                   <div className="w-14 h-14 bg-[#8B0000]/20 rounded-lg flex items-center justify-center mb-4">
@@ -221,7 +219,6 @@ const Index = () => {
               </Card>
             </div>
             
-            {/* Contact CTA */}
             <div className="mt-16 text-center">
               <h3 className="text-2xl font-semibold mb-4 text-white">Need Support?</h3>
               <p className="text-gray-light mb-6 max-w-2xl mx-auto">
@@ -238,7 +235,6 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Currency Converter Section - Moved below Contact Us button */}
       <section className="pt-8 pb-12 relative z-10 bg-dark content-overlay w-full">
         <div className="w-full px-8 mx-auto">
           <div className="max-w-3xl mx-auto">
