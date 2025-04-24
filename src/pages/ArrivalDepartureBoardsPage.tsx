@@ -114,7 +114,7 @@ const ArrivalDepartureBoardsPage: React.FC = () => {
   const handleSearch = async () => {
     setIsLoading(true);
     try {
-      if (!airport?.iata_code) {
+      if (!searchTerm) {
         toast({
           title: "Airport code required",
           description: "Please enter a valid airport code",
@@ -124,7 +124,18 @@ const ArrivalDepartureBoardsPage: React.FC = () => {
         return;
       }
       
-      const flightsData = await fetchArrivalsDepartures(airport.iata_code);
+      // Set airport information
+      const airportInfo: Airport = {
+        name: "Soekarno–Hatta International Airport",
+        iata_code: searchTerm.toUpperCase(),
+        city: "Jakarta",
+        country_code: "ID",
+        timezone: "Asia/Jakarta"
+      };
+      
+      setAirport(airportInfo);
+      
+      const flightsData = await fetchArrivalsDepartures(searchTerm);
       
       // Get the right array based on the current tab
       const flightsList = type === 'arrivals' ? flightsData.arrivals : flightsData.departures;
@@ -132,7 +143,7 @@ const ArrivalDepartureBoardsPage: React.FC = () => {
       if (flightsList.length === 0) {
         toast({
           title: "No flights found",
-          description: `No ${type} found for ${airport?.name || airport?.iata_code}`,
+          description: `No ${type} found for ${airportInfo.name}`,
           variant: "destructive",
         });
         setIsLoading(false);
@@ -142,10 +153,10 @@ const ArrivalDepartureBoardsPage: React.FC = () => {
       // Transform the API data into FlightData format
       const formattedFlights = flightsList.map((flight: any) => ({
         id: flight.flight_number,
-        airline: { name: 'Garuda Indonesia' }, // Mock airline data
+        airline: flight.airline && flight.airline.name ? flight.airline.name : 'Garuda Indonesia',
         destination: type === 'arrivals' ? flight.dep_iata : flight.arr_iata,
         time: type === 'arrivals' ? flight.scheduled_arrival : flight.scheduled_departure,
-        gate: type === 'arrivals' ? 'A1' : flight.gate || 'B2',
+        gate: flight.gate || 'B2',
         status: flight.status
       }));
       
@@ -154,7 +165,7 @@ const ArrivalDepartureBoardsPage: React.FC = () => {
       
       toast({
         title: "Flights found",
-        description: `Found ${formattedFlights.length} ${type} for ${airport?.name || airport?.iata_code}`,
+        description: `Found ${formattedFlights.length} ${type} for ${airportInfo.name}`,
       });
     } catch (error) {
       console.error("Error searching for flights:", error);
@@ -193,120 +204,140 @@ const ArrivalDepartureBoardsPage: React.FC = () => {
   };
 
   return (
-    <section id="arrival-departure-boards" className="py-8 w-full max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-6 px-4">
-        <div className="flex items-center gap-2">
-          <Plane className="text-purple h-6 w-6" />
-          <h2 className="text-2xl font-semibold font-space">
-            <AnimatedText text={animatedText} />
-          </h2>
+    <div className="min-h-screen bg-dark text-white">
+      <Header />
+      
+      <section className="pt-32 pb-12 relative">
+        <div className="absolute inset-0 bg-radial-gradient from-[#4c2a90]/10 via-transparent to-transparent z-0"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-bold font-space mb-4 animate-fade-in">
+              <span className="text-purple animate-text-glow">Flight Boards</span>
+            </h1>
+            <p className="text-xl text-gray-light mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              Check arrivals and departures for any airport worldwide
+            </p>
+          </div>
         </div>
-        
-        <div className="flex gap-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="rounded-full bg-white/5 hover:bg-white/10"
-            onClick={handleSwapType}
-          >
-            <ArrowDownUp className="h-4 w-4 rotate-90 md:rotate-0" />
-          </Button>
-        </div>
-      </div>
-
-      <div className="mb-6 px-4">
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Enter airport IATA code (e.g. CGK)"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
-            className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          />
-          <Button 
-            className="bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" 
-            onClick={handleSearch}
-            disabled={isLoading}
-          >
-            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-            Search
-          </Button>
-        </div>
-      </div>
-
-      <div className="px-4 mb-4">
-        <div className="relative">
-          <Input
-            type="text"
-            placeholder="Filter results..."
-            onChange={handleTextSearch}
-            className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg pr-10"
-          />
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-light h-4 w-4" />
-        </div>
-      </div>
-
-      <div className="glass-panel overflow-hidden">
-        <div className="relative overflow-x-auto">
-          <div className="bg-gray-dark/50 p-2 flex justify-between border-b border-white/10 text-xs md:text-sm font-medium text-gray-light sticky top-0">
-            <div className="w-[15%] pl-4">Flight</div>
-            <div className="w-[25%]">Airline</div>
-            <div className="w-[25%]">Destination</div>
-            <div className="w-[15%] text-center">Time</div>
-            <div className="w-[10%] text-center">Gate</div>
-            <div className="w-[10%] text-center">Status</div>
+      </section>
+      
+      <section id="arrival-departure-boards" className="py-8 w-full max-w-5xl mx-auto">
+        <div className="flex items-center justify-between mb-6 px-4">
+          <div className="flex items-center gap-2">
+            <Plane className="text-purple h-6 w-6" />
+            <h2 className="text-2xl font-semibold font-space">
+              <AnimatedText text={animatedText} />
+            </h2>
           </div>
           
-          <div className="text-sm md:text-base font-mono">
-            {isLoading ? (
-              <div className="flex justify-center items-center p-12">
-                <Loader2 className="animate-spin h-8 w-8 text-purple" />
-              </div>
-            ) : filteredFlights.length > 0 ? (
-              filteredFlights.map((flight: any, index) => (
-                <div 
-                  key={flight.id + index} 
-                  className={cn(
-                    "flex justify-between items-center p-3 border-b border-white/5 transition-colors hover:bg-white/5",
-                    index % 2 === 0 ? 'bg-white/[0.02]' : ''
-                  )}
-                >
-                  <div className="w-[15%] pl-4 font-medium">{flight.flight_number}</div>
-                  <div className="w-[25%] text-gray-light">{flight.airline.name}</div>
-                  <div className="w-[25%]">{flight.arrival.airport}</div>
-                  <div className="w-[15%] text-center font-medium">
-                    <span className="flight-cell">
-                      <span className="flight-cell-content">{flight.arrival.scheduled}</span>
-                    </span>
-                  </div>
-                  <div className="w-[10%] text-center">{flight.arrival.gate}</div>
-                  <div className="w-[10%] text-center">
-                    <span className={cn(
-                      "px-2 py-1 rounded-full text-xs font-semibold",
-                      flight.status === 'on-time' && "bg-green-900/30 text-green-400",
-                      flight.status === 'delayed' && "bg-red-900/30 text-red-400",
-                      flight.status === 'boarding' && "bg-blue-900/30 text-blue-400",
-                      flight.status === 'in-air' && "bg-purple-900/30 text-purple-400",
-                      flight.status === 'landed' && "bg-gray-900/30 text-gray-400",
-                      flight.status === 'cancelled' && "bg-red-900/50 text-red-500",
-                      flight.status === 'gate-change' && "bg-yellow-900/30 text-yellow-400",
-                      flight.status === 'diverted' && "bg-orange-900/30 text-orange-400"
-                    )}>
-                      {flight.status}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="p-8 text-center text-gray-light">
-                No flights found matching your criteria.
-              </div>
-            )}
+          <div className="flex gap-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full bg-white/5 hover:bg-white/10"
+              onClick={handleSwapType}
+            >
+              <ArrowDownUp className="h-4 w-4 rotate-90 md:rotate-0" />
+            </Button>
           </div>
         </div>
-      </div>
-    </section>
+
+        <div className="mb-6 px-4">
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              placeholder="Enter airport IATA code (e.g. CGK)"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
+              className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <Button 
+              className="bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" 
+              onClick={handleSearch}
+              disabled={isLoading}
+            >
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
+              Search
+            </Button>
+          </div>
+        </div>
+
+        <div className="px-4 mb-4">
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder="Filter results..."
+              onChange={handleTextSearch}
+              className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg pr-10"
+            />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-light h-4 w-4" />
+          </div>
+        </div>
+
+        <div className="glass-panel overflow-hidden">
+          <div className="relative overflow-x-auto">
+            <div className="bg-gray-dark/50 p-2 flex justify-between border-b border-white/10 text-xs md:text-sm font-medium text-gray-light sticky top-0">
+              <div className="w-[15%] pl-4">Flight</div>
+              <div className="w-[25%]">Airline</div>
+              <div className="w-[25%]">Destination</div>
+              <div className="w-[15%] text-center">Time</div>
+              <div className="w-[10%] text-center">Gate</div>
+              <div className="w-[10%] text-center">Status</div>
+            </div>
+            
+            <div className="text-sm md:text-base font-mono">
+              {isLoading ? (
+                <div className="flex justify-center items-center p-12">
+                  <Loader2 className="animate-spin h-8 w-8 text-purple" />
+                </div>
+              ) : filteredFlights.length > 0 ? (
+                filteredFlights.map((flight, index) => (
+                  <div 
+                    key={flight.id + index} 
+                    className={cn(
+                      "flex justify-between items-center p-3 border-b border-white/5 transition-colors hover:bg-white/5",
+                      index % 2 === 0 ? 'bg-white/[0.02]' : ''
+                    )}
+                  >
+                    <div className="w-[15%] pl-4 font-medium">{flight.id}</div>
+                    <div className="w-[25%] text-gray-light">{flight.airline}</div>
+                    <div className="w-[25%]">{flight.destination}</div>
+                    <div className="w-[15%] text-center font-medium">
+                      <span className="flight-cell">
+                        <span className="flight-cell-content">{flight.time}</span>
+                      </span>
+                    </div>
+                    <div className="w-[10%] text-center">{flight.gate}</div>
+                    <div className="w-[10%] text-center">
+                      <span className={cn(
+                        "px-2 py-1 rounded-full text-xs font-semibold",
+                        flight.status === 'on-time' && "bg-green-900/30 text-green-400",
+                        flight.status === 'delayed' && "bg-red-900/30 text-red-400",
+                        flight.status === 'boarding' && "bg-blue-900/30 text-blue-400",
+                        flight.status === 'in-air' && "bg-purple-900/30 text-purple-400",
+                        flight.status === 'landed' && "bg-gray-900/30 text-gray-400",
+                        flight.status === 'cancelled' && "bg-red-900/50 text-red-500",
+                        flight.status === 'gate-change' && "bg-yellow-900/30 text-yellow-400",
+                        flight.status === 'diverted' && "bg-orange-900/30 text-orange-400"
+                      )}>
+                        {flight.status}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="p-8 text-center text-gray-light">
+                  No flights found matching your criteria.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <Footer />
+    </div>
   );
 };
 

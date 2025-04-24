@@ -1,167 +1,182 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import ContactForm from '@/components/ContactForm';
+import { 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Send,
+  User,
+  MessageSquare,
+  HelpCircle
+} from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { X, MessageCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 const Contact = () => {
-  const [chatOpen, setChatOpen] = useState(false);
-  const [messages, setMessages] = useState<{ text: string; fromUser: boolean }[]>([
-    { text: "Hello! I'm Avia, your virtual assistant. How can I help you with your flight inquiries today?", fromUser: false }
-  ]);
-  const [inputValue, setInputValue] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [avatarLoaded, setAvatarLoaded] = useState(false);
+  const { toast } = useToast();
 
-  // Sample responses for the virtual assistant
-  const sampleResponses = [
-    "I can help you track any flight worldwide. Simply provide the flight number, and I'll give you real-time updates.",
-    "Our global weather forecast can show conditions at any airport. Would you like me to check a specific location for you?",
-    "You can view detailed information about airports and airlines in our database, including terminals, gates, and contact information.",
-    "If your flight is delayed, I can help you understand the reason and estimated new departure time.",
-    "Feel free to ask about any aspect of our flight tracking services!",
-    "I'd be happy to assist with that. Could you provide more details?",
-    "We have information for all major Asian airports including Jakarta, Singapore, Bangkok, Kuala Lumpur, and many more.",
-    "Our historical flight data goes back 7 days, allowing you to check past flight performance."
-  ];
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     
-    // Add user message
-    setMessages(prev => [...prev, { text: inputValue, fromUser: true }]);
-    setInputValue('');
-    
-    // Simulate AI thinking with delayed response
-    setTimeout(() => {
-      const randomResponse = sampleResponses[Math.floor(Math.random() * sampleResponses.length)];
-      setMessages(prev => [...prev, { text: randomResponse, fromUser: false }]);
-    }, 1000);
-  };
-
-  const handleInputKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
+    // Mock form submission
+    toast({
+      title: "Message Sent!",
+      description: "We'll get back to you as soon as possible.",
+    });
   };
 
   return (
-    <div className="min-h-screen bg-dark text-white overflow-x-hidden">
+    <div className="min-h-screen bg-dark text-white">
       <Header />
       
-      {/* Page Title Section */}
-      <section className="pt-32 pb-8 relative">
-        <div className="absolute inset-0 bg-radial-gradient from-purple/10 via-transparent to-transparent z-0"></div>
+      <section className="pt-32 pb-12 relative">
+        <div className="absolute inset-0 bg-radial-gradient from-[#4c2a90]/10 via-transparent to-transparent z-0"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold font-space mb-4 animate-fade-in">
               Contact <span className="text-purple animate-text-glow">Us</span>
             </h1>
-            <p className="text-xl text-gray-light animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Have questions or need assistance? Our team is ready to help you track flights worldwide.
+            <p className="text-xl text-gray-light mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              Get in touch with our team for support or inquiries
             </p>
           </div>
         </div>
       </section>
       
-      {/* Main Content */}
-      <div className="container mx-auto px-4">
-        <ContactForm />
-        
-        {/* 3D Avatar Chat Agent */}
-        <div className="fixed bottom-6 right-6 z-50">
-          {!chatOpen ? (
-            <Button 
-              onClick={() => setChatOpen(true)} 
-              className="bg-purple hover:bg-purple-600 text-white purple-glow h-16 w-16 rounded-full"
-            >
-              <MessageCircle size={24} />
-            </Button>
-          ) : (
-            <div className="bg-dark border border-gray-dark rounded-xl shadow-lg w-[350px] md:w-[400px] overflow-hidden flex flex-col">
-              <div className="bg-gray-dark/70 p-3 flex justify-between items-center">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-purple overflow-hidden flex items-center justify-center">
-                    <img 
-                      src="https://images.unsplash.com/photo-1596590508711-ccc7d63d0187?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" 
-                      alt="AI Assistant" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="font-medium">Avia Assistant</h3>
-                    <p className="text-xs text-gray-light">Online now</p>
-                  </div>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => setChatOpen(false)}
-                  className="text-gray-light hover:text-white"
-                >
-                  <X size={18} />
-                </Button>
-              </div>
+      <section className="py-10 container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div>
+            <div className="border-2 border-[#8B0000] rounded-xl p-6 bg-gray-dark/30">
+              <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
               
-              <div className="relative">
-                <div className="h-[350px] overflow-y-auto bg-gradient-to-b from-gray-dark/20 to-dark p-4">
-                  <div className="flex flex-col space-y-4">
-                    {messages.map((message, index) => (
-                      <div 
-                        key={index} 
-                        className={`flex ${message.fromUser ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div 
-                          className={`max-w-[80%] p-3 rounded-xl ${
-                            message.fromUser 
-                              ? 'bg-purple text-white rounded-tr-none' 
-                              : 'bg-gray-dark/70 text-white rounded-tl-none'
-                          }`}
-                        >
-                          {message.text}
-                        </div>
-                      </div>
-                    ))}
-                    <div ref={messagesEndRef} />
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="bg-[#8B0000]/20 p-3 rounded-lg">
+                    <Mail className="h-6 w-6 text-[#8B0000]" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg">Email</h3>
+                    <p className="text-gray-light">info@asaptracker.com</p>
+                    <p className="text-gray-light">support@asaptracker.com</p>
                   </div>
                 </div>
                 
-                <div className="p-3 border-t border-gray-dark bg-dark">
-                  <div className="flex items-center">
-                    <input
-                      type="text"
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onKeyPress={handleInputKeyPress}
-                      placeholder="Type your message..."
-                      className="flex-1 bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple rounded-lg py-2 px-3"
-                    />
-                    <Button 
-                      onClick={handleSendMessage} 
-                      className="ml-2 bg-purple hover:bg-purple-600 text-white"
-                    >
-                      Send
-                    </Button>
+                <div className="flex items-start gap-4">
+                  <div className="bg-[#8B0000]/20 p-3 rounded-lg">
+                    <Phone className="h-6 w-6 text-[#8B0000]" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg">Phone</h3>
+                    <p className="text-gray-light">+62 813 1567 9012</p>
+                    <p className="text-gray-light">+62 820 3425 6789</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
+                  <div className="bg-[#8B0000]/20 p-3 rounded-lg">
+                    <MapPin className="h-6 w-6 text-[#8B0000]" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg">Location</h3>
+                    <p className="text-gray-light">
+                      JL DMC 1 NO 29<br />
+                      BEKASI, Indonesia
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
+                  <div className="bg-[#8B0000]/20 p-3 rounded-lg">
+                    <HelpCircle className="h-6 w-6 text-[#8B0000]" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg">Support Hours</h3>
+                    <p className="text-gray-light">
+                      Monday - Friday: 8:00 AM - 8:00 PM<br />
+                      Saturday: 9:00 AM - 5:00 PM<br />
+                      Sunday: 10:00 AM - 3:00 PM<br />
+                      (Indonesia Time / GMT+7)
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+          
+          <div>
+            <div className="border-2 border-[#8B0000] rounded-xl p-6 bg-gray-dark/30">
+              <h2 className="text-2xl font-semibold mb-6">Send us a Message</h2>
+              
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Your Name</Label>
+                  <div className="relative">
+                    <Input 
+                      id="name"
+                      type="text" 
+                      placeholder="John Doe" 
+                      className="bg-gray-dark pl-10 border-gray-dark/50 focus:border-[#8B0000]" 
+                      required 
+                    />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="email">Email Address</Label>
+                  <div className="relative">
+                    <Input 
+                      id="email"
+                      type="email" 
+                      placeholder="your.email@example.com" 
+                      className="bg-gray-dark pl-10 border-gray-dark/50 focus:border-[#8B0000]" 
+                      required 
+                    />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="subject">Subject</Label>
+                  <div className="relative">
+                    <Input 
+                      id="subject"
+                      type="text" 
+                      placeholder="How can we help you?" 
+                      className="bg-gray-dark pl-10 border-gray-dark/50 focus:border-[#8B0000]" 
+                      required 
+                    />
+                    <MessageSquare className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea 
+                    id="message"
+                    placeholder="Please describe your question or concern in detail..." 
+                    className="bg-gray-dark border-gray-dark/50 focus:border-[#8B0000] min-h-[150px]" 
+                    required 
+                  />
+                </div>
+                
+                <div className="pt-2">
+                  <Button type="submit" className="w-full bg-[#8B0000] hover:bg-[#A80000] text-white">
+                    <Send className="mr-2 h-4 w-4" />
+                    Send Message
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
       
-      {/* Footer */}
       <Footer />
     </div>
   );

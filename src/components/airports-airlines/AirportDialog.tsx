@@ -1,9 +1,15 @@
 
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
-import { Building2, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import type { Airport } from "@/services/shared/types";
+import React from 'react';
+import { Airport } from '@/services/aviationService';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Separator } from '@/components/ui/separator';
+import { MapPin, Clock, Globe, Building, Navigation } from 'lucide-react';
 
 interface AirportDialogProps {
   open: boolean;
@@ -11,56 +17,92 @@ interface AirportDialogProps {
   airport: Airport | null;
 }
 
-const AirportDialog: React.FC<AirportDialogProps> = ({ open, onOpenChange, airport }) => (
-  <Dialog open={open} onOpenChange={onOpenChange}>
-    <DialogContent className="bg-gray-dark border-gray-light/20 text-white">
-      {airport && (
-        <>
-          <DialogHeader>
-            <DialogTitle className="text-xl flex items-center gap-2">
-              <Building2 className="text-purple" />
-              {airport.name}
-            </DialogTitle>
-            <DialogDescription className="text-gray-light">
-              {airport.iata_code || "N/A"} &bull; {airport.icao_code || "N/A"}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-gray-light">Location</h4>
-              <p>{airport.city || "Unknown"}, {airport.country || airport.country_code || "Unknown"}</p>
-              <h4 className="text-sm font-semibold text-gray-light mt-4">Coordinates</h4>
-              <p>Latitude: {airport.lat}</p>
-              <p>Longitude: {airport.lon}</p>
-              <h4 className="text-sm font-semibold text-gray-light mt-4">Time Zone</h4>
-              <p>{airport.timezone || "Unknown"}</p>
-            </div>
-            <div>
-              <div className="bg-black/30 p-4 rounded-lg">
-                <h4 className="text-sm font-semibold text-gray-light mb-2">Additional Information</h4>
-                <p>Altitude: {airport.alt || "Not available"} ft</p>
-                <div className="mt-4 flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    className="w-full bg-gray-dark/50 border-gray-light/20"
-                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${airport.lat},${airport.lon}`, '_blank')}
-                  >
-                    <MapPin className="h-4 w-4 mr-2" />
-                    View on Google Maps
-                  </Button>
-                  <DialogClose asChild>
-                    <Button variant="outline" className="w-full bg-gray-dark/50 border-gray-light/20">
-                      Close
-                    </Button>
-                  </DialogClose>
-                </div>
+const AirportDialog: React.FC<AirportDialogProps> = ({
+  open,
+  onOpenChange,
+  airport,
+}) => {
+  if (!airport) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="bg-dark text-white border-2 border-[#8B0000] max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-semibold text-white flex items-center gap-2">
+            <Building className="text-[#8B0000]" />
+            {airport.name}
+          </DialogTitle>
+          <DialogDescription className="text-gray-300">
+            {airport.iata_code && (
+              <div className="inline-block bg-[#8B0000]/20 text-white px-2 py-1 rounded-md mr-2">
+                {airport.iata_code}
               </div>
+            )}
+            {airport.icao_code && (
+              <div className="inline-block bg-[#8B0000]/20 text-white px-2 py-1 rounded-md">
+                {airport.icao_code}
+              </div>
+            )}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <MapPin className="h-5 w-5 text-[#8B0000] flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-medium text-white">Location</h4>
+              <p className="text-gray-300">
+                {airport.city}, {airport.country_code || "Unknown"}
+              </p>
+              {airport.lat && airport.lon && (
+                <p className="text-xs text-gray-400 mt-1">
+                  Coordinates: {airport.lat.toFixed(4)}, {airport.lon.toFixed(4)}
+                </p>
+              )}
             </div>
           </div>
-        </>
-      )}
-    </DialogContent>
-  </Dialog>
-);
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-start gap-3">
+            <Navigation className="h-5 w-5 text-[#8B0000] flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-medium text-white">Timezone</h4>
+              <p className="text-gray-300">{airport.timezone || "Asia/Jakarta"}</p>
+            </div>
+          </div>
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-start gap-3">
+            <Globe className="h-5 w-5 text-[#8B0000] flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-medium text-white">Region</h4>
+              <p className="text-gray-300">
+                {airport.region || "Asia"}
+              </p>
+            </div>
+          </div>
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-start gap-3">
+            <Clock className="h-5 w-5 text-[#8B0000] flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-medium text-white">Local Time</h4>
+              <p className="text-gray-300">
+                {new Date().toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZone: airport.timezone || 'Asia/Jakarta',
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 export default AirportDialog;

@@ -1,13 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { fetchAirports } from '@/services/aviationService';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown, Building2, Loader2, MapPin, PlaneTakeoff } from 'lucide-react';
+import { fetchAirports, Airport, Airline } from '@/services/aviationService';
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
-const fetchAirportsWithParams = async (params: Record<string, string>) => {
-  try {
-    return await fetchAirports(params);
-  } catch (error) {
-    console.error("Error fetching airports:", error);
-    return [];
-  }
+const SearchBar = ({ searchTerm, isLoading, onSearchChange, onSearch }: { 
+  searchTerm: string; 
+  isLoading: boolean; 
+  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void; 
+  onSearch: () => void;
+}) => {
+  return (
+    <div className="flex gap-2">
+      <Input
+        type="text"
+        placeholder="Search airports/airlines..."
+        value={searchTerm}
+        onChange={onSearchChange}
+        className="bg-gray-dark/50 border-gray-dark text-white placeholder:text-gray-light focus:border-purple"
+        onKeyDown={(e) => e.key === 'Enter' && onSearch()}
+      />
+      <Button 
+        className="bg-[#8B0000] hover:bg-[#A80000] text-white hover:shadow-[0_0_8px_#A80000]" 
+        onClick={onSearch}
+        disabled={isLoading}
+      >
+        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
+        Search
+      </Button>
+    </div>
+  );
 };
 
 const ITEMS_PER_PAGE = 25;
@@ -33,6 +61,7 @@ const AirportsAirlinesPage = () => {
   const [isAirlineDialogOpen, setIsAirlineDialogOpen] = useState(false);
   const [airlineCurrentPage, setAirlineCurrentPage] = useState(1);
   const [airlineTotalPages, setAirlineTotalPages] = useState(1);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (activeTab === "airports") {
@@ -84,7 +113,7 @@ const AirportsAirlinesPage = () => {
         params.search = search;
       }
 
-      const airportData = await fetchAirportsWithParams(params);
+      const airportData = await fetchAirports(params);
 
       if (airportData && airportData.length > 0) {
         setAirports(airportData);
@@ -122,7 +151,7 @@ const AirportsAirlinesPage = () => {
         params.search = search;
       }
 
-      const airlineData = await fetchAirlines(params);
+      const airlineData = await fetchAirports(params);
 
       if (airlineData && airlineData.length > 0) {
         setAirlines(airlineData);
@@ -293,8 +322,8 @@ const AirportsAirlinesPage = () => {
               <SearchBar
                 searchTerm={searchTerm}
                 isLoading={isLoading}
-                onSearchChange={handleFilterChange}
-                onSearch={handleSearch}
+                onSearchChange={(e) => setSearchTerm(e.target.value)}
+                onSearch={loadAirports}
               />
             </div>
 
@@ -338,7 +367,7 @@ const AirportsAirlinesPage = () => {
                       <CustomPagination
                         currentPage={currentPage}
                         totalPages={totalPages}
-                        onPageChange={handlePageChange}
+                        onPageChange={setCurrentPage}
                       />
                     </>
                   )}
@@ -386,7 +415,7 @@ const AirportsAirlinesPage = () => {
                       <CustomPagination
                         currentPage={airlineCurrentPage}
                         totalPages={airlineTotalPages}
-                        onPageChange={handleAirlinePageChange}
+                        onPageChange={setAirlineCurrentPage}
                       />
                     </>
                   )}

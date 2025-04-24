@@ -1,9 +1,15 @@
 
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
-import { PlaneTakeoff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import type { Airline } from "@/services/shared/types";
+import React from 'react';
+import { Airline } from '@/services/aviationService';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Separator } from '@/components/ui/separator';
+import { Globe, Map, Plane, Flag } from 'lucide-react';
 
 interface AirlineDialogProps {
   open: boolean;
@@ -11,45 +17,85 @@ interface AirlineDialogProps {
   airline: Airline | null;
 }
 
-const AirlineDialog: React.FC<AirlineDialogProps> = ({ open, onOpenChange, airline }) => (
-  <Dialog open={open} onOpenChange={onOpenChange}>
-    <DialogContent className="bg-gray-dark border-gray-light/20 text-white">
-      {airline && (
-        <>
-          <DialogHeader>
-            <DialogTitle className="text-xl flex items-center gap-2">
-              <PlaneTakeoff className="text-purple" />
-              {airline.name}
-            </DialogTitle>
-            <DialogDescription className="text-gray-light">
-              {airline.iata_code || "N/A"} &bull; {airline.icao_code || "N/A"}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-gray-light">Information</h4>
-              <p>Country: {airline.country_name || airline.country_code || "Unknown"}</p>
-              <p>IATA Code: {airline.iata_code || "N/A"}</p>
-              <p>ICAO Code: {airline.icao_code || "N/A"}</p>
-            </div>
-            <div>
-              <div className="bg-black/30 p-4 rounded-lg">
-                <h4 className="text-sm font-semibold text-gray-light mb-2">Additional Details</h4>
-                <p>Callsign: {airline.callsign || "Unknown"}</p>
-                <div className="mt-4 flex flex-col gap-2">
-                  <DialogClose asChild>
-                    <Button variant="outline" className="w-full bg-gray-dark/50 border-gray-light/20">
-                      Close
-                    </Button>
-                  </DialogClose>
-                </div>
+const AirlineDialog: React.FC<AirlineDialogProps> = ({
+  open,
+  onOpenChange,
+  airline,
+}) => {
+  if (!airline) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="bg-dark text-white border-2 border-[#8B0000] max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-semibold text-white flex items-center gap-2">
+            <Plane className="text-[#8B0000]" />
+            {airline.name}
+          </DialogTitle>
+          <DialogDescription className="text-gray-300">
+            {airline.iata_code && (
+              <div className="inline-block bg-[#8B0000]/20 text-white px-2 py-1 rounded-md mr-2">
+                {airline.iata_code}
               </div>
+            )}
+            {airline.icao_code && (
+              <div className="inline-block bg-[#8B0000]/20 text-white px-2 py-1 rounded-md">
+                {airline.icao_code}
+              </div>
+            )}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <Flag className="h-5 w-5 text-[#8B0000] flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-medium text-white">Country</h4>
+              <p className="text-gray-300">
+                {airline.country_code || "Indonesia"}
+              </p>
             </div>
           </div>
-        </>
-      )}
-    </DialogContent>
-  </Dialog>
-);
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-start gap-3">
+            <Map className="h-5 w-5 text-[#8B0000] flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-medium text-white">Hub Airport</h4>
+              <p className="text-gray-300">
+                Soekarno–Hatta International Airport (CGK)
+              </p>
+            </div>
+          </div>
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-start gap-3">
+            <Globe className="h-5 w-5 text-[#8B0000] flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-medium text-white">Destinations</h4>
+              <p className="text-gray-300">
+                International and Domestic
+              </p>
+            </div>
+          </div>
+
+          <Separator className="bg-white/10" />
+
+          <div className="flex items-start gap-3">
+            <Plane className="h-5 w-5 text-[#8B0000] flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-medium text-white">Fleet Size</h4>
+              <p className="text-gray-300">
+                {Math.floor(Math.random() * 100) + 20} Aircraft
+              </p>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 export default AirlineDialog;

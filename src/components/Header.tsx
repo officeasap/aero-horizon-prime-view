@@ -10,7 +10,7 @@ import {
   Plane,
   Cloud,
   Clock,
-  Bell,
+  Phone,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
@@ -25,19 +25,17 @@ const Header = () => {
   };
 
   const navigationItems = [
+    { path: "/", label: "Home", icon: Radar },
     { path: "/flight-schedule", label: "Flight Schedule", icon: Calendar },
     { path: "/live-flight-tracker", label: "Live Tracker", icon: MapPin },
-    { path: "/airports-airlines", label: "Airports & Airlines", icon: Plane },
-    { path: "/world-clock", label: "World Clock", icon: Clock },
+    { path: "/flight-status", label: "Flight Status", icon: Plane },
     { path: "/global-weather", label: "Weather", icon: Cloud },
+    { path: "/world-clock", label: "World Clock", icon: Clock },
+    { path: "/contact", label: "Contact", icon: Phone },
   ];
 
-  // Mobile menu items include all navigation options
-  const mobileMenuItems = [
-    ...navigationItems,
-    { path: "/flight-status", label: "Flight Status", icon: Calendar },
-    { path: "/flight-alerts", label: "Flight Alerts", icon: Bell },
-  ];
+  // Mobile menu items are the same as navigation items
+  const mobileMenuItems = [...navigationItems];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-dark/80 backdrop-blur-lg border-b border-white/5">

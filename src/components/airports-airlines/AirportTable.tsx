@@ -1,17 +1,9 @@
 
 import React from 'react';
-import { ArrowUpDown, Info } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import type { Airport } from '@/services/shared/types';
+import { Airport } from '@/services/aviationService';
+import { Button } from '@/components/ui/button';
+import { ArrowUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface AirportTableProps {
   airports: Airport[];
@@ -20,12 +12,17 @@ interface AirportTableProps {
   onAirportSelect: (airport: Airport) => void;
 }
 
-const AirportTable = ({ airports, onSort, sortConfig, onAirportSelect }: AirportTableProps) => {
+const AirportTable: React.FC<AirportTableProps> = ({
+  airports,
+  onSort,
+  sortConfig,
+  onAirportSelect,
+}) => {
   const getSortIndicator = (key: string) => {
     if (!sortConfig || sortConfig.key !== key) {
       return <ArrowUpDown className="ml-1 h-4 w-4 text-gray-400" />;
     }
-    
+
     return sortConfig.direction === 'asc' 
       ? <ArrowUpDown className="ml-1 h-4 w-4 text-purple rotate-180" />
       : <ArrowUpDown className="ml-1 h-4 w-4 text-purple" />;
@@ -33,80 +30,53 @@ const AirportTable = ({ airports, onSort, sortConfig, onAirportSelect }: Airport
 
   return (
     <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-white/5">
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => onSort('name')}
-            >
+      <table className="w-full text-left text-sm">
+        <thead className="bg-gray-dark/50 text-xs uppercase text-gray-light">
+          <tr>
+            <th className="px-4 py-3 cursor-pointer" onClick={() => onSort('name')}>
               <div className="flex items-center">
-                Airport Name
-                {getSortIndicator('name')}
+                Airport Name {getSortIndicator('name')}
               </div>
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => onSort('iata_code')}
-            >
+            </th>
+            <th className="px-4 py-3 cursor-pointer" onClick={() => onSort('iata_code')}>
               <div className="flex items-center">
-                IATA
-                {getSortIndicator('iata_code')}
+                IATA {getSortIndicator('iata_code')}
               </div>
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => onSort('icao_code')}
-            >
+            </th>
+            <th className="px-4 py-3 cursor-pointer" onClick={() => onSort('city')}>
               <div className="flex items-center">
-                ICAO
-                {getSortIndicator('icao_code')}
+                City {getSortIndicator('city')}
               </div>
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => onSort('country_code')}
-            >
+            </th>
+            <th className="px-4 py-3 cursor-pointer" onClick={() => onSort('country_code')}>
               <div className="flex items-center">
-                Country
-                {getSortIndicator('country_code')}
+                Country {getSortIndicator('country_code')}
               </div>
-            </TableHead>
-            <TableHead>
-              <div className="flex items-center justify-end">
-                Details
-              </div>
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {airports.map((airport, index) => (
-            <TableRow 
-              key={`${airport.iata_code || airport.icao_code || index}-${index}`}
-              className="hover:bg-white/5 cursor-pointer"
-              onClick={() => onAirportSelect(airport)}
-            >
-              <TableCell className="font-medium">{airport.name}</TableCell>
-              <TableCell>
-                <Badge variant="outline" className="font-mono">
-                  {airport.iata_code || 'N/A'}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge variant="secondary" className="font-mono">
-                  {airport.icao_code || 'N/A'}
-                </Badge>
-              </TableCell>
-              <TableCell>{airport.country || airport.country_code || 'Unknown'}</TableCell>
-              <TableCell className="text-right">
-                <Button variant="ghost" size="icon">
-                  <Info className="h-4 w-4" />
+            </th>
+            <th className="px-4 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {airports.map((airport) => (
+            <tr key={airport.iata_code} className="border-b border-white/5 hover:bg-white/5">
+              <td className="px-4 py-3 font-medium">{airport.name}</td>
+              <td className="px-4 py-3 text-gray-light">{airport.iata_code}</td>
+              <td className="px-4 py-3">{airport.city}</td>
+              <td className="px-4 py-3">{airport.country_code}</td>
+              <td className="px-4 py-3 text-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onAirportSelect(airport)}
+                  className="bg-[#8B0000]/20 text-white hover:bg-[#8B0000] border-[#8B0000]/50"
+                >
+                  View Details
                 </Button>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
+        </tbody>
+      </table>
     </div>
   );
 };

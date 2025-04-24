@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -33,20 +34,20 @@ const Index = () => {
               <a href="/flight-schedule" rel="noopener noreferrer">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
                   <Calendar className="h-4 w-4" />
-                  Arrival/Departure Boards
+                  Flight Schedule
                 </Button>
               </a>
               
               <a href="/live-flight-tracker" rel="noopener noreferrer">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
                   <Map className="h-4 w-4" />
-                  Route Map Tool
+                  Live Tracker
                 </Button>
               </a>
               
               <a href="/flight-status" rel="noopener noreferrer">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <Calendar className="h-4 w-4" />
+                  <Plane className="h-4 w-4" />
                   Flight Status
                 </Button>
               </a>
@@ -62,13 +63,6 @@ const Index = () => {
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
                   <BookOpen className="h-4 w-4" />
                   Aviation Info
-                </Button>
-              </a>
-              
-              <a href="/global-weather" rel="noopener noreferrer">
-                <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <Cloud className="h-4 w-4" />
-                  Weather
                 </Button>
               </a>
               
@@ -129,7 +123,7 @@ const Index = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <a href="/live-tracker" target="_blank" rel="noopener noreferrer" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
+                  <a href="/live-flight-tracker" target="_blank" rel="noopener noreferrer" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
                     Track flights
                     <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -189,7 +183,7 @@ const Index = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <a href="/weather" target="_blank" rel="noopener noreferrer" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
+                  <a href="/global-weather" target="_blank" rel="noopener noreferrer" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
                     View weather
                     <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -227,7 +221,7 @@ const Index = () => {
               <a href="/contact" target="_blank" rel="noopener noreferrer">
                 <Button variant="contact" size="lg" className="rounded-[14px] hover:shadow-[0_0_8px_#A80000]">
                   <Phone className="h-4 w-4" />
-                  Contact Us
+                  Contact Support
                 </Button>
               </a>
             </div>

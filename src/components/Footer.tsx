@@ -77,7 +77,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/live-tracker" target="_blank" rel="noopener noreferrer" className="text-white text-sm flex items-center gap-2 hover:text-white/80 transition-colors">
+                <a href="/live-flight-tracker" target="_blank" rel="noopener noreferrer" className="text-white text-sm flex items-center gap-2 hover:text-white/80 transition-colors">
                   <Plane size={16} className="text-[#8B0000]" />
                   Live Flight Tracker
                 </a>
@@ -97,7 +97,7 @@ const Footer = () => {
               <li>
                 <a href="/global-weather" target="_blank" rel="noopener noreferrer" className="text-white text-sm flex items-center gap-2 hover:text-white/80 transition-colors">
                   <Cloud size={16} className="text-[#8B0000]" />
-                  Global Weather
+                  Weather
                 </a>
               </li>
               <li>
@@ -132,6 +132,14 @@ const Footer = () => {
                   info@asaptracker.com
                 </a>
               </li>
+              <li className="mt-4">
+                <a href="/contact" target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" size="sm" className="bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000] rounded-[12px]">
+                    <Phone className="h-4 w-4 mr-2" />
+                    Contact Support
+                  </Button>
+                </a>
+              </li>
             </ul>
           </div>
           
@@ -164,13 +172,13 @@ const Footer = () => {
               © 2025 ASAP Tracker. All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <a href="#" className="text-white text-xs hover:text-white/80 transition-colors">
+              <a href="/privacy" className="text-white text-xs hover:text-white/80 transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="text-white text-xs hover:text-white/80 transition-colors">
+              <a href="/terms" className="text-white text-xs hover:text-white/80 transition-colors">
                 Terms of Service
               </a>
-              <a href="#" className="text-white text-xs hover:text-white/80 transition-colors">
+              <a href="/cookies" className="text-white text-xs hover:text-white/80 transition-colors">
                 Cookie Policy
               </a>
             </div>
