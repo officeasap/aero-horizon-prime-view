@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -25,7 +24,28 @@ const AviationInfo = () => {
     try {
       if (activeTab === "airports") {
         const data = await fetchAirports();
-        setAirports(data.slice(0, 12)); // Limit to 12 items for display
+        if (Array.isArray(data) && data.length > 0) {
+          setAirports(data.slice(0, 12)); // Limit to 12 items for display
+        } else {
+          // Create mock data if real data is not available
+          const mockAirports: Airport[] = Array(12).fill(null).map((_, index) => ({
+            name: `Airport ${index + 1}`,
+            iata: `AP${index}`,
+            iata_code: `AP${index}`,
+            icao: `ICAO${index}`,
+            icao_code: `ICAO${index}`,
+            city: `City ${index}`,
+            country: 'Indonesia',
+            country_code: 'ID',
+            lat: -6.1256 + (index * 0.1),
+            lon: 106.6558 + (index * 0.1),
+            latitude: -6.1256 + (index * 0.1),
+            longitude: 106.6558 + (index * 0.1),
+            alt: 10,
+            timezone: 'Asia/Jakarta'
+          }));
+          setAirports(mockAirports);
+        }
       } else {
         // Create mock airline data based on airports
         const airlineData: Airline[] = Array(12).fill(null).map((_, index) => ({

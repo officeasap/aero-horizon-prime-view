@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -124,20 +123,24 @@ const ArrivalDepartureBoardsPage: React.FC = () => {
         return;
       }
       
-      // Set airport information
       const airportInfo: Airport = {
         name: "Soekarno–Hatta International Airport",
+        iata: searchTerm.toUpperCase(),
         iata_code: searchTerm.toUpperCase(),
+        icao: "WIII",
         city: "Jakarta",
+        country: "Indonesia",
         country_code: "ID",
-        timezone: "Asia/Jakarta"
+        timezone: "Asia/Jakarta",
+        lat: -6.1256,
+        lon: 106.6558,
+        alt: 10
       };
       
       setAirport(airportInfo);
       
       const flightsData = await fetchArrivalsDepartures(searchTerm);
       
-      // Get the right array based on the current tab
       const flightsList = type === 'arrivals' ? flightsData.arrivals : flightsData.departures;
       
       if (flightsList.length === 0) {
@@ -150,7 +153,6 @@ const ArrivalDepartureBoardsPage: React.FC = () => {
         return;
       }
       
-      // Transform the API data into FlightData format
       const formattedFlights = flightsList.map((flight: any) => ({
         id: flight.flight_number,
         airline: flight.airline && flight.airline.name ? flight.airline.name : 'Garuda Indonesia',

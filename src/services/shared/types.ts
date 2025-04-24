@@ -16,7 +16,7 @@ export interface Airport {
   timezone: string;
   region?: string; // Used by some components
   distance?: number; // Used in nearby airports
-  type?: 'airport' | 'airline' | 'city'; // Used in SuggestResult
+  type?: 'airport'; // Used in SuggestResult
 }
 
 export interface Airline {
@@ -101,7 +101,7 @@ export interface SuggestResult {
   city: string;
   country: string;
   country_code?: string;
-  type: 'airport' | 'airline' | 'city';
+  type: 'airport' | 'airline';
   lat?: number;
   latitude?: number;
   lon?: number;

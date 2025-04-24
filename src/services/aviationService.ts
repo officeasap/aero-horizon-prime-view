@@ -1,24 +1,8 @@
-
 import { API_BASE_URL, fetchData, fetchWithCache } from './shared/apiUtils';
 import { Flight, Airport, Airline, SuggestResult } from './shared/types';
 import { getMockFlights, mockAirport } from './mockData';
 
-export { type Flight, type Airport, type Airline };
-
-export interface SuggestResult {
-  iata_code: string;
-  icao_code: string;
-  name: string;
-  city: string;
-  country: string;
-  country_code?: string;
-  type: 'airport' | 'airline';
-  lat?: number;
-  latitude?: number;
-  lon?: number;
-  longitude?: number;
-  distance?: number;
-}
+export { type Flight, type Airport, type Airline, type SuggestResult };
 
 // Get user position (for nearby airports feature)
 export async function getUserPosition(): Promise<GeolocationPosition> {

@@ -1,24 +1,7 @@
 
 import { fetchAirports } from './airportService';
 import { fetchAirlines } from './airlineService';
-
-/**
- * Suggest result type for autocomplete or unified search
- */
-export interface SuggestResult {
-  name: string;
-  iata_code: string;
-  icao_code: string;
-  city?: string;
-  country?: string;
-  country_code?: string;
-  lat?: number;
-  lon?: number;
-  longitude?: number;
-  latitude?: number;
-  timezone?: string;
-  type: 'airport' | 'airline' | 'city';
-}
+import { SuggestResult } from './shared/types';
 
 export async function fetchSuggestions(query: string): Promise<SuggestResult[]> {
   if (!query || query.length < 2) {
@@ -45,8 +28,10 @@ export async function fetchSuggestions(query: string): Promise<SuggestResult[]> 
   }));
   const airlineResults = airlines.map(al => ({
     name: al.name,
-    iata_code: al.iata_code,
-    icao_code: al.icao_code,
+    iata_code: al.iata_code || al.iata,
+    icao_code: al.icao_code || al.icao,
+    city: '', // Required field
+    country: al.country || '',  // Required field
     country_code: al.country_code,
     type: 'airline' as const,
   }));
