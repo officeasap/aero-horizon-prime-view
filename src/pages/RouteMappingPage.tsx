@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import { RouteMap } from '@/components/RouteMap';
 import { Button } from '@/components/ui/button';
 import AutocompleteSearch from '@/components/AutocompleteSearch';
-import { SuggestResult } from '@/services/aviationService';
+import { SuggestResult } from '@/services/shared/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Map, Plane, ArrowDownUp, ArrowRight, Info, MapPin, Globe, Search } from 'lucide-react';
 
@@ -25,7 +25,8 @@ const RouteMappingPage = () => {
       iata_code: "CGK",
       icao_code: "WIII",
       city: "Jakarta",
-      country_code: "Indonesia",
+      country: "Indonesia",
+      country_code: "ID",
       type: "airport"
     });
     setArrivalAirport({
@@ -33,7 +34,8 @@ const RouteMappingPage = () => {
       iata_code: "SIN",
       icao_code: "WSSS",
       city: "Singapore",
-      country_code: "Singapore",
+      country: "Singapore",
+      country_code: "SG",
       type: "airport"
     });
   };
@@ -44,7 +46,8 @@ const RouteMappingPage = () => {
       iata_code: "DPS",
       icao_code: "WADD",
       city: "Denpasar",
-      country_code: "Indonesia",
+      country: "Indonesia",
+      country_code: "ID",
       type: "airport"
     });
     setArrivalAirport({
@@ -52,7 +55,8 @@ const RouteMappingPage = () => {
       iata_code: "NRT",
       icao_code: "RJAA",
       city: "Tokyo",
-      country_code: "Japan",
+      country: "Japan",
+      country_code: "JP",
       type: "airport"
     });
   };
@@ -63,7 +67,8 @@ const RouteMappingPage = () => {
       iata_code: "CGK",
       icao_code: "WIII",
       city: "Jakarta",
-      country_code: "Indonesia",
+      country: "Indonesia",
+      country_code: "ID",
       type: "airport"
     });
     setArrivalAirport({
@@ -71,7 +76,8 @@ const RouteMappingPage = () => {
       iata_code: "MEL",
       icao_code: "YMML",
       city: "Melbourne",
-      country_code: "Australia",
+      country: "Australia",
+      country_code: "AU",
       type: "airport"
     });
   };

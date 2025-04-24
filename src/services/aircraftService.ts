@@ -1,6 +1,4 @@
-
 import { toast } from "sonner";
-import { fetchWithCache } from "./shared/apiUtils";
 
 // Define the Aircraft type
 export interface Aircraft {

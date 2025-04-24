@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import { AirportDetail } from '@/components/AirportDetail';
 import { Button } from '@/components/ui/button';
 import AutocompleteSearch from '@/components/AutocompleteSearch';
-import { SuggestResult } from '@/services/aviationService';
+import { SuggestResult } from '@/services/shared/types';
 import { MapPin, Info } from 'lucide-react';
 
 const AirportInfoPage = () => {
@@ -17,8 +17,9 @@ const AirportInfoPage = () => {
     iata_code: "CGK",
     icao_code: "WIII",
     city: "Jakarta",
+    country: "Indonesia",
     country_code: "ID",
-    type: "airport" // Explicitly set to "airport" to match SuggestResult type
+    type: "airport"
   };
 
   useEffect(() => {

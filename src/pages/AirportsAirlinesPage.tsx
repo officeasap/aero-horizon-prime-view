@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -9,6 +10,13 @@ import { fetchAirports, Airport, Airline } from '@/services/aviationService';
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+
+// Import missing components
+import AirportTable from '@/components/airports-airlines/AirportTable';
+import AirlineTable from '@/components/airports-airlines/AirlineTable';
+import CustomPagination from '@/components/airports-airlines/CustomPagination';
+import AirportDialog from '@/components/airports-airlines/AirportDialog';
+import AirlineDialog from '@/components/airports-airlines/AirlineDialog';
 
 const SearchBar = ({ searchTerm, isLoading, onSearchChange, onSearch }: { 
   searchTerm: string; 

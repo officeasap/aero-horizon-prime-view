@@ -1,6 +1,6 @@
 
-import { fetchData, fetchWithCache, API_BASE_URL } from './shared/apiUtils';
-import type { Flight, Airport, Airline } from './shared/types';
+import { API_BASE_URL, fetchData, fetchWithCache } from './shared/apiUtils';
+import { Flight, Airport, Airline, SuggestResult } from './shared/types';
 import { getMockFlights, mockAirport } from './mockData';
 
 export { type Flight, type Airport, type Airline };
