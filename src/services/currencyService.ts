@@ -1,5 +1,7 @@
 
-import { CACHE_DURATION } from './shared/apiUtils';
+// Define our own cache duration for currency service
+const CURRENCY_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const RATE_CACHE_DURATION = 60 * 1000; // 1 minute
 
 interface Currency {
   id: string;
@@ -11,8 +13,6 @@ interface Currency {
 // Cache for currency data
 const CURRENCY_CACHE_KEY = "currency_list_cache";
 const RATES_CACHE_KEY_PREFIX = "currency_rate_";
-const CURRENCY_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-const RATE_CACHE_DURATION = 60 * 1000; // 1 minute
 
 // Preset major currencies to avoid relying on API for basic data
 const PRESET_MAJOR_CURRENCIES: Currency[] = [

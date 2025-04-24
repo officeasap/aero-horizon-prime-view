@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { fetchNearbyAirports, getUserPosition } from '@/services/aviationService';
+import { fetchNearbyAirports } from '@/services/aviationService';
+import { getUserPosition } from '@/services/shared/apiUtils';
 import { MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { SearchForm } from './nearby-airports/SearchForm';
@@ -24,12 +25,10 @@ const NearbyAirports: React.FC = () => {
     setLoading(true);
     try {
       const position = await getUserPosition();
-      if (position) {
-        setUserLocation(position);
-        setCustomLat(position.lat.toString());
-        setCustomLng(position.lng.toString());
-        await searchNearbyAirports(position.lat, position.lng, distance);
-      }
+      setUserLocation(position);
+      setCustomLat(position.lat.toString());
+      setCustomLng(position.lng.toString());
+      await searchNearbyAirports(position.lat, position.lng, distance);
     } catch (error) {
       console.error("Error detecting location:", error);
       toast.error("Could not detect your location. Please enter coordinates manually.");

@@ -1,18 +1,19 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import Header from '@/components/Header';
 import FlightTracker from '@/components/FlightTracker';
 import FlightMap from '@/components/FlightMap';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, List, Info, Plane, LocateFixed } from 'lucide-react';
+import { MapPin, List, Info, LocateFixed } from 'lucide-react';
 import { 
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Button } from '@/components/ui/button';
-import { fetchNearbyAircraft, getUserPosition } from '@/services/aviationService';
+import { fetchNearbyAircraft } from '@/services/aviationService';
+import { getUserPosition } from '@/services/shared/apiUtils';
 import { toast } from 'sonner';
 
 const LiveFlightTracker = () => {

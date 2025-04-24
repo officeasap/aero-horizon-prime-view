@@ -16,6 +16,7 @@ export interface Airport {
   timezone: string;
   region?: string; // Used by some components
   distance?: number; // Used in nearby airports
+  type?: 'airport' | 'airline' | 'city'; // Used in SuggestResult
 }
 
 export interface Airline {
@@ -73,12 +74,14 @@ export interface Flight {
   
   // Flight status
   status?: string;
+  flight_status?: string; // Alternative property name
   duration?: number;
   delayed?: number;
   delay?: number;
   
   // Aircraft information
   aircraft_icao?: string;
+  aircraft_icao24?: string; // Alternative property name
   reg_number?: string;
   
   // Position data
@@ -98,7 +101,7 @@ export interface SuggestResult {
   city: string;
   country: string;
   country_code?: string;
-  type: 'airport' | 'airline';
+  type: 'airport' | 'airline' | 'city';
   lat?: number;
   latitude?: number;
   lon?: number;

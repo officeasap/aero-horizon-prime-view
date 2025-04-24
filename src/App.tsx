@@ -25,15 +25,76 @@ import { useState, useEffect } from "react";
 import { registerServiceWorker } from "./services/notificationService";
 import ASAPAgentButton from "./components/ASAPAgent/ASAPAgentButton";
 
-// Import fetch and Headers for global definition
-import fetch from 'node-fetch';
+// Define global Headers if not already defined (for browser compatibility)
+if (typeof window !== 'undefined' && !window.Headers) {
+  // @ts-ignore - Simple Headers polyfill for environments where it might be missing
+  window.Headers = class Headers {
+    constructor(init?: HeadersInit) {
+      this._headers = {};
+      if (init) {
+        if (Array.isArray(init)) {
+          init.forEach(([name, value]) => this.append(name, value));
+        } else if (init instanceof Headers || init instanceof this.constructor) {
+          // @ts-ignore
+          Array.from(init.entries()).forEach(([name, value]) => this.append(name, value));
+        } else {
+          Object.entries(init).forEach(([name, value]) => this.append(name, value));
+        }
+      }
+    }
 
-// Define global fetch and Headers if not already defined (for SSR compatibility)
-if (!globalThis.fetch) {
-  // @ts-ignore
-  globalThis.fetch = fetch;
-  // @ts-ignore
-  globalThis.Headers = fetch.Headers;
+    _headers: Record<string, string>;
+
+    append(name: string, value: string) {
+      const key = name.toLowerCase();
+      if (this._headers[key]) {
+        this._headers[key] += `, ${value}`;
+      } else {
+        this._headers[key] = value;
+      }
+    }
+
+    delete(name: string) {
+      delete this._headers[name.toLowerCase()];
+    }
+
+    get(name: string) {
+      return this._headers[name.toLowerCase()] || null;
+    }
+
+    has(name: string) {
+      return name.toLowerCase() in this._headers;
+    }
+
+    set(name: string, value: string) {
+      this._headers[name.toLowerCase()] = value;
+    }
+
+    forEach(callback: (value: string, name: string, parent: Headers) => void) {
+      Object.entries(this._headers).forEach(([name, value]) => {
+        // @ts-ignore
+        callback(value, name, this);
+      });
+    }
+
+    *entries() {
+      for (const name in this._headers) {
+        yield [name, this._headers[name]];
+      }
+    }
+
+    *keys() {
+      for (const name in this._headers) {
+        yield name;
+      }
+    }
+
+    *values() {
+      for (const name in this._headers) {
+        yield this._headers[name];
+      }
+    }
+  };
 }
 
 const router = createBrowserRouter([

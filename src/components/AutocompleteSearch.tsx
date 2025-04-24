@@ -129,8 +129,8 @@ const AutocompleteSearch: React.FC<AutocompleteSearchProps> = ({
                 <div className={cn(
                   "w-6 h-6 flex items-center justify-center rounded-full text-xs",
                   item.type === 'airport' && "bg-blue-500/20 text-blue-400",
-                  item.type === 'city' && "bg-green-500/20 text-green-400",
-                  item.type === 'airline' && "bg-purple/20 text-purple-400"
+                  item.type === 'airline' && "bg-purple/20 text-purple-400",
+                  item.type === 'city' && "bg-green-500/20 text-green-400"
                 )}>
                   {item.type === 'airport' ? 'A' : item.type === 'airline' ? 'L' : 'C'}
                 </div>

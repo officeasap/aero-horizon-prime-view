@@ -1,82 +1,47 @@
 
-export const API_BASE_URL = 'https://aviation-api.example.com/v1'; // Placeholder API URL
+// Common API utilities for all services
 
-// Cache durations in milliseconds
-export const DEFAULT_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-export const FLIGHT_CACHE_DURATION = 60 * 1000; // 1 minute (for time-sensitive flight data)
-export const AIRPORT_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours (airports don't change often)
-export const AIRLINE_CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days (airlines don't change often)
+export const API_BASE_URL = 'https://aviation-edge-api.example.com'; // Replace with actual API URL
+export const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
 
-interface CacheItem {
-  data: any;
-  timestamp: number;
-}
-
-const apiCache: Record<string, CacheItem> = {};
-
-// Utility to create cache keys
-const getCacheKey = (endpoint: string, params?: Record<string, string>) => {
-  const queryString = params ? Object.entries(params)
-    .map(([key, value]) => `${key}=${value}`)
-    .join('&') : '';
+// Helper for geolocation
+export const getUserPosition = (): Promise<{ lat: number; lng: number }> => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Geolocation is not supported by your browser'));
+      return;
+    }
     
-  return `${endpoint}${queryString ? `?${queryString}` : ''}`;
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        });
+      },
+      (error) => {
+        console.error("Error getting user position:", error);
+        reject(error);
+      },
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+  });
 };
 
-// Utility to check if cache is valid
-const isCacheValid = (cacheItem: CacheItem, duration: number) => {
-  return Date.now() - cacheItem.timestamp < duration;
-};
-
-// Fetch data without caching
-export async function fetchData(endpoint: string, options = {}): Promise<any> {
-  try {
-    // Using sample data for development
-    console.log(`Simulating API request to ${endpoint}`);
-    
-    // In a real app, this would be:
-    // const response = await fetch(`${API_BASE_URL}/${endpoint}`, options);
-    // const data = await response.json();
-    
-    // For demo, we'll just return empty arrays for most requests
-    return [];
-  } catch (error) {
-    console.error(`API Error (${endpoint}):`, error);
-    throw error;
-  }
-}
-
-// Fetch data with caching
-export async function fetchWithCache(
-  endpoint: string, 
-  params?: Record<string, string>,
-  cacheDuration = DEFAULT_CACHE_DURATION
-): Promise<any> {
-  const cacheKey = getCacheKey(endpoint, params);
-  
-  // Check cache first
-  const cachedItem = apiCache[cacheKey];
-  if (cachedItem && isCacheValid(cachedItem, cacheDuration)) {
-    console.log(`Using cached data for ${cacheKey}`);
-    return cachedItem.data;
-  }
+// Helper for general API fetching
+export async function fetchWithTimeout(url: string, options: RequestInit = {}, timeout = 10000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
   
   try {
-    // Fetch fresh data
-    const data = await fetchData(endpoint, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
     });
-    
-    // Cache the result
-    apiCache[cacheKey] = {
-      data,
-      timestamp: Date.now()
-    };
-    
-    return data;
+    clearTimeout(id);
+    return response;
   } catch (error) {
-    console.error(`Cache fetch error (${cacheKey}):`, error);
+    clearTimeout(id);
     throw error;
   }
 }
