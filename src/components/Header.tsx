@@ -24,6 +24,7 @@ const Header = () => {
     setIsOpen(!isOpen);
   };
 
+  // Update navigation items to match the requested order
   const navigationItems = [
     { path: "/", label: "Home", icon: Radar },
     { path: "/flight-schedule", label: "Flight Schedule", icon: Calendar },
@@ -31,7 +32,7 @@ const Header = () => {
     { path: "/flight-status", label: "Flight Status", icon: Plane },
     { path: "/global-weather", label: "Weather", icon: Cloud },
     { path: "/world-clock", label: "World Clock", icon: Clock },
-    { path: "/contact", label: "Contact", icon: Phone },
+    { path: "/contact", label: "Contact", icon: Phone }, // Renamed to "Contact" as requested
   ];
 
   // Mobile menu items are the same as navigation items

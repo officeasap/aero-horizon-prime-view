@@ -25,6 +25,17 @@ import { useState, useEffect } from "react";
 import { registerServiceWorker } from "./services/notificationService";
 import ASAPAgentButton from "./components/ASAPAgent/ASAPAgentButton";
 
+// Import fetch and Headers for global definition
+import fetch from 'node-fetch';
+
+// Define global fetch and Headers if not already defined (for SSR compatibility)
+if (!globalThis.fetch) {
+  // @ts-ignore
+  globalThis.fetch = fetch;
+  // @ts-ignore
+  globalThis.Headers = fetch.Headers;
+}
+
 const router = createBrowserRouter([
   {
     path: "/",

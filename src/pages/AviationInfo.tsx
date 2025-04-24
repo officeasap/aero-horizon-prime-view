@@ -27,14 +27,15 @@ const AviationInfo = () => {
         const data = await fetchAirports();
         setAirports(data.slice(0, 12)); // Limit to 12 items for display
       } else {
-        // Since fetchAirlines is an alias for fetchAirports, transform the data
-        const data = await fetchAirports();
         // Create mock airline data based on airports
-        const airlineData: Airline[] = data.slice(0, 12).map((airport, index) => ({
-          name: `${airport.city || 'Jakarta'} Airlines ${index + 1}`,
+        const airlineData: Airline[] = Array(12).fill(null).map((_, index) => ({
+          name: `${['Jakarta', 'Singapore', 'Kuala Lumpur', 'Bangkok', 'Manila'][index % 5]} Airlines ${index + 1}`,
+          iata: `J${index}`,
           iata_code: `J${index}`,
+          icao: `JAK${index}`,
           icao_code: `JAK${index}`,
-          country_code: airport.country_code || 'ID',
+          country: ['Indonesia', 'Singapore', 'Malaysia', 'Thailand', 'Philippines'][index % 5],
+          country_code: ['ID', 'SG', 'MY', 'TH', 'PH'][index % 5],
         }));
         setAirlines(airlineData);
       }
@@ -59,7 +60,7 @@ const AviationInfo = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold font-space mb-4 animate-fade-in">
-              Aviation <span className="text-purple animate-text-glow">Info</span>
+              Aviation <span className="text-[#8B0000] animate-text-glow">Info</span>
             </h1>
             <p className="text-xl text-gray-light mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
               Discover detailed information about global airports and airlines
@@ -91,13 +92,13 @@ const AviationInfo = () => {
           <TabsContent value="airports" className="mt-0">
             {isLoading ? (
               <div className="flex justify-center items-center py-16">
-                <Loader2 className="h-8 w-8 animate-spin text-purple" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#8B0000]" />
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {airports.map((airport) => (
                   <div 
-                    key={airport.iata_code || airport.name}
+                    key={airport.iata || airport.iata_code || airport.name}
                     className={cn(
                       "border-2 border-[#8B0000] rounded-[18px] overflow-hidden",
                       "shadow-[0_2px_8px_rgba(139,0,0,0.3)] transition-all duration-300",
@@ -112,24 +113,24 @@ const AviationInfo = () => {
                     <div className="p-5">
                       <div className="flex justify-between items-center mb-3">
                         <h3 className="text-xl font-semibold text-white">{airport.name}</h3>
-                        {airport.iata_code && (
+                        {(airport.iata || airport.iata_code) && (
                           <span className="bg-[#8B0000]/20 text-white px-2 py-1 rounded-md text-sm">
-                            {airport.iata_code}
+                            {airport.iata || airport.iata_code}
                           </span>
                         )}
                       </div>
                       
                       <p className="text-gray-300 mb-4">
-                        {airport.city || 'Jakarta'}, {airport.country_code || 'ID'}
+                        {airport.city}, {airport.country || airport.country_code || 'Indonesia'}
                       </p>
                       
                       <div className="space-y-2 mb-4">
                         <div className="text-sm text-gray-300">
                           <span className="text-gray-400">Timezone:</span> {airport.timezone || 'Asia/Jakarta'}
                         </div>
-                        {airport.lat && airport.lon && (
+                        {(airport.lat || airport.latitude) && (airport.lon || airport.longitude) && (
                           <div className="text-sm text-gray-300">
-                            <span className="text-gray-400">Coordinates:</span> {airport.lat.toFixed(4)}, {airport.lon.toFixed(4)}
+                            <span className="text-gray-400">Coordinates:</span> {airport.lat || airport.latitude}, {airport.lon || airport.longitude}
                           </div>
                         )}
                       </div>
@@ -147,13 +148,13 @@ const AviationInfo = () => {
           <TabsContent value="airlines" className="mt-0">
             {isLoading ? (
               <div className="flex justify-center items-center py-16">
-                <Loader2 className="h-8 w-8 animate-spin text-purple" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#8B0000]" />
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {airlines.map((airline) => (
                   <div 
-                    key={airline.iata_code || airline.name}
+                    key={airline.iata || airline.iata_code || airline.name}
                     className={cn(
                       "border-2 border-[#8B0000] rounded-[18px] overflow-hidden",
                       "shadow-[0_2px_8px_rgba(139,0,0,0.3)] transition-all duration-300",
@@ -169,21 +170,21 @@ const AviationInfo = () => {
                       <div className="flex justify-between items-center mb-3">
                         <h3 className="text-xl font-semibold text-white">{airline.name}</h3>
                         <div className="flex space-x-2">
-                          {airline.iata_code && (
+                          {(airline.iata || airline.iata_code) && (
                             <span className="bg-[#8B0000]/20 text-white px-2 py-1 rounded-md text-sm">
-                              {airline.iata_code}
+                              {airline.iata || airline.iata_code}
                             </span>
                           )}
-                          {airline.icao_code && (
+                          {(airline.icao || airline.icao_code) && (
                             <span className="bg-[#8B0000]/20 text-white px-2 py-1 rounded-md text-sm">
-                              {airline.icao_code}
+                              {airline.icao || airline.icao_code}
                             </span>
                           )}
                         </div>
                       </div>
                       
                       <p className="text-gray-300 mb-4">
-                        Based in {airline.country_code || 'Indonesia'}
+                        Based in {airline.country || airline.country_code || 'Indonesia'}
                       </p>
                       
                       <div className="space-y-2 mb-4">

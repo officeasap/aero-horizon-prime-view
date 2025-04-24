@@ -1,21 +1,32 @@
+
 export interface Airport {
   name: string;
-  iata: string;  // Add missing properties
+  iata: string;  // IATA code
+  iata_code?: string; // Alternative property name used in some components
   icao: string;
+  icao_code?: string; // Alternative property name used in some components
   city: string;
   country: string;
+  country_code?: string; // Alternative property name used in some components
   lat: number;
+  latitude?: number; // Alternative property name used in some components
   lon: number;
+  longitude?: number; // Alternative property name used in some components
   alt: number;  // Altitude
   timezone: string;
+  region?: string; // Used by some components
+  distance?: number; // Used in nearby airports
 }
 
 export interface Airline {
   name: string;
   iata: string;
+  iata_code?: string; // Alternative property name used in some components
   icao: string;
+  icao_code?: string; // Alternative property name used in some components
   callsign?: string;
   country?: string;
+  country_code?: string; // Alternative property name used in some components
   active?: boolean;
 }
 
@@ -78,4 +89,19 @@ export interface Flight {
   speed?: number;
   v_speed?: number;
   squawk?: string;
+}
+
+export interface SuggestResult {
+  name: string;
+  iata_code: string;
+  icao_code: string;
+  city: string;
+  country: string;
+  country_code?: string;
+  type: 'airport' | 'airline';
+  lat?: number;
+  latitude?: number;
+  lon?: number;
+  longitude?: number;
+  distance?: number;
 }

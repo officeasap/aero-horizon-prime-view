@@ -1,12 +1,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, X, Paperclip, Smile } from 'lucide-react';
+import { Send, X, Paperclip } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { v4 as uuidv4 } from 'uuid';
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
 
 // Import the useMediaQuery hook
 import { useMediaQuery } from '@/hooks/use-media-query';
@@ -35,7 +33,6 @@ const ASAPAgentChatWindow: React.FC<ASAPAgentChatWindowProps> = ({ onClose, isMo
   
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
@@ -184,12 +181,6 @@ IMPORTANT: Always provide accurate information but keep responses friendly and c
     }
   };
   
-  const addEmoji = (emoji: any) => {
-    setInput(prev => prev + emoji.native);
-    setShowEmojiPicker(false);
-    inputRef.current?.focus();
-  };
-  
   const clearChat = () => {
     if (window.confirm('Are you sure you want to clear all chat messages?')) {
       setMessages([]);
@@ -288,25 +279,9 @@ IMPORTANT: Always provide accurate information but keep responses friendly and c
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Emoji Picker */}
-      {showEmojiPicker && (
-        <div className="absolute bottom-16 right-0 z-10">
-          <Picker data={data} onEmojiSelect={addEmoji} theme="dark" />
-        </div>
-      )}
-
       {/* Input */}
       <form onSubmit={handleSubmit} className="p-3 border-t border-[#8B0000]/20 bg-[#1A1A1A]">
         <div className="flex items-center">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="text-gray-400 hover:text-white"
-            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          >
-            <Smile className="h-5 w-5" />
-          </Button>
           <input
             type="text"
             value={input}

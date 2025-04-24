@@ -1,6 +1,7 @@
 
 import { fetchData, fetchWithCache, API_BASE_URL } from './shared/apiUtils';
 import type { Flight, Airport, Airline } from './shared/types';
+import { getMockFlights, mockAirport } from './mockData';
 
 export { type Flight, type Airport, type Airline };
 
@@ -10,7 +11,80 @@ export interface SuggestResult {
   name: string;
   city: string;
   country: string;
+  country_code?: string;
   type: 'airport' | 'airline';
+  lat?: number;
+  latitude?: number;
+  lon?: number;
+  longitude?: number;
+  distance?: number;
+}
+
+// Get user position (for nearby airports feature)
+export async function getUserPosition(): Promise<GeolocationPosition> {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Geolocation is not supported by this browser.'));
+      return;
+    }
+    
+    navigator.geolocation.getCurrentPosition(resolve, reject, {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    });
+  });
+}
+
+// Fetch airports (used in multiple components)
+export async function fetchAirports(params: Record<string, string> = {}): Promise<Airport[]> {
+  try {
+    const response = await fetchWithCache('airports', params);
+    if (Array.isArray(response) && response.length > 0) {
+      return response as Airport[];
+    }
+    
+    // Return mock data for development
+    const mockAirports: Airport[] = Array(10).fill(null).map((_, index) => ({
+      ...mockAirport,
+      iata: `AP${index}`,
+      iata_code: `AP${index}`,
+      name: `Airport ${index}`,
+      city: `City ${index}`,
+      country_code: 'ID',
+      lat: mockAirport.lat + (index * 0.1),
+      latitude: mockAirport.lat + (index * 0.1),
+      lon: mockAirport.lon + (index * 0.1),
+      longitude: mockAirport.lon + (index * 0.1)
+    }));
+    
+    return mockAirports;
+  } catch (error) {
+    console.error('Error fetching airports:', error);
+    return [];
+  }
+}
+
+// Fetch arrivals and departures
+export async function fetchArrivalsDepartures(iataCode: string): Promise<{ arrivals: Flight[], departures: Flight[] }> {
+  try {
+    const params = { iata: iataCode };
+    const response = await fetchWithCache(`airport/traffic/${iataCode}`, params);
+    
+    if (response && typeof response === 'object') {
+      return response as { arrivals: Flight[], departures: Flight[] };
+    }
+    
+    // Return mock data for development
+    const mockFlights = getMockFlights(20);
+    return {
+      arrivals: mockFlights.slice(0, 10),
+      departures: mockFlights.slice(10, 20)
+    };
+  } catch (error) {
+    console.error(`Error fetching arrivals/departures for ${iataCode}:`, error);
+    return { arrivals: [], departures: [] };
+  }
 }
 
 // Fetch airport by IATA code
