@@ -49,24 +49,47 @@ export const translations: TranslationDictionary = {
     "contact.title": "Contáctenos",
     "contact.submit": "Enviar",
   },
+  id: {
+    "home.title": "Layanan Penerbangan Real-Time",
+    "home.subtitle": "Lacak penerbangan, periksa jadwal, pantau keterlambatan, dan dapatkan informasi terbaru tentang perkiraan cuaca global - semua dalam satu tempat.",
+    "nav.home": "Beranda",
+    "nav.flightSchedule": "Jadwal Penerbangan",
+    "nav.liveTracker": "Pelacak Langsung",
+    "nav.flightStatus": "Status Penerbangan",
+    "nav.weather": "Cuaca",
+    "nav.worldClock": "Jam Dunia",
+    "nav.contact": "Kontak",
+    "common.loading": "Memuat...",
+    "common.error": "Terjadi kesalahan",
+    "common.try-again": "Coba Lagi",
+    "flight.status": "Status Penerbangan",
+    "flight.schedule": "Jadwal Penerbangan",
+    "flight.tracker": "Pelacak Penerbangan",
+    "weather.title": "Cuaca Global",
+    "contact.title": "Hubungi Kami",
+    "contact.submit": "Kirim",
+  },
   // Add more languages as needed
 };
 
 export const getCountryLanguage = (countryCode: string): string => {
   // Map country codes to language codes
   const countryToLanguage: { [key: string]: string } = {
+    // Spanish speaking countries
     'es': 'es',
     'mx': 'es',
     'ar': 'es',
     'co': 'es',
     'pe': 'es',
     'cl': 'es',
-    // Add more country to language mappings as needed
+    // English speaking countries
     'en': 'en',
     'us': 'en',
     'gb': 'en',
     'au': 'en',
     'ca': 'en',
+    // Indonesian speaking countries
+    'id': 'id',
   };
 
   return countryToLanguage[countryCode.toLowerCase()] || 'en';

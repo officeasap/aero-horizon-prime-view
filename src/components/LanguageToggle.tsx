@@ -7,6 +7,11 @@ import { Button } from '@/components/ui/button';
 const LanguageToggle = () => {
   const { currentLanguage, toggleLanguage } = useLanguage();
   
+  // Determine what to display as current language code
+  const displayLanguage = currentLanguage === 'local' ? 
+    (localStorage.getItem('detectedLanguage') || 'ID') : 
+    currentLanguage.toUpperCase();
+  
   return (
     <Button
       variant="ghost"
@@ -17,7 +22,7 @@ const LanguageToggle = () => {
     >
       <Globe className="h-5 w-5" />
       <span className="absolute -bottom-1 right-0 text-xs font-bold">
-        {currentLanguage.toUpperCase()}
+        {displayLanguage}
       </span>
     </Button>
   );

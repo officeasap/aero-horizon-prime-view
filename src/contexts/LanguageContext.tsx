@@ -33,8 +33,12 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
         if (!localStorage.getItem('preferredLanguage')) {
           const response = await fetch('https://ipwho.is/');
           const data = await response.json();
+          
+          console.log('IP Geolocation data:', data);
+          
           if (data.success && data.country_code) {
             const language = getCountryLanguage(data.country_code);
+            console.log('Detected language:', language);
             setLanguage(language);
           }
         }
