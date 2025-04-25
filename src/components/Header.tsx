@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
+import LanguageToggle from "./LanguageToggle";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -70,15 +71,18 @@ const Header = () => {
             ))}
           </nav>
 
-          <div className="flex md:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMenu}
-              className={isMobile ? "visible" : "hidden"}
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <div className="flex md:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleMenu}
+                className={isMobile ? "visible" : "hidden"}
+              >
+                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
