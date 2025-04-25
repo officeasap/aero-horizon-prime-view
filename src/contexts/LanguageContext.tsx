@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getCountryLanguage } from '@/utils/translations';
 
 interface LanguageContextType {
   currentLanguage: string;
@@ -33,7 +34,8 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
           const response = await fetch('https://ipwho.is/');
           const data = await response.json();
           if (data.success && data.country_code) {
-            setLanguage(data.country_code.toLowerCase());
+            const language = getCountryLanguage(data.country_code);
+            setLanguage(language);
           }
         }
       } catch (error) {
