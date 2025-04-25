@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
-const FlightTracker = () => {
+const FlightTracker: React.FC = () => {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [filteredFlights, setFilteredFlights] = useState<Flight[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,9 +25,10 @@ const FlightTracker = () => {
   const loadFlights = async (showToast = false) => {
     try {
       setError(null);
+      setIsLoading(true);
       const data = await fetchMostTrackedFlights();
       
-      if (data.length === 0) {
+      if (!data || data.length === 0) {
         setError('No active flights found. Please try again later.');
         setFlights([]);
         setFilteredFlights([]);
@@ -40,7 +41,7 @@ const FlightTracker = () => {
       }
     } catch (err) {
       console.error('Error fetching flights:', err);
-      setError('No aircraft found or service unavailable.');
+      setError('Failed to load flight data. Please try again.');
       toast.error('Failed to load flight data');
     } finally {
       setIsLoading(false);

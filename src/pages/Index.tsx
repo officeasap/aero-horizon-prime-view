@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BackgroundAircraft from '@/components/BackgroundAircraft';
@@ -11,7 +12,7 @@ import CurrencyConverter from '@/components/CurrencyConverter';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import NotificationBell from '@/components/NotificationBell';
 
-const Index = () => {
+const Index: React.FC = () => {
   return (
     <div className="min-h-screen text-white overflow-x-hidden relative w-full">
       <Header />
@@ -22,7 +23,7 @@ const Index = () => {
         <BackgroundAircraft />
         
         {/* Content */}
-        <div className="w-full px-8 relative z-10 content-overlay">
+        <div className="w-full px-4 sm:px-8 relative z-10 content-overlay">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-space mb-4 animate-fade-in text-white">
               Real-Time <span className="text-[#8B0000] animate-text-glow">Flight Services</span>
@@ -31,47 +32,47 @@ const Index = () => {
               Track flights, check schedules, monitor delays, and stay updated with global weather forecasts - all in one place.
             </p>
             <div className="flex flex-wrap justify-center gap-3 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              <a href="/flight-schedule" rel="noopener noreferrer">
+              <Link to="/flight-schedule">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-4 w-4 mr-2" />
                   Flight Schedule
                 </Button>
-              </a>
+              </Link>
               
-              <a href="/live-flight-tracker" rel="noopener noreferrer">
+              <Link to="/live-flight-tracker">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <Map className="h-4 w-4" />
+                  <Map className="h-4 w-4 mr-2" />
                   Live Tracker
                 </Button>
-              </a>
+              </Link>
               
-              <a href="/flight-status" rel="noopener noreferrer">
+              <Link to="/flight-status">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <Plane className="h-4 w-4" />
+                  <Plane className="h-4 w-4 mr-2" />
                   Flight Status
                 </Button>
-              </a>
+              </Link>
               
-              <a href="/airports-airlines" rel="noopener noreferrer">
+              <Link to="/airports-airlines">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <Building className="h-4 w-4" />
+                  <Building className="h-4 w-4 mr-2" />
                   Airport Information
                 </Button>
-              </a>
+              </Link>
               
-              <a href="/aviation-info" rel="noopener noreferrer">
+              <Link to="/aviation-info">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <BookOpen className="h-4 w-4" />
+                  <BookOpen className="h-4 w-4 mr-2" />
                   Aviation Info
                 </Button>
-              </a>
+              </Link>
               
-              <a href="/contact" rel="noopener noreferrer">
+              <Link to="/contact">
                 <Button variant="outline" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
-                  <Phone className="h-4 w-4" />
+                  <Phone className="h-4 w-4 mr-2" />
                   Contact Support
                 </Button>
-              </a>
+              </Link>
               
               <NotificationBell variant="button" className="border-white/20 hover:bg-white/5 w-full sm:w-auto rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]" />
             </div>
@@ -80,7 +81,7 @@ const Index = () => {
       </section>
       
       <section className="py-12 relative z-10 bg-dark content-overlay w-full">
-        <div className="w-full px-8 mx-auto">
+        <div className="w-full px-4 sm:px-8 mx-auto">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-space mb-4">
@@ -103,12 +104,12 @@ const Index = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <a href="/flight-schedule" target="_blank" rel="noopener noreferrer" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
+                  <Link to="/flight-schedule" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
                     View schedules
                     <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                  </a>
+                  </Link>
                 </CardFooter>
               </Card>
               
@@ -123,12 +124,12 @@ const Index = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <a href="/live-flight-tracker" target="_blank" rel="noopener noreferrer" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
+                  <Link to="/live-flight-tracker" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
                     Track flights
                     <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                  </a>
+                  </Link>
                 </CardFooter>
               </Card>
               
@@ -143,12 +144,12 @@ const Index = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <a href="/flight-status" target="_blank" rel="noopener noreferrer" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
+                  <Link to="/flight-status" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
                     Check status
                     <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                  </a>
+                  </Link>
                 </CardFooter>
               </Card>
               
@@ -163,12 +164,12 @@ const Index = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <a href="/airports-airlines" target="_blank" rel="noopener noreferrer" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
+                  <Link to="/airports-airlines" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
                     Explore database
                     <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                  </a>
+                  </Link>
                 </CardFooter>
               </Card>
               
@@ -183,12 +184,12 @@ const Index = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <a href="/global-weather" target="_blank" rel="noopener noreferrer" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
+                  <Link to="/global-weather" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
                     View weather
                     <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                  </a>
+                  </Link>
                 </CardFooter>
               </Card>
               
@@ -203,12 +204,12 @@ const Index = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <a href="/world-clock" target="_blank" rel="noopener noreferrer" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
+                  <Link to="/world-clock" className="text-[#8B0000] flex items-center gap-1 hover:text-[#A80000] transition-colors hover:shadow-[0_0_6px_#A80000] group">
                     View time zones
                     <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                  </a>
+                  </Link>
                 </CardFooter>
               </Card>
             </div>
@@ -218,19 +219,19 @@ const Index = () => {
               <p className="text-gray-light mb-6 max-w-2xl mx-auto">
                 Our team is ready to assist you with any questions or concerns about our flight services.
               </p>
-              <a href="/contact" target="_blank" rel="noopener noreferrer">
-                <Button variant="contact" size="lg" className="rounded-[14px] hover:shadow-[0_0_8px_#A80000]">
-                  <Phone className="h-4 w-4" />
+              <Link to="/contact">
+                <Button variant="outline" size="lg" className="rounded-[14px] hover:shadow-[0_0_8px_#A80000] bg-[#8B0000] hover:bg-[#A80000] text-white border-[#8B0000]">
+                  <Phone className="h-4 w-4 mr-2" />
                   Contact Support
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
       </section>
       
       <section className="pt-8 pb-12 relative z-10 bg-dark content-overlay w-full">
-        <div className="w-full px-8 mx-auto">
+        <div className="w-full px-4 sm:px-8 mx-auto">
           <div className="max-w-3xl mx-auto">
             <CurrencyConverter />
           </div>

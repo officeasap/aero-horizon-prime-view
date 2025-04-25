@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { 
@@ -15,19 +15,37 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
-const Contact = () => {
-  const { toast } = useToast();
+const Contact: React.FC = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     // Mock form submission
-    toast({
-      title: "Message Sent!",
-      description: "We'll get back to you as soon as possible.",
-    });
+    setTimeout(() => {
+      toast.success("Message sent! We'll get back to you soon.");
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+      setIsSubmitting(false);
+    }, 1500);
   };
 
   return (
@@ -73,7 +91,6 @@ const Contact = () => {
                   <div>
                     <h3 className="font-medium text-lg">Phone</h3>
                     <p className="text-gray-light">+62 813 1567 9012</p>
-                    <p className="text-gray-light">+62 820 3425 6789</p>
                   </div>
                 </div>
                 
@@ -122,6 +139,8 @@ const Contact = () => {
                       placeholder="John Doe" 
                       className="bg-gray-dark pl-10 border-gray-dark/50 focus:border-[#8B0000]" 
                       required 
+                      value={formData.name}
+                      onChange={handleChange}
                     />
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
                   </div>
@@ -136,6 +155,8 @@ const Contact = () => {
                       placeholder="your.email@example.com" 
                       className="bg-gray-dark pl-10 border-gray-dark/50 focus:border-[#8B0000]" 
                       required 
+                      value={formData.email}
+                      onChange={handleChange}
                     />
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
                   </div>
@@ -150,6 +171,8 @@ const Contact = () => {
                       placeholder="How can we help you?" 
                       className="bg-gray-dark pl-10 border-gray-dark/50 focus:border-[#8B0000]" 
                       required 
+                      value={formData.subject}
+                      onChange={handleChange}
                     />
                     <MessageSquare className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-light" />
                   </div>
@@ -162,13 +185,28 @@ const Contact = () => {
                     placeholder="Please describe your question or concern in detail..." 
                     className="bg-gray-dark border-gray-dark/50 focus:border-[#8B0000] min-h-[150px]" 
                     required 
+                    value={formData.message}
+                    onChange={handleChange}
                   />
                 </div>
                 
                 <div className="pt-2">
-                  <Button type="submit" className="w-full bg-[#8B0000] hover:bg-[#A80000] text-white">
-                    <Send className="mr-2 h-4 w-4" />
-                    Send Message
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-[#8B0000] hover:bg-[#A80000] text-white"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span className="mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="mr-2 h-4 w-4" />
+                        Send Message
+                      </>
+                    )}
                   </Button>
                 </div>
               </form>

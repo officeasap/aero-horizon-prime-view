@@ -13,10 +13,9 @@ import {
 } from "@/components/ui/hover-card";
 import { Button } from '@/components/ui/button';
 import { fetchNearbyAircraft, fetchLiveFlights } from '@/services/aviationService';
-import { getUserPosition } from '@/services/shared/apiUtils';
 import { toast } from 'sonner';
 
-const LiveFlightTracker = () => {
+const LiveFlightTracker: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,9 +44,20 @@ const LiveFlightTracker = () => {
     try {
       setIsLoading(true);
       toast.info("Finding aircraft near your location...");
-      // Get user position first
-      const position = await getUserPosition();
-      await fetchNearbyAircraft(position.lat, position.lng, 100);
+      
+      if (!navigator.geolocation) {
+        throw new Error("Geolocation is not supported by your browser");
+      }
+      
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        });
+      });
+      
+      await fetchNearbyAircraft(position.coords.latitude, position.coords.longitude, 100);
       toast.success("Found nearby aircraft");
       // The map and list components will update with the new data
     } catch (error) {

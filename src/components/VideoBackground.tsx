@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect } from 'react';
 
-const VideoBackground = () => {
+const VideoBackground: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   
   useEffect(() => {
@@ -12,16 +12,17 @@ const VideoBackground = () => {
   }, []);
 
   return (
-    <div className="video-container w-full left-0 right-0">
+    <div className="video-container absolute inset-0 w-full h-full overflow-hidden">
       {/* Video Element */}
       <video
         ref={videoRef}
         autoPlay
-        loop
         muted
+        loop
         playsInline
         id="homepage-video"
-        className="video-element w-full"
+        className="absolute w-full h-full object-cover"
+        style={{ objectPosition: 'center center' }}
       >
         <source
           src="https://res.cloudinary.com/daqofqxjr/video/upload/v1744425287/mzw7gebems1so9sjf9zi.mp4"

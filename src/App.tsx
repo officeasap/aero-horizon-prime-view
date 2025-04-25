@@ -19,15 +19,16 @@ import FlightStatus from "./pages/FlightStatus";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { registerServiceWorker } from "./services/notificationService";
 import ASAPAgentButton from "./components/ASAPAgent/ASAPAgentButton";
+import RouteMappingPage from "./pages/RouteMappingPage";
 
 // Define global Headers if not already defined (for browser compatibility)
 if (typeof window !== 'undefined' && !window.Headers) {
-  // @ts-ignore - Simple Headers polyfill for environments where it might be missing
+  // Simple Headers polyfill for environments where it might be missing
   window.Headers = class Headers {
     constructor(init?: HeadersInit) {
       this._headers = {};
@@ -35,7 +36,6 @@ if (typeof window !== 'undefined' && !window.Headers) {
         if (Array.isArray(init)) {
           init.forEach(([name, value]) => this.append(name, value));
         } else if (init instanceof Headers || init instanceof this.constructor) {
-          // @ts-ignore
           Array.from(init.entries()).forEach(([name, value]) => this.append(name, value));
         } else {
           Object.entries(init).forEach(([name, value]) => this.append(name, value));
@@ -72,8 +72,7 @@ if (typeof window !== 'undefined' && !window.Headers) {
 
     forEach(callback: (value: string, name: string, parent: Headers) => void) {
       Object.entries(this._headers).forEach(([name, value]) => {
-        // @ts-ignore
-        callback(value, name, this);
+        callback(value, name, this as unknown as Headers);
       });
     }
 
@@ -156,6 +155,10 @@ const router = createBrowserRouter([
     element: <FlightStatus />
   },
   {
+    path: "/route-mapping",
+    element: <RouteMappingPage />
+  },
+  {
     path: "/privacy",
     element: <PrivacyPolicy />
   },
@@ -174,7 +177,15 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 2,
+        retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+        staleTime: 30000,
+      },
+    },
+  }));
 
   useEffect(() => {
     // Register service worker on app load
@@ -192,7 +203,7 @@ function App() {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
-        <Toaster />
+        <Toaster position="top-right" richColors closeButton />
         <ASAPAgentButton />
       </QueryClientProvider>
     </StrictMode>

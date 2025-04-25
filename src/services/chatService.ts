@@ -1,9 +1,10 @@
 
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'sonner';
 
-// DeepSeek r1 API endpoint
-const API_URL = 'https://api.deepseek.com/v1/chat/completions';
-const API_KEY = 'sk-8eaefa18962043f99cbbd1e0aeecdb92'; // DeepSeek R1 API key
+// OpenRouter API endpoint
+const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const API_KEY = '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';
 
 // Cache for previously asked questions and responses
 interface CacheItem {
@@ -22,8 +23,13 @@ class ResponseCache {
     // Load cache from localStorage
     const savedCache = localStorage.getItem('asap_agent_cache');
     if (savedCache) {
-      this.cache = JSON.parse(savedCache);
-      this.cleanupExpiredItems();
+      try {
+        this.cache = JSON.parse(savedCache);
+        this.cleanupExpiredItems();
+      } catch (error) {
+        console.error('Error parsing cache:', error);
+        this.cache = {};
+      }
     }
   }
 
@@ -64,7 +70,7 @@ class ResponseCache {
   public get(question: string): string | null {
     this.cleanupExpiredItems();
     
-    // Simple search for similar questions (you might want to improve this)
+    // Simple search for similar questions
     const normalizedQuestion = question.toLowerCase().trim();
     for (const key in this.cache) {
       const item = this.cache[key];
@@ -138,7 +144,7 @@ export const fetchChatResponse = async (question: string, previousMessages: Mess
   }
 
   try {
-    // Prepare conversation for DeepSeek API
+    // Prepare conversation for OpenRouter API
     const conversationHistory = previousMessages.map(msg => ({
       role: msg.role,
       content: msg.content,
@@ -147,22 +153,20 @@ export const fetchChatResponse = async (question: string, previousMessages: Mess
     // Enhanced system message to guide the AI's behavior
     const systemMessage = {
       role: "system",
-      content: `You are ASAP Agent, a beautiful, friendly, and intelligent assistant working 24/7 for the aviation site 'ASAP Tracker'. You are powered by DeepSeek R1 and your primary role is to:
+      content: `You are ASAP Agent, a friendly and intelligent assistant working for the aviation site 'ASAP Tracker'. Your primary role is to:
 
   - Track live flights and schedules (departures/arrivals)
   - Help users find flight information (flight numbers, routes, airlines, airports)
   - Provide professional insights into flight status, airline info, aircraft types, delays, and weather impact
   - Explain flight logistics in a helpful and comforting tone
-  - Always speak clearly, confidently, and with warmth — like a kind, charming, and knowledgeable cabin crew member
+  - Always speak clearly, confidently, and with warmth
 
   You have expert-level knowledge of:
-  - Airport codes and airline data globally (including Emirates, Qatar Airways, Garuda, etc.)
-  - AviationStack API endpoints, how they work, and how to guide users through use cases
+  - Airport codes and airline data globally
+  - Aviation APIs and how they work
   - Time zones, weather, delays, layovers, and baggage rules
 
-  Always speak as a beautiful and highly professional young woman avatar that makes people feel cared for and welcome. Never say you're unsure — give confident answers, and when necessary, guide the user with helpful steps.
-
-  Your main priority: provide smooth, satisfying, and delightful experiences to all users — especially travelers from Indonesia, Asia, and global visitors alike.
+  Your main priority: provide smooth, satisfying, and delightful experiences to all users.
   
   Refer users to relevant pages on the ASAP Tracker website when applicable:
   - Flight Schedule: /flight-schedule
@@ -176,7 +180,7 @@ export const fetchChatResponse = async (question: string, previousMessages: Mess
 
     // Construct the API payload
     const payload = {
-      model: "deepseek-chat",
+      model: "anthropic/claude-3-haiku",
       messages: [
         systemMessage,
         ...conversationHistory,
@@ -186,14 +190,15 @@ export const fetchChatResponse = async (question: string, previousMessages: Mess
       max_tokens: 800
     };
 
-    // API call logic with fallbacks
-    let response;
+    // Make API call to OpenRouter
     try {
-      response = await fetch(API_URL, {
+      const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
+          'Authorization': `Bearer ${API_KEY}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'ASAP Tracker'
         },
         body: JSON.stringify(payload)
       });
@@ -210,12 +215,13 @@ export const fetchChatResponse = async (question: string, previousMessages: Mess
       
       return responseText;
     } catch (error) {
-      console.error('Error with DeepSeek API:', error);
+      console.error('Error with OpenRouter API:', error);
+      toast.error('Could not connect to AI service. Using local responses.');
       
       // Generate a generic helpful response based on the question content
       let fallbackResponse = "I'm here to help with flight tracking, schedules, and other aviation information. What specifically would you like to know?";
       
-      // Check if question contains any keywords for default responses again
+      // Check if question contains any keywords for default responses again as a fallback
       for (const [keyword, response] of Object.entries(defaultResponses)) {
         if (question.toLowerCase().includes(keyword)) {
           return response;
@@ -226,7 +232,7 @@ export const fetchChatResponse = async (question: string, previousMessages: Mess
     }
   } catch (error) {
     console.error('Error in fetchChatResponse:', error);
-    return "I'm sorry, I couldn't process your request. How else can I help you with flight information?";
+    return "I'm sorry, I couldn't process your request. Please try again or contact our support team for assistance.";
   }
 };
 
