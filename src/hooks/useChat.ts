@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { fetchChatResponse } from '@/services/chatService';
+import { toast } from 'sonner';
 
 interface Message {
   id: string;
@@ -11,20 +12,17 @@ interface Message {
 }
 
 export const useChat = () => {
-  // Load messages from localStorage on initial render
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem('asap_agent_messages');
     return saved ? JSON.parse(saved) : [];
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Save messages to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('asap_agent_messages', JSON.stringify(messages));
   }, [messages]);
 
   const sendMessage = async (content: string) => {
-    // Add user message to the chat
     const userMessage: Message = {
       id: uuidv4(),
       role: 'user',
@@ -36,10 +34,9 @@ export const useChat = () => {
     setIsLoading(true);
     
     try {
-      // Get response from API
-      const response = await fetchChatResponse(content, messages);
+      const previousMessages = messages.map(({ role, content }) => ({ role, content }));
+      const response = await fetchChatResponse(content, previousMessages);
       
-      // Add assistant message to the chat
       const assistantMessage: Message = {
         id: uuidv4(),
         role: 'assistant',
@@ -49,9 +46,9 @@ export const useChat = () => {
       
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Error fetching chat response:', error);
+      console.error('Chat error:', error);
+      toast.error('Unable to get a response. Please try again.');
       
-      // Add error message
       const errorMessage: Message = {
         id: uuidv4(),
         role: 'assistant',
