@@ -58,8 +58,8 @@ function appendMessage(sender, message) {
 
 // Get a response from the OpenRouter AI API
 function getBotResponse(userMessage) {
-     const apiUrl = 'https://api.openrouter.ai/v1/query'; // Replace with OpenRouter API URL
- const apiKey = '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'; // Your OpenRouter API key
+const openRouterUrl = 'https://api.openrouter.ai/v1/query';
+const openRouterApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
 
     const data = {
         prompt: userMessage,
@@ -87,8 +87,8 @@ function getBotResponse(userMessage) {
 
 // Fetch flight information from AviationStack API (optional, depending on query)
 function getFlightInfo(query) {
-    const apiUrl = 'https://api.aviationstack.com/v1/flights'; // Replace with AviationStack API URL
-    const apiKey = 'c1e20070cd11b45c048c0f3ac887377e'; // Your AviationStack API key
+   const aviationStackUrl = 'https://api.aviationstack.com/v1/flights';
+const aviationStackApiKey = import.meta.env.VITE_AVIATIONSTACK_API_KEY;
 
     fetch(`${apiUrl}?access_key=${apiKey}&query=${query}`)
     .then(response => response.json())
