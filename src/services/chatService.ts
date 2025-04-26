@@ -1,240 +1,140 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
+import { fetchFromAviationStack, AviationStackFlight } from './aviationStackService';
 
-// OpenRouter API endpoint
-const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const API_KEY = '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';
+// API Keys from environment variables
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+const AVIATION_STACK_API_KEY = import.meta.env.VITE_AVIATIONSTACK_API_KEY;
 
-// Cache for previously asked questions and responses
-interface CacheItem {
-  question: string;
-  response: string;
-  timestamp: number;
-}
+// Aviation-related keywords to trigger AviationStack API
+const AVIATION_KEYWORDS = [
+  'flight', 'airline', 'airport', 'departure', 'arrival', 'schedule',
+  'status', 'delayed', 'route', 'terminal', 'gate', 'boarding'
+];
 
-// Simple cache mechanism for faster responses and reducing API calls
-class ResponseCache {
-  private cache: Record<string, CacheItem> = {};
-  private readonly MAX_CACHE_SIZE = 50;
-  private readonly CACHE_EXPIRY = 1000 * 60 * 60 * 24; // 24 hours
-
-  constructor() {
-    // Load cache from localStorage
-    const savedCache = localStorage.getItem('asap_agent_cache');
-    if (savedCache) {
-      try {
-        this.cache = JSON.parse(savedCache);
-        this.cleanupExpiredItems();
-      } catch (error) {
-        console.error('Error parsing cache:', error);
-        this.cache = {};
-      }
-    }
-  }
-
-  private saveCache() {
-    localStorage.setItem('asap_agent_cache', JSON.stringify(this.cache));
-  }
-
-  private cleanupExpiredItems() {
-    const now = Date.now();
-    let hasRemoved = false;
-    
-    Object.entries(this.cache).forEach(([key, item]) => {
-      if (now - item.timestamp > this.CACHE_EXPIRY) {
-        delete this.cache[key];
-        hasRemoved = true;
-      }
-    });
-    
-    if (hasRemoved) {
-      this.saveCache();
-    }
-  }
-
-  private enforceMaxSize() {
-    const cacheEntries = Object.entries(this.cache);
-    if (cacheEntries.length > this.MAX_CACHE_SIZE) {
-      // Sort by timestamp (oldest first)
-      const sortedEntries = cacheEntries.sort((a, b) => a[1].timestamp - b[1].timestamp);
-      // Remove oldest entries
-      const toRemove = sortedEntries.slice(0, cacheEntries.length - this.MAX_CACHE_SIZE);
-      toRemove.forEach(([key]) => {
-        delete this.cache[key];
-      });
-      this.saveCache();
-    }
-  }
-
-  public get(question: string): string | null {
-    this.cleanupExpiredItems();
-    
-    // Simple search for similar questions
-    const normalizedQuestion = question.toLowerCase().trim();
-    for (const key in this.cache) {
-      const item = this.cache[key];
-      const normalizedCacheQuestion = item.question.toLowerCase().trim();
-      
-      // Check if questions are very similar
-      if (
-        normalizedCacheQuestion === normalizedQuestion ||
-        normalizedQuestion.includes(normalizedCacheQuestion) ||
-        normalizedCacheQuestion.includes(normalizedQuestion)
-      ) {
-        // Update timestamp to keep recently used items longer
-        this.cache[key].timestamp = Date.now();
-        this.saveCache();
-        return item.response;
-      }
-    }
-    
-    return null;
-  }
-
-  public set(question: string, response: string) {
-    const cacheKey = uuidv4();
-    this.cache[cacheKey] = {
-      question,
-      response,
-      timestamp: Date.now()
-    };
-    
-    this.enforceMaxSize();
-    this.saveCache();
-  }
-}
-
-const responseCache = new ResponseCache();
-
-// Type definitions for messages
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
-
-export const fetchChatResponse = async (question: string, previousMessages: Message[]): Promise<string> => {
-  // Try to get cached response first
-  const cachedResponse = responseCache.get(question);
-  if (cachedResponse) {
-    return cachedResponse;
-  }
-  
-  // Default responses for common aviation questions if API is unavailable
-  const defaultResponses: Record<string, string> = {
-    'flight': 'I can help you track flights, check schedules, and provide information about airports and airlines.',
-    'weather': 'Our global weather feature provides real-time weather data for airports around the world. You can check it at /global-weather.',
-    'schedule': 'You can view flight schedules, departures, and arrivals on our Flight Schedule page at /flight-schedule.',
-    'track': 'Our Live Flight Tracker allows you to monitor flights in real-time. Visit /live-flight-tracker to use this feature.',
-    'airport': 'You can find comprehensive information about airports worldwide in our Airports & Airlines database at /airports-airlines.',
-    'alert': 'Set up flight alerts to stay updated on any changes to your flight status by visiting /flight-alerts.',
-    'contact': 'For customer support, please visit our Contact page at /contact or email info@asaptracker.com.',
-    'hello': 'Hello! I\'m your ASAP Agent. How can I help you with flight tracking, schedules, or other aviation information today?',
-    'hi': 'Hi there! I\'m your ASAP Agent. How can I assist you with your aviation needs today?',
-  };
-
-  // Check if question contains any keywords for default responses
-  for (const [keyword, response] of Object.entries(defaultResponses)) {
-    if (question.toLowerCase().includes(keyword)) {
-      responseCache.set(question, response);
-      return response;
-    }
-  }
+export const fetchChatResponse = async (question: string, previousMessages: any[]) => {
+  // Check if the question is aviation-related
+  const isAviationQuery = AVIATION_KEYWORDS.some(keyword => 
+    question.toLowerCase().includes(keyword)
+  );
 
   try {
-    // Prepare conversation for OpenRouter API
-    const conversationHistory = previousMessages.map(msg => ({
-      role: msg.role,
-      content: msg.content,
-    }));
-
-    // Enhanced system message to guide the AI's behavior
-    const systemMessage = {
-      role: "system",
-      content: `You are ASAP Agent, a friendly and intelligent assistant working for the aviation site 'ASAP Tracker'. Your primary role is to:
-
-  - Track live flights and schedules (departures/arrivals)
-  - Help users find flight information (flight numbers, routes, airlines, airports)
-  - Provide professional insights into flight status, airline info, aircraft types, delays, and weather impact
-  - Explain flight logistics in a helpful and comforting tone
-  - Always speak clearly, confidently, and with warmth
-
-  You have expert-level knowledge of:
-  - Airport codes and airline data globally
-  - Aviation APIs and how they work
-  - Time zones, weather, delays, layovers, and baggage rules
-
-  Your main priority: provide smooth, satisfying, and delightful experiences to all users.
-  
-  Refer users to relevant pages on the ASAP Tracker website when applicable:
-  - Flight Schedule: /flight-schedule
-  - Live Flight Tracker: /live-flight-tracker
-  - Airports & Airlines: /airports-airlines
-  - Flight Alerts: /flight-alerts
-  - Global Weather: /global-weather
-  - World Clock: /world-clock
-  - Contact: /contact`
-    };
-
-    // Construct the API payload
-    const payload = {
-      model: "anthropic/claude-3-haiku",
-      messages: [
-        systemMessage,
-        ...conversationHistory,
-        { role: "user", content: question }
-      ],
-      temperature: 0.7,
-      max_tokens: 800
-    };
-
-    // Make API call to OpenRouter
-    try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`,
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'ASAP Tracker'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed with status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const responseText = data.choices[0].message.content;
-      
-      // Cache the response
-      responseCache.set(question, responseText);
-      
-      return responseText;
-    } catch (error) {
-      console.error('Error with OpenRouter API:', error);
-      toast.error('Could not connect to AI service. Using local responses.');
-      
-      // Generate a generic helpful response based on the question content
-      let fallbackResponse = "I'm here to help with flight tracking, schedules, and other aviation information. What specifically would you like to know?";
-      
-      // Check if question contains any keywords for default responses again as a fallback
-      for (const [keyword, response] of Object.entries(defaultResponses)) {
-        if (question.toLowerCase().includes(keyword)) {
-          return response;
+    if (isAviationQuery) {
+      // Try AviationStack first
+      try {
+        const flightInfo = await handleAviationQuery(question);
+        if (flightInfo) {
+          return formatAviationResponse(flightInfo, question);
         }
+      } catch (error) {
+        console.error('AviationStack Error:', error);
+        // Fallback to OpenRouter if AviationStack fails
       }
-      
-      return fallbackResponse;
     }
+
+    // Use OpenRouter for general queries or when AviationStack fails
+    return await fetchOpenRouterResponse(question, previousMessages);
+
   } catch (error) {
-    console.error('Error in fetchChatResponse:', error);
-    return "I'm sorry, I couldn't process your request. Please try again or contact our support team for assistance.";
+    console.error('Chat Error:', error);
+    toast.error('Unable to process your request');
+    return "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.";
   }
 };
 
-// Public GitHub repo path for future development
-export const ASAP_AGENT_GITHUB_PATH = '/asap-agent/asapagent.js';
+async function handleAviationQuery(question: string) {
+  // Extract flight number if present (e.g., "AA123" or "American Airlines 123")
+  const flightNumberMatch = question.match(/([A-Z]{2}|[A-Z]\d)(\d{1,4})/i);
+  
+  if (flightNumberMatch) {
+    const flightIata = flightNumberMatch[0].toUpperCase();
+    const response = await fetchFromAviationStack('flights', { 
+      flight_iata: flightIata 
+    });
+    return response.data[0];
+  }
+
+  // Extract airport code if present (e.g., "JFK" or "LAX")
+  const airportMatch = question.match(/\b([A-Z]{3})\b/i);
+  
+  if (airportMatch) {
+    const airportCode = airportMatch[0].toUpperCase();
+    const response = await fetchFromAviationStack('flights', {
+      dep_iata: airportCode
+    });
+    return response.data;
+  }
+
+  return null;
+}
+
+function formatAviationResponse(flightInfo: AviationStackFlight | AviationStackFlight[], question: string): string {
+  if (Array.isArray(flightInfo)) {
+    // Format multiple flights information
+    const flights = flightInfo.slice(0, 3); // Limit to 3 flights for readability
+    return flights.map(flight => formatSingleFlight(flight)).join('\n\n');
+  } else if (flightInfo) {
+    // Format single flight information
+    return formatSingleFlight(flightInfo);
+  }
+  
+  return "I couldn't find specific flight information for your query. Could you please provide more details?";
+}
+
+function formatSingleFlight(flight: AviationStackFlight): string {
+  const status = flight.flight_status.toLowerCase();
+  const statusEmoji = {
+    scheduled: '🕒',
+    active: '✈️',
+    landed: '🛬',
+    delayed: '⚠️',
+    cancelled: '❌'
+  }[status] || '✈️';
+
+  return `${statusEmoji} Flight ${flight.flight.iata} (${flight.airline.name})\n` +
+    `From: ${flight.departure.airport} (${flight.departure.iata})\n` +
+    `To: ${flight.arrival.airport} (${flight.arrival.iata})\n` +
+    `Status: ${flight.flight_status}\n` +
+    `Scheduled Departure: ${new Date(flight.departure.scheduled).toLocaleString()}\n` +
+    `Scheduled Arrival: ${new Date(flight.arrival.scheduled).toLocaleString()}` +
+    (flight.departure.delay ? `\nDeparture Delay: ${flight.departure.delay} minutes` : '') +
+    (flight.arrival.delay ? `\nArrival Delay: ${flight.arrival.delay} minutes` : '');
+}
+
+async function fetchOpenRouterResponse(question: string, previousMessages: any[]): Promise<string> {
+  const systemMessage = {
+    role: "system",
+    content: `You are ASAP Agent, a friendly and knowledgeable aviation assistant. Always be helpful, clear, and concise in your responses. When discussing flights, airports, or travel, be informative but maintain a warm, conversational tone.`
+  };
+
+  const conversationHistory = [
+    systemMessage,
+    ...previousMessages.slice(-5), // Keep last 5 messages for context
+    { role: "user", content: question }
+  ];
+
+  const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': window.location.origin,
+      'X-Title': 'ASAP Tracker'
+    },
+    body: JSON.stringify({
+      model: "anthropic/claude-3-haiku",
+      messages: conversationHistory,
+      temperature: 0.7,
+      max_tokens: 500
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`OpenRouter API request failed with status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, Paperclip } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -6,10 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { v4 as uuidv4 } from 'uuid';
 
-// Import the useMediaQuery hook
 import { useMediaQuery } from '@/hooks/use-media-query';
 
-// OpenRouter API key
 const API_KEY = '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';
 
 interface ASAPAgentChatWindowProps {
@@ -26,7 +23,6 @@ interface Message {
 
 const ASAPAgentChatWindow: React.FC<ASAPAgentChatWindowProps> = ({ onClose, isMobile = false }) => {
   const [messages, setMessages] = useState<Message[]>(() => {
-    // Load previous messages from localStorage
     const saved = localStorage.getItem('asap_agent_messages');
     return saved ? JSON.parse(saved) : [];
   });
@@ -36,7 +32,6 @@ const ASAPAgentChatWindow: React.FC<ASAPAgentChatWindowProps> = ({ onClose, isMo
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  // Define system message for AI
   const systemMessage: Message = {
     id: 'system-1',
     role: 'system',
@@ -60,17 +55,14 @@ IMPORTANT: Always provide accurate information but keep responses friendly and c
     timestamp: new Date()
   };
   
-  // Save messages to localStorage when they change
   useEffect(() => {
     localStorage.setItem('asap_agent_messages', JSON.stringify(messages));
   }, [messages]);
   
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
-  // Welcome message when there are no messages
   useEffect(() => {
     if (messages.length === 0) {
       const welcomeMessage: Message = {
@@ -86,7 +78,6 @@ IMPORTANT: Always provide accurate information but keep responses friendly and c
   const sendMessage = async (messageContent: string) => {
     if (!messageContent.trim() || isLoading) return;
     
-    // Create user message
     const userMessage: Message = {
       id: uuidv4(),
       role: 'user',
@@ -94,72 +85,28 @@ IMPORTANT: Always provide accurate information but keep responses friendly and c
       timestamp: new Date()
     };
     
-    // Add user message to chat
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
     
     try {
-      // Prepare conversation history including system message at the beginning
-      let conversationHistory = [systemMessage];
+      const response = await fetchChatResponse(messageContent, messages);
       
-      // Add the last 10 messages from history (to stay within token limits)
-      if (messages.length > 0) {
-        conversationHistory = [...conversationHistory, ...messages.slice(-10)];
-      }
-      
-      // Add the new user message
-      conversationHistory.push(userMessage);
-      
-      // Format messages for API
-      const apiMessages = conversationHistory.map(msg => ({
-        role: msg.role,
-        content: msg.content
-      }));
-      
-      // Call OpenRouter API
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`,
-          'HTTP-Referer': window.location.href,
-          'X-Title': 'ASAP Tracker Chat'
-        },
-        body: JSON.stringify({
-          model: 'anthropic/claude-3-haiku',
-          messages: apiMessages,
-          temperature: 0.7,
-          max_tokens: 500,
-          stream: false
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API request failed with status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      const assistantReply = data.choices[0].message.content;
-      
-      // Create assistant message
       const assistantMessage: Message = {
         id: uuidv4(),
         role: 'assistant',
-        content: assistantReply,
+        content: response,
         timestamp: new Date()
       };
       
-      // Add assistant message to chat
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Error calling OpenRouter API:', error);
+      console.error('Error in chat:', error);
       
-      // Add error message to chat
       const errorMessage: Message = {
         id: uuidv4(),
         role: 'assistant',
-        content: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        content: "I'm sorry, I'm having trouble processing your request right now. Please try again in a moment.",
         timestamp: new Date()
       };
       
@@ -194,7 +141,6 @@ IMPORTANT: Always provide accurate information but keep responses friendly and c
         isMobile ? 'fixed inset-0 z-50' : 'w-[350px] sm:w-[400px] max-h-[500px]'
       }`}
     >
-      {/* Header */}
       <div className="bg-[#1A1A1A] px-4 py-3 border-b border-[#8B0000]/20 flex items-center justify-between">
         <div className="flex items-center">
           <Avatar className="h-8 w-8 mr-3 border border-[#8B0000]">
@@ -230,9 +176,7 @@ IMPORTANT: Always provide accurate information but keep responses friendly and c
         </div>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-dark to-[#1A1A1A]">
-        {/* Conversation messages */}
         {messages.map((message) => (
           <div 
             key={message.id} 
@@ -259,7 +203,6 @@ IMPORTANT: Always provide accurate information but keep responses friendly and c
           </div>
         ))}
 
-        {/* Loading indicator */}
         {isLoading && (
           <div className="flex items-start">
             <Avatar className="h-8 w-8 mr-3 border border-[#8B0000]">
@@ -279,7 +222,6 @@ IMPORTANT: Always provide accurate information but keep responses friendly and c
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
       <form onSubmit={handleSubmit} className="p-3 border-t border-[#8B0000]/20 bg-[#1A1A1A]">
         <div className="flex items-center">
           <input

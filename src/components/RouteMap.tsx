@@ -1,15 +1,14 @@
-
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { SuggestResult } from '@/services/shared/types';
 
 interface RouteMapProps {
-  departure: SuggestResult | null;
-  arrival: SuggestResult | null;
+  origin: SuggestResult | null;
+  destination: SuggestResult | null;
 }
 
-export const RouteMap: React.FC<RouteMapProps> = ({ departure, arrival }) => {
+const RouteMap: React.FC<RouteMapProps> = ({ origin, destination }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
@@ -28,23 +27,8 @@ export const RouteMap: React.FC<RouteMapProps> = ({ departure, arrival }) => {
     }
 
     // Update route when departure and arrival change
-    if (departure?.coordinates && arrival?.coordinates) {
-      const route = {
-        type: 'FeatureCollection' as const,
-        features: [
-          {
-            type: 'Feature' as const,
-            geometry: {
-              type: 'LineString' as const,
-              coordinates: [
-                departure.coordinates,
-                arrival.coordinates
-              ]
-            },
-            properties: {}
-          }
-        ]
-      };
+    if (origin?.coordinates && destination?.coordinates) {
+      const route = createGeoJSON([origin.coordinates, destination.coordinates]);
 
       if (map.current?.getSource('route')) {
         (map.current.getSource('route') as mapboxgl.GeoJSONSource).setData(route);
@@ -70,32 +54,48 @@ export const RouteMap: React.FC<RouteMapProps> = ({ departure, arrival }) => {
       }
 
       // Add markers for departure and arrival
-      if (departure.coordinates) {
+      if (origin.coordinates) {
         new mapboxgl.Marker()
-          .setLngLat(departure.coordinates)
-          .setPopup(new mapboxgl.Popup().setHTML(`<h3>${departure.name}</h3>`))
+          .setLngLat(origin.coordinates)
+          .setPopup(new mapboxgl.Popup().setHTML(`<h3>${origin.name}</h3>`))
           .addTo(map.current!);
       }
 
-      if (arrival.coordinates) {
+      if (destination.coordinates) {
         new mapboxgl.Marker({ color: '#8B0000' })
-          .setLngLat(arrival.coordinates)
-          .setPopup(new mapboxgl.Popup().setHTML(`<h3>${arrival.name}</h3>`))
+          .setLngLat(destination.coordinates)
+          .setPopup(new mapboxgl.Popup().setHTML(`<h3>${destination.name}</h3>`))
           .addTo(map.current!);
       }
 
       // Fit bounds to show both points
       const bounds = new mapboxgl.LngLatBounds()
-        .extend(departure.coordinates)
-        .extend(arrival.coordinates);
+        .extend(origin.coordinates)
+        .extend(destination.coordinates);
 
       map.current?.fitBounds(bounds, {
         padding: 50
       });
     }
-  }, [departure, arrival]);
+  }, [origin, destination]);
+
+  const createGeoJSON = (coordinates: { lat: number; lon: number; }[]) => {
+    return {
+      type: "FeatureCollection",
+      features: [{
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: coordinates.map(coord => [coord.lon, coord.lat])
+        },
+        properties: {}
+      }]
+    };
+  };
 
   return (
     <div ref={mapContainer} className="h-[600px] w-full rounded-lg border border-gray-200" />
   );
 };
+
+export default RouteMap;
