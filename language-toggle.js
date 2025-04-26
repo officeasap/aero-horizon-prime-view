@@ -37,7 +37,7 @@ function detectLanguage() {
         return;
     }
 
-    const ipInfoToken = import.meta.env.VITE_IPINFO_TOKEN;
+    const ipInfoToken = import.meta.env.VITE_IPINFO_TOKEN; // Make sure this is in your .env file
     const ipInfoUrl = `https://ipinfo.io?token=${ipInfoToken}`;
 
     fetch(ipInfoUrl)
@@ -57,6 +57,7 @@ function detectLanguage() {
             }
 
             localStorage.setItem("preferredLanguage", language);
+            localStorage.setItem("detectedLanguage", language); // Store detected language too for toggling
             translatePage(language);
         })
         .catch(() => {
@@ -72,6 +73,12 @@ function toggleLanguage() {
 
     localStorage.setItem("preferredLanguage", toggledLanguage);
     translatePage(toggledLanguage);
+
+    // Toggle button text (or any UI change) to indicate active language
+    const languageButton = document.querySelector("#language-toggle span");
+    if (languageButton) {
+        languageButton.innerText = toggledLanguage.toUpperCase(); // Updates the text next to the button
+    }
 }
 
 // Initialize
@@ -83,4 +90,3 @@ document.addEventListener("DOMContentLoaded", function () {
         toggleButton.addEventListener("click", toggleLanguage);
     }
 });
-
