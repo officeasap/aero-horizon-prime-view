@@ -1,3 +1,4 @@
+
 // Translation function
 function translatePage(language) {
     const translations = {
@@ -90,3 +91,4 @@ document.addEventListener("DOMContentLoaded", function () {
         toggleButton.addEventListener("click", toggleLanguage);
     }
 });
+
