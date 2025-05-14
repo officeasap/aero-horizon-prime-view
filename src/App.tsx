@@ -1,3 +1,4 @@
+
 import { StrictMode } from "react";
 import "./App.css";
 import "./index.css";
@@ -19,6 +20,7 @@ import FlightStatus from "./pages/FlightStatus";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
+import SiteElements from "./pages/SiteElements";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
@@ -99,6 +101,10 @@ const router = createBrowserRouter([
   {
     path: "/cookies",
     element: <CookiePolicy />
+  },
+  {
+    path: "/site-elements",
+    element: <SiteElements />
   },
   {
     path: "*",

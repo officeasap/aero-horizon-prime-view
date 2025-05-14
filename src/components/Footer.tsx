@@ -15,7 +15,8 @@ import {
   AlertTriangle, 
   Clock, 
   Cloud,
-  Radar
+  Radar,
+  Palette
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -106,6 +107,12 @@ const Footer = () => {
                   World Clock
                 </a>
               </li>
+              <li>
+                <a href="/site-elements" target="_blank" rel="noopener noreferrer" className="text-white text-sm flex items-center gap-2 hover:text-white/80 transition-colors">
+                  <Palette size={16} className="text-[#8B0000]" />
+                  Site Elements
+                </a>
+              </li>
             </ul>
           </div>
           
@@ -116,14 +123,15 @@ const Footer = () => {
               <li className="flex items-start">
                 <MapPin size={18} className="text-[#8B0000] mr-3 mt-1 flex-shrink-0" />
                 <span className="text-white text-sm">
-                  JL DMC 1 NO 29 BEKASI<br />
-                  Indonesia
+                  PT. Asap World Secure Point Indonesia,<br />
+                  Gedung Menara Global Lantai 3 Suite A,<br />
+                  Jalan Jenderal Gatot Subroto Kavling 27
                 </span>
               </li>
               <li className="flex items-center">
                 <Phone size={18} className="text-[#8B0000] mr-3 flex-shrink-0" />
-                <a href="tel:+6281315679012" className="text-white text-sm hover:text-white/80 transition-colors">
-                  +62 813 1567 9012
+                <a href="tel:085718530703" className="text-white text-sm hover:text-white/80 transition-colors">
+                  0857 1853 0703
                 </a>
               </li>
               <li className="flex items-center">
