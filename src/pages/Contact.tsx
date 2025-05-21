@@ -90,7 +90,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-lg">Phone</h3>
-                    <p className="text-gray-light">+62 813 1567 9012</p>
+                    <p className="text-gray-light">+62 857 1853 0703</p>
                   </div>
                 </div>
                 
@@ -101,8 +101,9 @@ const Contact: React.FC = () => {
                   <div>
                     <h3 className="font-medium text-lg">Location</h3>
                     <p className="text-gray-light">
-                      JL DMC 1 NO 29<br />
-                      BEKASI, Indonesia
+                      PT. Asap World Secure Point Indonesia,<br />
+                      Gedung Menara Global Lantai 3 Suite A,<br />
+                      Jalan Jenderal Gatot Subroto Kavling 27
                     </p>
                   </div>
                 </div>
